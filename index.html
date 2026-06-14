@@ -623,10 +623,11 @@ var STOCK_POOL_CONFIG = {
     var cost = parseFloat(costEl.value) || 0;
     if (shares > 0 && cost > 0) {
       setHolding(code, shares, cost);
-      // Delayed render to avoid losing focus on second input
-      clearTimeout(window._renderTimer);
-      window._renderTimer = setTimeout(render, 300);
+    } else {
+      clearHolding(code);
     }
+    clearTimeout(window._renderTimer);
+    window._renderTimer = setTimeout(render, 300);
   };
   window.clearHold = function(code) {
     clearHolding(code);
