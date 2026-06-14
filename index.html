@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>逆向股票池 — AI泡沫错杀监控</title>
+<title>AI估值泡沫破灭逆向股票池</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -11,342 +11,310 @@ body {
   background: #0a0a0f;
   color: #e8e8ec;
   min-height: 100vh;
-  padding: 20px;
+  padding: 16px;
 }
 .header {
   text-align: center;
-  padding: 24px 0 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 20px;
+  padding: 16px 0 10px;
+  margin-bottom: 12px;
 }
-.header h1 { font-size: 20px; font-weight: 600; color: #f0f0f5; margin-bottom: 4px; }
-.header .sub { font-size: 13px; color: #888; }
-.header .status { font-size: 12px; margin-top: 8px; }
+.header h1 { font-size: 18px; font-weight: 600; color: #f0f0f5; }
+.header .status { font-size: 12px; margin-top: 6px; color: #666; }
 .status .live { color: #4ade80; }
-.status .stale { color: #eab308; }
-.status .offline { color: #666; }
 
 .summary {
-  display: flex; justify-content: center; gap: 18px;
-  margin-bottom: 20px; flex-wrap: wrap;
+  display: flex; justify-content: center; gap: 14px;
+  margin-bottom: 14px; flex-wrap: wrap; font-size: 12px;
 }
-.summary .stat { display: flex; align-items: center; gap: 6px; font-size: 13px; }
-.stat .dot { width: 9px; height: 9px; border-radius: 50%; }
-.dot-strong { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
-.dot-buy { background: #3b82f6; box-shadow: 0 0 6px #3b82f688; }
-.dot-watch { background: #eab308; }
-.dot-expensive { background: #ef4444; }
+.summary span { display: flex; align-items: center; gap: 4px; }
+.summary .d { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 
 .filters {
-  display: flex; justify-content: center; gap: 6px;
-  margin-bottom: 16px; flex-wrap: wrap;
+  display: flex; justify-content: center; gap: 5px;
+  margin-bottom: 12px; flex-wrap: wrap;
 }
-.filter-btn {
-  padding: 5px 12px; border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: transparent; color: #aaa; font-size: 12px;
-  cursor: pointer; transition: all 0.2s;
+.filters button {
+  padding: 3px 10px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: transparent; color: #777; font-size: 11px;
+  cursor: pointer; transition: all 0.15s;
 }
-.filter-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
-.filter-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); color: #fff; }
+.filters button:hover { color: #ccc; border-color: rgba(255,255,255,0.2); }
+.filters button.on { background: rgba(255,255,255,0.06); color: #fff; border-color: rgba(255,255,255,0.2); }
 
-.grid {
+.pool { max-width: 1200px; margin: 0 auto; }
+
+.row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 12px; max-width: 1200px; margin: 0 auto;
+  grid-template-columns: 24px 82px 58px 48px minmax(120px, 1fr) 200px;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  transition: background 0.12s;
 }
-.card {
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 10px; padding: 14px;
-  position: relative; overflow: hidden; transition: all 0.2s;
+.row:hover { background: rgba(255,255,255,0.025); }
+.row-head {
+  font-size: 9px; color: #444; letter-spacing: 0.2px;
+  padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-.card::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 3px; height: 100%;
+.row-head:hover { background: transparent; }
+
+.col-sig { font-size: 13px; text-align: center; }
+.col-name { font-size: 12px; font-weight: 500; line-height: 1.3; }
+.col-name .code { font-size: 9px; color: #444; font-weight: 400; }
+.col-price { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.col-chg { font-size: 10px; font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.col-chg.up { color: #ef4444; }
+.col-chg.dn { color: #22c55e; }
+
+/* Bar */
+.col-bar { position: relative; height: 22px; }
+.bar-track {
+  position: absolute; top: 9px; left: 0; right: 0; height: 3px;
+  background: rgba(255,255,255,0.06); border-radius: 2px;
 }
-.card.strong::before { background: #22c55e; }
-.card.buy::before { background: #3b82f6; }
-.card.watch::before { background: #eab308; }
-.card.expensive::before { background: #ef4444; }
-.card.loading { opacity: 0.6; }
+.bar-mk {
+  position: absolute; top: 4px; width: 1.5px; height: 13px; border-radius: 1px;
+}
+.mk-b { background: #22c55e; left: 0; }
+.mk-a { background: #3b82f6; }
+.mk-r { background: rgba(239,68,68,0.5); right: 0; left: auto; }
+.bar-dot {
+  position: absolute; top: 6px;
+  width: 9px; height: 9px; border-radius: 50%;
+  transform: translateX(-50%);
+  transition: left 0.3s;
+}
+.bar-dot.strong { background: #22c55e; }
+.bar-dot.buy { background: #3b82f6; }
+.bar-dot.watch { background: #eab308; }
+.bar-dot.expensive { background: #ef4444; }
+.bar-lbl {
+  position: absolute; bottom: -1px; font-size: 8px; color: #444;
+  transform: translateX(-50%);
+}
 
-.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.card-name { font-size: 15px; font-weight: 600; }
-.card-code { font-size: 11px; color: #666; margin-top: 1px; }
-.card-sector { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: rgba(255,255,255,0.05); color: #999; }
-
-.card-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-.card-price .current { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.card-price .change { font-size: 12px; font-weight: 600; }
-.change-up { color: #ef4444; }
-.change-down { color: #22c55e; }
-.card-price .signal-text { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; margin-left: auto; }
-.signal-strong { background: rgba(34,197,94,0.12); color: #22c55e; }
-.signal-buy { background: rgba(59,130,246,0.12); color: #60a5fa; }
-.signal-watch { background: rgba(234,179,8,0.1); color: #eab308; }
-.signal-expensive { background: rgba(239,68,68,0.1); color: #ef4444; }
-
-.progress-bar { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; margin: 6px 0; position: relative; }
-.progress-fill { height: 100%; border-radius: 2px; }
-.progress-marker { position: absolute; top: -2px; width: 2px; height: 7px; border-radius: 1px; background: #3b82f6; }
-
-.card-thresholds { display: flex; gap: 10px; font-size: 11px; margin-bottom: 6px; flex-wrap: wrap; }
-.threshold { display: flex; align-items: center; gap: 3px; }
-.threshold .label { color: #555; }
-.threshold .val { font-weight: 600; font-variant-numeric: tabular-nums; }
-.th-strong .val { color: #22c55e; }
-.th-buy .val { color: #60a5fa; }
-.th-red .val { color: #ef4444; }
-
-.card-note { font-size: 11px; color: #666; line-height: 1.4; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 6px; }
-
-.signal-badge { position: absolute; top: 10px; right: 10px; font-size: 16px; }
+/* Rule column */
+.col-rule {
+  font-size: 10px; color: #666; line-height: 1.5;
+  padding-left: 8px;
+  white-space: nowrap;
+}
+.col-rule .r { display: block; }
+.col-rule .tag-b { color: #4ade80; }
+.col-rule .tag-a { color: #60a5fa; }
+.col-rule .tag-ctx { color: #888; }
 
 .legend {
-  max-width: 1200px; margin: 24px auto 0; padding: 14px;
-  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 8px; font-size: 11px; color: #777; line-height: 1.7;
+  max-width: 1200px; margin: 20px auto 0; padding: 12px 14px;
+  background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px; font-size: 10px; color: #555; line-height: 1.7;
 }
-.legend h3 { font-size: 12px; color: #999; margin-bottom: 4px; }
+.legend h3 { font-size: 11px; color: #888; margin-bottom: 3px; }
 
-@media (max-width: 700px) {
-  .grid { grid-template-columns: 1fr; }
-  body { padding: 12px; }
+.section-label {
+  max-width: 1200px; margin: 18px auto 6px;
+  padding: 0 10px;
+  font-size: 12px; font-weight: 600; color: #888;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+}
+.section-label .badge {
+  font-size: 10px; font-weight: 400; color: #666;
+  background: rgba(255,255,255,0.04); padding: 1px 6px; border-radius: 6px;
+}
+.watch-row { opacity: 0.6; }
+.watch-row:hover { opacity: 0.85; }
+
+@media (max-width: 768px) {
+  .row { grid-template-columns: 20px 66px 50px 42px minmax(80px,1fr) 160px; gap: 4px; padding: 7px 6px; }
+  .col-rule { font-size: 9px; }
+  body { padding: 10px; }
+}
+@media (max-width: 480px) {
+  .row { grid-template-columns: 18px 58px 44px 38px 1fr; }
+  .col-rule { display: none; }
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>逆向股票池</h1>
-  <div class="sub" id="stockCount"></div>
-  <div class="status" id="status"><span class="offline">正在获取实时数据...</span></div>
+  <h1>AI估值泡沫破灭逆向股票池</h1>
+  <div class="status" id="status">正在获取数据...</div>
 </div>
-
 <div class="summary" id="summary"></div>
 <div class="filters" id="filters"></div>
-<div class="grid" id="grid"></div>
+<div class="pool" id="pool"></div>
 
 <div class="legend">
   <h3>规则</h3>
-  <p><span style="color:#22c55e">● 强烈建议买入(B线)</span> 极端恐慌价 &nbsp;
-  <span style="color:#3b82f6">● 推荐买入(A线)</span> 估值历史低分位 &nbsp;
-  <span style="color:#eab308">● 监控中</span> 未到A线 &nbsp;
-  <span style="color:#ef4444">● 偏贵</span> 超红线·红灯60天淘汰</p>
-  <p style="margin-top:4px">入池逻辑：盈利健康 + 估值被AI虹吸压至历史低位 = "错杀"。价格每30秒自动刷新。</p>
+  <p><span style="color:#22c55e">●B线</span>=极端恐慌(重仓) &nbsp; <span style="color:#3b82f6">●A线</span>=低分位(建仓) &nbsp; <span style="color:#eab308">●监控</span>=未到A线 &nbsp; <span style="color:#ef4444">●偏贵</span>=超红线</p>
+  <p>进度条: 左端B线 → 蓝标A线 → 右端红线。圆点=当前价。右列=该股阈值定价逻辑。</p>
+  <p style="margin-top:4px"><b>观察区</b>：新扫描入池标的先进观察区30天验证→合格转正式池；正式池红灯超30天→降级观察区→再30天仍红灯→踢出。</p>
+  <p><b>数据</b>：价格每30秒从东方财富实时拉取。股票列表每晚20:00全量扫描更新（新增/淘汰/升降级）。</p>
 </div>
 
 <script src="stock-pool-data.js"></script>
 <script>
 (function() {
-  const config = STOCK_POOL_CONFIG;
-  const stocks = config.stocks;
-  let prices = {}; // code -> {price, change}
-  let currentSectorFilter = null;
-  let currentSignalFilter = null;
+  const stocks = STOCK_POOL_CONFIG.stocks;
+  let prices = {};
+  let curSector = null, curSignal = null;
 
-  // Build secid for East Money API
-  function getSecId(s) {
-    if (s.market === 'SH') return '1.' + s.code;
-    if (s.market === 'SZ') return '0.' + s.code;
-    if (s.market === 'HK') return '116.' + s.code;
-    return '1.' + s.code;
+  function secId(s) {
+    if (s.market==='SH') return '1.'+s.code;
+    if (s.market==='SZ') return '0.'+s.code;
+    return '116.'+s.code;
   }
 
-  // Fetch all prices via East Money batch API
   async function fetchPrices() {
-    const secids = stocks.map(s => getSecId(s)).join(',');
-    const url = `https://push2.eastmoney.com/api/qt/ulist.np/get?secids=${secids}&fields=f12,f14,f2,f3,f18&cb=priceCallback&_=${Date.now()}`;
-    
-    return new Promise((resolve) => {
-      // JSONP approach
-      window.priceCallback = function(data) {
-        if (data && data.data && data.data.diff) {
-          data.data.diff.forEach(item => {
-            const code = item.f12;
-            const price = item.f2 / 100; // A股除100
-            const change = item.f3 / 100; // 涨跌幅%
-            const preClose = item.f18 / 100;
-            // 港股价格需要特殊处理
-            const stock = stocks.find(s => s.code === code);
-            if (stock && stock.market === 'HK') {
-              prices[code] = { price: item.f2 / 1000, change: item.f3 / 100 };
-            } else if (price > 0) {
-              prices[code] = { price, change };
-            }
-          });
-        }
-        resolve();
-        // cleanup
-        delete window.priceCallback;
-        document.body.removeChild(script);
+    const ids = stocks.map(s=>secId(s)).join(',');
+    const url = `https://push2.eastmoney.com/api/qt/ulist.np/get?secids=${ids}&fields=f12,f14,f2,f3&cb=_p&_=${Date.now()}`;
+    return new Promise(r => {
+      window._p = function(d) {
+        if(d&&d.data&&d.data.diff) d.data.diff.forEach(i => {
+          const c=i.f12, s=stocks.find(x=>x.code===c);
+          if(s&&i.f2>0) prices[c]={price:i.f2/(s.market==='HK'?1000:100), change:i.f3/100};
+        });
+        r(); delete window._p; try{document.body.removeChild(sc);}catch(e){}
       };
-      const script = document.createElement('script');
-      script.src = url;
-      script.onerror = () => {
-        resolve(); // fail silently
-        try { document.body.removeChild(script); } catch(e) {}
-      };
-      document.body.appendChild(script);
+      const sc=document.createElement('script'); sc.src=url;
+      sc.onerror=()=>{r();try{document.body.removeChild(sc);}catch(e){}};
+      document.body.appendChild(sc);
     });
   }
 
-  function getSignal(s) {
-    const p = prices[s.code];
-    if (!p) return 'watch';
-    if (p.price <= s.lineB) return 'strong';
-    if (p.price <= s.lineA) return 'buy';
-    if (p.price >= s.red) return 'expensive';
+  function sig(s) {
+    const p=prices[s.code]; if(!p) return 'watch';
+    if(p.price<=s.lineB) return 'strong';
+    if(p.price<=s.lineA) return 'buy';
+    if(p.price>=s.red) return 'expensive';
     return 'watch';
   }
+  const emo={strong:'🟢',buy:'🔵',watch:'🟡',expensive:'🔴'};
 
-  function getSignalLabel(sig) {
-    return { strong: '强烈建议', buy: '推荐买入', watch: '监控中', expensive: '偏贵' }[sig];
-  }
+  function render() {
+    const now=new Date(), loaded=Object.keys(prices).length;
+    if(loaded>0){
+      const t=now.toTimeString().slice(0,8);
+      const tr=now.getDay()>=1&&now.getDay()<=5&&now.getHours()*100+now.getMinutes()>=925&&now.getHours()*100+now.getMinutes()<=1500;
+      document.getElementById('status').innerHTML=tr?`<span class="live">● 实时 ${t}</span>`:`${t} · 收盘`;
+    }
+    let cnt={strong:0,buy:0,watch:0,expensive:0};
+    poolStocks.forEach(s=>cnt[sig(s)]++);
+    document.getElementById('summary').innerHTML=`
+      <span><span class="d" style="background:#22c55e"></span>${cnt.strong}强烈</span>
+      <span><span class="d" style="background:#3b82f6"></span>${cnt.buy}推荐</span>
+      <span><span class="d" style="background:#eab308"></span>${cnt.watch}监控</span>
+      <span><span class="d" style="background:#ef4444"></span>${cnt.expensive}偏贵</span>
+      <span style="color:#555">| 观察区${watchStocks.length}</span>`;
 
-  function getSignalEmoji(sig) {
-    return { strong: '🟢', buy: '🔵', watch: '🟡', expensive: '🔴' }[sig];
-  }
+    const pool=document.getElementById('pool');
+    pool.innerHTML='';
 
-  function renderAll() {
-    // Status
-    const statusEl = document.getElementById('status');
-    const loadedCount = Object.keys(prices).length;
-    if (loadedCount > 0) {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2,'0');
-      const mm = String(now.getMinutes()).padStart(2,'0');
-      const ss = String(now.getSeconds()).padStart(2,'0');
-      const isTrading = now.getDay() >= 1 && now.getDay() <= 5 && 
-        (now.getHours() * 100 + now.getMinutes()) >= 925 && 
-        (now.getHours() * 100 + now.getMinutes()) <= 1500;
-      statusEl.innerHTML = isTrading 
-        ? `<span class="live">● 实时 ${hh}:${mm}:${ss} · 每30秒自动刷新</span>`
-        : `<span class="stale">数据截至 ${hh}:${mm} · 非交易时段</span>`;
+    const ord={strong:0,buy:1,watch:2,expensive:3};
+    const poolStocks = stocks.filter(s=>s.zone!=='watch');
+    const watchStocks = stocks.filter(s=>s.zone==='watch');
+
+    function renderSection(list, sectionLabel, isWatch) {
+      if (sectionLabel) {
+        const lbl = document.createElement('div');
+        lbl.className = 'section-label';
+        lbl.innerHTML = sectionLabel;
+        pool.appendChild(lbl);
+      }
+      const hd=document.createElement('div');
+      hd.className='row row-head';
+      hd.innerHTML=`<div></div><div>名称</div><div style="text-align:right">现价</div><div style="text-align:right">涨跌</div><div style="text-align:center">位置</div><div style="padding-left:8px">阈值规则</div>`;
+      pool.appendChild(hd);
+
+      const sorted = [...list].sort((a,b)=>ord[sig(a)]-ord[sig(b)]);
+      sorted.forEach(s=>{
+        const signal=sig(s);
+        if(curSector&&s.sector!==curSector) return;
+        if(curSignal&&signal!==curSignal) return;
+        const p=prices[s.code];
+        const pStr=p?p.price.toFixed(2):'--';
+        const cStr=p?(p.change>=0?'+':'')+p.change.toFixed(2)+'%':'';
+        const cCls=p?(p.change>=0?'up':'dn'):'';
+
+        const range=s.red-s.lineB;
+        const pPos=p?Math.max(0,Math.min(100,(p.price-s.lineB)/range*100)):50;
+        const aPos=(s.lineA-s.lineB)/range*100;
+
+        const parts = s.note.split('｜');
+        const aRule = parts.find(r=>r.startsWith('A=')) || '';
+        const bRule = parts.find(r=>r.startsWith('B=')) || '';
+        const ctx = parts.filter(r=>!r.startsWith('A=')&&!r.startsWith('B=')).slice(0,2).join(' ');
+
+        const row=document.createElement('div');
+        row.className='row' + (isWatch ? ' watch-row' : '');
+        row.innerHTML=`
+          <div class="col-sig">${emo[signal]}</div>
+          <div class="col-name">${s.name}<div class="code">${s.market}:${s.code}</div></div>
+          <div class="col-price">${pStr}</div>
+          <div class="col-chg ${cCls}">${cStr}</div>
+          <div class="col-bar">
+            <div class="bar-track"></div>
+            <div class="bar-mk mk-b"></div>
+            <div class="bar-mk mk-a" style="left:${aPos}%"></div>
+            <div class="bar-mk mk-r"></div>
+            <div class="bar-dot ${signal}" style="left:${pPos}%"></div>
+            <div class="bar-lbl" style="left:0">${s.lineB}</div>
+            <div class="bar-lbl" style="left:${aPos}%">${s.lineA}</div>
+            <div class="bar-lbl" style="left:100%">${s.red}</div>
+          </div>
+          <div class="col-rule">
+            <span class="r"><span class="tag-a">${aRule}</span> <span class="tag-b">${bRule}</span></span>
+            <span class="r tag-ctx">${ctx}</span>
+          </div>
+        `;
+        pool.appendChild(row);
+      });
     }
 
-    // Stock count & sectors
-    document.getElementById('stockCount').textContent = 
-      stocks.length + '只 · ' + [...new Set(stocks.map(s=>s.sector))].join(' · ');
+    // Render pool section
+    const poolFiltered = curSector||curSignal ? poolStocks.filter(s=>{
+      if(curSector&&s.sector!==curSector) return false;
+      if(curSignal&&sig(s)!==curSignal) return false;
+      return true;
+    }) : poolStocks;
+    if (poolFiltered.length > 0) {
+      renderSection(poolStocks, `正式池 <span class="badge">${poolStocks.length}只</span>`, false);
+    }
 
-    // Count signals
-    let counts = { strong: 0, buy: 0, watch: 0, expensive: 0 };
-    stocks.forEach(s => { counts[getSignal(s)]++; });
-    
-    document.getElementById('summary').innerHTML = `
-      <div class="stat"><div class="dot dot-strong"></div><span>${counts.strong} 强烈建议</span></div>
-      <div class="stat"><div class="dot dot-buy"></div><span>${counts.buy} 推荐买入</span></div>
-      <div class="stat"><div class="dot dot-watch"></div><span>${counts.watch} 监控中</span></div>
-      <div class="stat"><div class="dot dot-expensive"></div><span>${counts.expensive} 偏贵</span></div>
-    `;
-
-    // Render grid
-    const gridEl = document.getElementById('grid');
-    gridEl.innerHTML = '';
-    const order = { strong: 0, buy: 1, watch: 2, expensive: 3 };
-    const sorted = [...stocks].sort((a, b) => order[getSignal(a)] - order[getSignal(b)]);
-
-    sorted.forEach(s => {
-      const signal = getSignal(s);
-      if (currentSectorFilter && s.sector !== currentSectorFilter) return;
-      if (currentSignalFilter && signal !== currentSignalFilter) return;
-
-      const p = prices[s.code];
-      const priceVal = p ? p.price.toFixed(2) : '--';
-      const changeVal = p ? (p.change >= 0 ? '+' : '') + p.change.toFixed(2) + '%' : '';
-      const changeClass = p ? (p.change >= 0 ? 'change-up' : 'change-down') : '';
-
-      let distText = '';
-      if (p) {
-        if (signal === 'strong') distText = '已达B线 ✓✓';
-        else if (signal === 'buy') distText = `已达A线 ✓ · 距B线 ${((p.price-s.lineB)/s.lineB*100).toFixed(1)}%`;
-        else if (signal === 'watch') distText = `距A线 ${((p.price-s.lineA)/s.lineA*100).toFixed(1)}%`;
-        else {
-          const days = s.redSince ? Math.round((Date.now()-new Date(s.redSince))/86400000) : 0;
-          distText = '偏贵' + (days > 0 ? ` · 红灯${days}天/60天淘汰` : '');
-        }
-      }
-
-      const range = s.red - s.lineB;
-      const pos = p ? Math.max(0, Math.min(100, (p.price - s.lineB) / range * 100)) : 50;
-      const posA = Math.max(0, Math.min(100, (s.lineA - s.lineB) / range * 100));
-      const barColor = signal === 'strong' ? '#22c55e' : signal === 'buy' ? '#3b82f6' : signal === 'watch' ? '#eab308' : '#ef4444';
-
-      const card = document.createElement('div');
-      card.className = `card ${signal}` + (p ? '' : ' loading');
-      card.innerHTML = `
-        <div class="signal-badge">${getSignalEmoji(signal)}</div>
-        <div class="card-top">
-          <div>
-            <div class="card-name">${s.name}</div>
-            <div class="card-code">${s.market}:${s.code} · ${s.anchor} ${s.anchorVal}</div>
-          </div>
-          <div class="card-sector">${s.sector}</div>
-        </div>
-        <div class="card-price">
-          <span class="current">${priceVal}</span>
-          <span class="change ${changeClass}">${changeVal}</span>
-          <span class="signal-text signal-${signal}">${getSignalLabel(signal)}</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${pos}%;background:${barColor};opacity:0.5"></div>
-          <div class="progress-marker" style="left:${posA}%"></div>
-        </div>
-        <div class="card-thresholds">
-          <div class="threshold th-strong"><span class="label">B线≤</span><span class="val">${s.lineB}</span></div>
-          <div class="threshold th-buy"><span class="label">A线≤</span><span class="val">${s.lineA}</span></div>
-          <div class="threshold th-red"><span class="label">红线≥</span><span class="val">${s.red}</span></div>
-        </div>
-        <div class="card-note">${distText}${distText ? '<br>' : ''}${s.note}</div>
-      `;
-      gridEl.appendChild(card);
-    });
+    // Render watch section
+    const watchFiltered = curSector||curSignal ? watchStocks.filter(s=>{
+      if(curSector&&s.sector!==curSector) return false;
+      if(curSignal&&sig(s)!==curSignal) return false;
+      return true;
+    }) : watchStocks;
+    if (watchFiltered.length > 0) {
+      renderSection(watchStocks, `观察区 <span class="badge">${watchStocks.length}只 · 新入池/红灯降级</span>`, true);
+    }
   }
 
-  // Filters (render once)
   function initFilters() {
-    const filtersEl = document.getElementById('filters');
-    const sectors = ['全部', ...new Set(stocks.map(s => s.sector))];
-    sectors.forEach((sec, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'filter-btn' + (i === 0 ? ' active' : '');
-      btn.textContent = sec;
-      btn.onclick = () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentSectorFilter = sec === '全部' ? null : sec;
-        currentSignalFilter = null;
-        renderAll();
-      };
-      filtersEl.appendChild(btn);
+    const el=document.getElementById('filters');
+    ['全部',...new Set(stocks.map(s=>s.sector))].forEach((sec,i)=>{
+      const b=document.createElement('button');
+      b.textContent=sec; b.className=i===0?'on':'';
+      b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');curSector=sec==='全部'?null:sec;curSignal=null;render();};
+      el.appendChild(b);
     });
-    [['强烈建议','strong'],['推荐买入','buy'],['监控中','watch'],['偏贵','expensive']].forEach(([label, sig]) => {
-      const btn = document.createElement('button');
-      btn.className = 'filter-btn';
-      btn.textContent = label;
-      btn.onclick = () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentSectorFilter = null;
-        currentSignalFilter = sig;
-        renderAll();
-      };
-      filtersEl.appendChild(btn);
+    [['强烈','strong'],['推荐','buy'],['监控','watch'],['偏贵','expensive']].forEach(([l,v])=>{
+      const b=document.createElement('button');b.textContent=l;
+      b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');curSector=null;curSignal=v;render();};
+      el.appendChild(b);
     });
   }
 
-  // Main loop
-  async function tick() {
-    await fetchPrices();
-    renderAll();
-  }
-
-  initFilters();
-  renderAll(); // show skeleton
-  tick(); // first fetch
-  setInterval(tick, 30000); // every 30s
+  async function tick(){await fetchPrices();render();}
+  initFilters(); render(); tick(); setInterval(tick,30000);
 })();
 </script>
 </body>
