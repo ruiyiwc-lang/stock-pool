@@ -129,6 +129,8 @@ body {
 .watch-row { opacity: 0.6; }
 .watch-row:hover { opacity: 0.85; }
 
+.err-msg { text-align: center; color: #ef4444; font-size: 11px; margin: 10px 0; }
+
 @media (max-width: 768px) {
   .row { grid-template-columns: 20px 66px 50px 42px minmax(80px,1fr) 160px; gap: 4px; padding: 7px 6px; }
   .col-rule { font-size: 9px; }
@@ -155,15 +157,114 @@ body {
   <p><span style="color:#22c55e">●B线</span>=极端恐慌(重仓) &nbsp; <span style="color:#3b82f6">●A线</span>=低分位(建仓) &nbsp; <span style="color:#eab308">●监控</span>=未到A线 &nbsp; <span style="color:#ef4444">●偏贵</span>=超红线</p>
   <p>进度条: 左端B线 → 蓝标A线 → 右端红线。圆点=当前价。右列=该股阈值定价逻辑。</p>
   <p style="margin-top:4px"><b>观察区</b>：新扫描入池标的先进观察区30天验证→合格转正式池；正式池红灯超30天→降级观察区→再30天仍红灯→踢出。</p>
-  <p><b>数据</b>：价格每30秒从东方财富实时拉取。股票列表每晚20:00全量扫描更新（新增/淘汰/升降级）。</p>
+  <p><b>数据</b>：价格每30秒从腾讯财经实时拉取。股票列表每晚20:00全量扫描更新（新增/淘汰/升降级）。</p>
 </div>
 
-<script src="stock-pool-data.js"></script>
+<script>
+// ==== STOCK_POOL_DATA_START ====
+var STOCK_POOL_CONFIG = {
+  lastScan: '2026-06-14',
+  stocks: [
+    { code: '600519', name: '贵州茅台', market: 'SH', sector: '消费', zone: 'pool',
+      lineA: 1300, lineB: 1100, red: 2100, anchor: 'PE', anchorVal: '19.5x',
+      addedDate: '2026-06-14',
+      note: '5年PE 5%分位｜盈利2026E+5%｜股息4%｜A=PE 19.5x｜B=PE 16.5x' },
+    { code: '600887', name: '伊利股份', market: 'SH', sector: '消费', zone: 'pool',
+      lineA: 26, lineB: 20, red: 38, anchor: 'PE', anchorVal: '13.5x',
+      addedDate: '2026-06-14',
+      note: '5年PE 5%分位｜盈利+10%｜股息5.3%｜A=PE 13.5x｜B=PE 10.5x' },
+    { code: '603288', name: '海天味业', market: 'SH', sector: '消费', zone: 'pool',
+      lineA: 36, lineB: 26, red: 53, anchor: 'PE', anchorVal: '30x',
+      addedDate: '2026-06-14',
+      note: '5年PE 5%分位｜盈利+11%｜A=PE 30x｜B=PE 22x' },
+    { code: '09633', name: '农夫山泉', market: 'HK', sector: '消费', zone: 'pool',
+      lineA: 45, lineB: 35, red: 82, anchor: 'PE', anchorVal: '27x',
+      addedDate: '2026-06-14',
+      note: '3年PE 12%分位｜历史中位数40x｜A=PE 27x｜B=PE 21x' },
+    { code: '000568', name: '泸州老窖', market: 'SZ', sector: '消费', zone: 'pool',
+      lineA: 85, lineB: 65, red: 140, anchor: 'PE', anchorVal: '12.6x',
+      addedDate: '2026-06-14',
+      note: '5年PE <10%分位｜盈利-20%⚠️｜股息6.8%｜A=PE 12.6x｜B=PE 9.5x' },
+    { code: '000651', name: '格力电器', market: 'SZ', sector: '消费', zone: 'pool',
+      lineA: 39, lineB: 30, red: 55, anchor: 'PE', anchorVal: '5.2x',
+      addedDate: '2026-06-14',
+      note: 'PE极低｜股息7.5%｜现金1100亿｜A=PE 5.2x｜B=PE 4x' },
+    { code: '600276', name: '恒瑞医药', market: 'SH', sector: '医药', zone: 'pool',
+      lineA: 49, lineB: 36, red: 66, anchor: 'PE', anchorVal: '40x',
+      addedDate: '2026-06-14',
+      note: '5年PE 3%分位｜盈利+22%｜创新药占62%｜A=PE 40x｜B=PE 30x' },
+    { code: '603259', name: '药明康德', market: 'SH', sector: '医药', zone: 'pool',
+      lineA: 100, lineB: 72, red: 178, anchor: 'PE', anchorVal: '22x',
+      addedDate: '2026-06-14',
+      note: '5年PE 5%分位｜扣非+32%｜BIOSECURE风险｜A=PE 22x｜B=PE 16x' },
+    { code: '300015', name: '爱尔眼科', market: 'SZ', sector: '医药', zone: 'pool',
+      lineA: 8.5, lineB: 6.5, red: 19, anchor: 'PE', anchorVal: '18x',
+      addedDate: '2026-06-14',
+      note: '5年PE <3%分位｜2026Q1恢复+12.5%｜A=PE 18x｜B=PE 14x' },
+    { code: '601318', name: '中国平安', market: 'SH', sector: '金融', zone: 'pool',
+      lineA: 55, lineB: 42, red: 70, anchor: 'PEV', anchorVal: '0.66x',
+      addedDate: '2026-06-14',
+      note: '3年PE 1.7%分位｜NBV+29%｜股息4.7%｜A=PEV 0.66x｜B=PEV 0.5x' },
+    { code: '600036', name: '招商银行', market: 'SH', sector: '金融', zone: 'pool',
+      lineA: 40, lineB: 30, red: 51, anchor: 'PB', anchorVal: '0.83x',
+      addedDate: '2026-06-14',
+      note: 'PB破净｜股息5.2%｜H股罕见溢价A股｜A=PB 0.83x｜B=PB 0.63x' },
+    { code: '600030', name: '中信证券', market: 'SH', sector: '金融', zone: 'pool',
+      lineA: 27, lineB: 20, red: 32, anchor: 'PB', anchorVal: '1.2x',
+      addedDate: '2026-06-14',
+      note: '5年PE 10%分位｜盈利+38.6%｜波动大｜A=PB 1.2x｜B=PB 0.9x' },
+    { code: '00700', name: '腾讯控股', market: 'HK', sector: '科技', zone: 'pool',
+      lineA: 420, lineB: 350, red: 700, anchor: 'PE', anchorVal: '16x',
+      addedDate: '2026-06-14',
+      note: '3年PE 27%分位｜盈利稳增长｜A=PE 14.5x｜B=PE 12x' },
+    { code: '300750', name: '宁德时代', market: 'SZ', sector: '新能源', zone: 'pool',
+      lineA: 340, lineB: 260, red: 500, anchor: 'PE', anchorVal: '23x',
+      addedDate: '2026-06-14',
+      note: '5年PE 55%分位(中性)｜2026E+30%｜A=PE 20x｜B=PE 15x' },
+    { code: '300274', name: '阳光电源', market: 'SZ', sector: '新能源', zone: 'pool',
+      lineA: 135, lineB: 100, red: 200, anchor: 'PE', anchorVal: '15x',
+      addedDate: '2026-06-14',
+      note: 'PE历史低位｜利润+26-41%｜PEG 0.4｜A=PE 13.5x｜B=PE 10x' },
+    { code: '09999', name: '网易', market: 'HK', sector: '科技', zone: 'pool',
+      lineA: 180, lineB: 145, red: 280, anchor: 'PE', anchorVal: '12x',
+      addedDate: '2026-06-14',
+      note: '3年PE底部附近｜游戏+12%｜A=PE 11x｜B=PE 8.5x' },
+    { code: '601899', name: '紫金矿业', market: 'SH', sector: '资源', zone: 'pool',
+      lineA: 26, lineB: 22, red: 50, anchor: 'PE', anchorVal: '12x',
+      addedDate: '2026-06-14',
+      note: '铜金价峰值→周期陷阱风险｜A=PE 10.7x｜B=PE 9x' },
+    { code: '600150', name: '中国船舶', market: 'SH', sector: '周期', zone: 'pool',
+      lineA: 32, lineB: 26, red: 50, anchor: 'PB', anchorVal: '1.76x',
+      addedDate: '2026-06-14',
+      note: '利润翻倍但周期顶部特征｜A=PB 1.6x｜B=PB 1.3x' },
+    { code: '600900', name: '长江电力', market: 'SH', sector: '公用', zone: 'pool',
+      lineA: 25, lineB: 21, red: 32, anchor: 'PE', anchorVal: '19x',
+      addedDate: '2026-06-14',
+      note: 'PE接近中枢｜股息3.7%｜A=PE 17x｜B=PE 14x' },
+    { code: '00823', name: '领展REIT', market: 'HK', sector: '公用', zone: 'pool',
+      lineA: 37, lineB: 28, red: 55, anchor: '股息率', anchorVal: '6%+',
+      addedDate: '2026-06-14',
+      note: '股息6%+｜估值较均值低1σ｜A=息率6%｜B=息率8%' },
+    { code: '600938', name: '中国海油', market: 'SH', sector: '资源', zone: 'watch',
+      lineA: 28, lineB: 24, red: 38, anchor: '股息率', anchorVal: '4.0%',
+      addedDate: '2026-06-14', redSince: '2026-06-14',
+      note: '3年PE 88%分位(偏贵)｜需等油价跌｜A=股息5%｜B=股息6%' },
+    { code: '600941', name: '中国移动', market: 'SH', sector: '公用', zone: 'watch',
+      lineA: 82, lineB: 70, red: 100, anchor: 'PE', anchorVal: '15x',
+      addedDate: '2026-06-14', redSince: '2026-06-14',
+      note: 'A股PE高位(88%分位)｜股息4.8%｜A=PE 13x｜B=PE 11x' }
+  ]
+};
+// ==== STOCK_POOL_DATA_END ====
+</script>
 <script>
 (function() {
-  const stocks = STOCK_POOL_CONFIG.stocks;
-  let prices = {};
-  let curSector = null, curSignal = null;
+  var stocks = STOCK_POOL_CONFIG.stocks;
+  var poolStocks = stocks.filter(function(s){return s.zone!=='watch';});
+  var watchStocks = stocks.filter(function(s){return s.zone==='watch';});
+  var prices = {};
+  var curSector = null, curSignal = null;
+  var fetchCount = 0;
 
   function secId(s) {
     if (s.market==='SH') return 'sh'+s.code;
@@ -171,159 +272,185 @@ body {
     return 'hk'+s.code;
   }
 
-  async function fetchPrices() {
-    const ids = stocks.map(s=>secId(s)).join(',');
-    const url = `https://qt.gtimg.cn/q=${ids}&_=${Date.now()}`;
-    return new Promise(r => {
-      const sc = document.createElement('script');
-      sc.src = url;
-      sc.onload = () => {
-        stocks.forEach(s => {
-          const varName = 'v_' + secId(s);
-          const val = window[varName];
-          if (val && val.length > 0) {
-            const parts = val.split('~');
-            // Format: parts[3]=current price, parts[32]=change%
-            const price = parseFloat(parts[3]);
-            const chg = parseFloat(parts[32]);
-            if (price > 0) prices[s.code] = { price, change: chg };
-          }
-        });
-        r();
-        try { document.body.removeChild(sc); } catch(e){}
-      };
-      sc.onerror = () => { r(); try{document.body.removeChild(sc);}catch(e){} };
-      document.body.appendChild(sc);
-    });
+  function fetchPrices() {
+    var ids = stocks.map(function(s){return secId(s);}).join(',');
+    var url = 'https://qt.gtimg.cn/q=' + ids + '&_=' + Date.now();
+    var sc = document.createElement('script');
+    sc.src = url;
+    sc.onload = function() {
+      stocks.forEach(function(s) {
+        var varName = 'v_' + secId(s);
+        var val = window[varName];
+        if (val && val.length > 0) {
+          var parts = val.split('~');
+          var price = parseFloat(parts[3]);
+          var chg = parseFloat(parts[32]);
+          if (price > 0) prices[s.code] = { price: price, change: chg };
+        }
+      });
+      fetchCount++;
+      render();
+      try { sc.parentNode.removeChild(sc); } catch(e){}
+    };
+    sc.onerror = function() {
+      document.getElementById('status').innerHTML = '<span style="color:#ef4444">API连接失败，30秒后重试...</span>';
+      try { sc.parentNode.removeChild(sc); } catch(e){}
+    };
+    document.head.appendChild(sc);
   }
 
   function sig(s) {
-    const p=prices[s.code]; if(!p) return 'watch';
+    var p = prices[s.code]; if(!p) return 'watch';
     if(p.price<=s.lineB) return 'strong';
     if(p.price<=s.lineA) return 'buy';
     if(p.price>=s.red) return 'expensive';
     return 'watch';
   }
-  const emo={strong:'🟢',buy:'🔵',watch:'🟡',expensive:'🔴'};
+  var emo = {strong:'\u{1F7E2}',buy:'\u{1F535}',watch:'\u{1F7E1}',expensive:'\u{1F534}'};
 
   function render() {
-    const now=new Date(), loaded=Object.keys(prices).length;
-    if(loaded>0){
-      const t=now.toTimeString().slice(0,8);
-      const tr=now.getDay()>=1&&now.getDay()<=5&&now.getHours()*100+now.getMinutes()>=925&&now.getHours()*100+now.getMinutes()<=1500;
-      document.getElementById('status').innerHTML=tr?`<span class="live">● 实时 ${t}</span>`:`${t} · 收盘`;
+    var now = new Date(), loaded = Object.keys(prices).length;
+    if(loaded > 0){
+      var t = now.toTimeString().slice(0,8);
+      var h = now.getHours(), m = now.getMinutes(), d = now.getDay();
+      var tr = d>=1 && d<=5 && (h*100+m)>=925 && (h*100+m)<=1500;
+      document.getElementById('status').innerHTML = tr
+        ? '<span class="live">\u25CF \u5B9E\u65F6 '+t+'</span>'
+        : t+' \u00B7 \u6536\u76D8\u4EF7';
+    } else if(fetchCount > 0) {
+      document.getElementById('status').innerHTML = '<span style="color:#ef4444">未获取到数据</span>';
     }
-    let cnt={strong:0,buy:0,watch:0,expensive:0};
-    poolStocks.forEach(s=>cnt[sig(s)]++);
-    document.getElementById('summary').innerHTML=`
-      <span><span class="d" style="background:#22c55e"></span>${cnt.strong}强烈</span>
-      <span><span class="d" style="background:#3b82f6"></span>${cnt.buy}推荐</span>
-      <span><span class="d" style="background:#eab308"></span>${cnt.watch}监控</span>
-      <span><span class="d" style="background:#ef4444"></span>${cnt.expensive}偏贵</span>
-      <span style="color:#555">| 观察区${watchStocks.length}</span>`;
 
-    const pool=document.getElementById('pool');
-    pool.innerHTML='';
+    var cnt = {strong:0,buy:0,watch:0,expensive:0};
+    poolStocks.forEach(function(s){cnt[sig(s)]++;});
+    document.getElementById('summary').innerHTML =
+      '<span><span class="d" style="background:#22c55e"></span>'+cnt.strong+'\u5F3A\u70C8</span>'+
+      '<span><span class="d" style="background:#3b82f6"></span>'+cnt.buy+'\u63A8\u8350</span>'+
+      '<span><span class="d" style="background:#eab308"></span>'+cnt.watch+'\u76D1\u63A7</span>'+
+      '<span><span class="d" style="background:#ef4444"></span>'+cnt.expensive+'\u504F\u8D35</span>'+
+      '<span style="color:#555">| \u89C2\u5BDF\u533A'+watchStocks.length+'</span>';
 
-    const ord={strong:0,buy:1,watch:2,expensive:3};
-    const poolStocks = stocks.filter(s=>s.zone!=='watch');
-    const watchStocks = stocks.filter(s=>s.zone==='watch');
+    var pool = document.getElementById('pool');
+    pool.innerHTML = '';
+
+    var ord = {strong:0,buy:1,watch:2,expensive:3};
 
     function renderSection(list, sectionLabel, isWatch) {
       if (sectionLabel) {
-        const lbl = document.createElement('div');
+        var lbl = document.createElement('div');
         lbl.className = 'section-label';
         lbl.innerHTML = sectionLabel;
         pool.appendChild(lbl);
       }
-      const hd=document.createElement('div');
-      hd.className='row row-head';
-      hd.innerHTML=`<div></div><div>名称</div><div style="text-align:right">现价</div><div style="text-align:right">涨跌</div><div style="text-align:center">位置</div><div style="padding-left:8px">阈值规则</div>`;
+      var hd = document.createElement('div');
+      hd.className = 'row row-head';
+      hd.innerHTML = '<div></div><div>\u540D\u79F0</div><div style="text-align:right">\u73B0\u4EF7</div><div style="text-align:right">\u6DA8\u8DCC</div><div style="text-align:center">\u4F4D\u7F6E</div><div style="padding-left:8px">\u9608\u503C\u89C4\u5219</div>';
       pool.appendChild(hd);
 
-      const sorted = [...list].sort((a,b)=>ord[sig(a)]-ord[sig(b)]);
-      sorted.forEach(s=>{
-        const signal=sig(s);
-        if(curSector&&s.sector!==curSector) return;
-        if(curSignal&&signal!==curSignal) return;
-        const p=prices[s.code];
-        const pStr=p?p.price.toFixed(2):'--';
-        const cStr=p?(p.change>=0?'+':'')+p.change.toFixed(2)+'%':'';
-        const cCls=p?(p.change>=0?'up':'dn'):'';
+      var sorted = list.slice().sort(function(a,b){return ord[sig(a)]-ord[sig(b)];});
+      sorted.forEach(function(s){
+        var signal = sig(s);
+        if(curSector && s.sector!==curSector) return;
+        if(curSignal && signal!==curSignal) return;
+        var p = prices[s.code];
+        var pStr = p ? p.price.toFixed(2) : '--';
+        var cStr = p ? (p.change>=0?'+':'') + p.change.toFixed(2)+'%' : '';
+        var cCls = p ? (p.change>=0?'up':'dn') : '';
 
-        const range=s.red-s.lineB;
-        const pPos=p?Math.max(0,Math.min(100,(p.price-s.lineB)/range*100)):50;
-        const aPos=(s.lineA-s.lineB)/range*100;
+        var range = s.red - s.lineB;
+        var pPos = p ? Math.max(0, Math.min(100, (p.price-s.lineB)/range*100)) : 50;
+        var aPos = (s.lineA-s.lineB)/range*100;
 
-        const parts = s.note.split('｜');
-        const aRule = parts.find(r=>r.startsWith('A=')) || '';
-        const bRule = parts.find(r=>r.startsWith('B=')) || '';
-        const ctx = parts.filter(r=>!r.startsWith('A=')&&!r.startsWith('B=')).slice(0,2).join(' ');
+        var parts = s.note.split('\uFF5C');
+        var aRule = '', bRule = '', ctxArr = [];
+        parts.forEach(function(r){
+          if(r.startsWith('A=')) aRule = r;
+          else if(r.startsWith('B=')) bRule = r;
+          else ctxArr.push(r);
+        });
+        var ctx = ctxArr.slice(0,2).join(' ');
 
-        const row=document.createElement('div');
-        row.className='row' + (isWatch ? ' watch-row' : '');
-        row.innerHTML=`
-          <div class="col-sig">${emo[signal]}</div>
-          <div class="col-name">${s.name}<div class="code">${s.market}:${s.code}</div></div>
-          <div class="col-price">${pStr}</div>
-          <div class="col-chg ${cCls}">${cStr}</div>
-          <div class="col-bar">
-            <div class="bar-track"></div>
-            <div class="bar-mk mk-b"></div>
-            <div class="bar-mk mk-a" style="left:${aPos}%"></div>
-            <div class="bar-mk mk-r"></div>
-            <div class="bar-dot ${signal}" style="left:${pPos}%"></div>
-            <div class="bar-lbl" style="left:0">${s.lineB}</div>
-            <div class="bar-lbl" style="left:${aPos}%">${s.lineA}</div>
-            <div class="bar-lbl" style="left:100%">${s.red}</div>
-          </div>
-          <div class="col-rule">
-            <span class="r"><span class="tag-a">${aRule}</span> <span class="tag-b">${bRule}</span></span>
-            <span class="r tag-ctx">${ctx}</span>
-          </div>
-        `;
+        var row = document.createElement('div');
+        row.className = 'row' + (isWatch ? ' watch-row' : '');
+        row.innerHTML =
+          '<div class="col-sig">'+emo[signal]+'</div>'+
+          '<div class="col-name">'+s.name+'<div class="code">'+s.market+':'+s.code+'</div></div>'+
+          '<div class="col-price">'+pStr+'</div>'+
+          '<div class="col-chg '+cCls+'">'+cStr+'</div>'+
+          '<div class="col-bar">'+
+            '<div class="bar-track"></div>'+
+            '<div class="bar-mk mk-b"></div>'+
+            '<div class="bar-mk mk-a" style="left:'+aPos+'%"></div>'+
+            '<div class="bar-mk mk-r"></div>'+
+            '<div class="bar-dot '+signal+'" style="left:'+pPos+'%"></div>'+
+            '<div class="bar-lbl" style="left:0">'+s.lineB+'</div>'+
+            '<div class="bar-lbl" style="left:'+aPos+'%">'+s.lineA+'</div>'+
+            '<div class="bar-lbl" style="left:100%">'+s.red+'</div>'+
+          '</div>'+
+          '<div class="col-rule">'+
+            '<span class="r"><span class="tag-a">'+aRule+'</span> <span class="tag-b">'+bRule+'</span></span>'+
+            '<span class="r tag-ctx">'+ctx+'</span>'+
+          '</div>';
         pool.appendChild(row);
       });
     }
 
-    // Render pool section
-    const poolFiltered = curSector||curSignal ? poolStocks.filter(s=>{
-      if(curSector&&s.sector!==curSector) return false;
-      if(curSignal&&sig(s)!==curSignal) return false;
+    // Filter
+    var pf = curSector||curSignal ? poolStocks.filter(function(s){
+      if(curSector && s.sector!==curSector) return false;
+      if(curSignal && sig(s)!==curSignal) return false;
       return true;
     }) : poolStocks;
-    if (poolFiltered.length > 0) {
-      renderSection(poolStocks, `正式池 <span class="badge">${poolStocks.length}只</span>`, false);
+    if (pf.length > 0) {
+      renderSection(poolStocks, '\u6B63\u5F0F\u6C60 <span class="badge">'+poolStocks.length+'\u53EA</span>', false);
     }
 
-    // Render watch section
-    const watchFiltered = curSector||curSignal ? watchStocks.filter(s=>{
-      if(curSector&&s.sector!==curSector) return false;
-      if(curSignal&&sig(s)!==curSignal) return false;
+    var wf = curSector||curSignal ? watchStocks.filter(function(s){
+      if(curSector && s.sector!==curSector) return false;
+      if(curSignal && sig(s)!==curSignal) return false;
       return true;
     }) : watchStocks;
-    if (watchFiltered.length > 0) {
-      renderSection(watchStocks, `观察区 <span class="badge">${watchStocks.length}只 · 新入池/红灯降级</span>`, true);
+    if (wf.length > 0) {
+      renderSection(watchStocks, '\u89C2\u5BDF\u533A <span class="badge">'+watchStocks.length+'\u53EA \u00B7 \u65B0\u5165\u6C60/\u7EA2\u706F\u964D\u7EA7</span>', true);
     }
   }
 
   function initFilters() {
-    const el=document.getElementById('filters');
-    ['全部',...new Set(stocks.map(s=>s.sector))].forEach((sec,i)=>{
-      const b=document.createElement('button');
-      b.textContent=sec; b.className=i===0?'on':'';
-      b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');curSector=sec==='全部'?null:sec;curSignal=null;render();};
+    var el = document.getElementById('filters');
+    var sectors = ['全部'];
+    var seen = {};
+    stocks.forEach(function(s){ if(!seen[s.sector]){seen[s.sector]=1; sectors.push(s.sector);} });
+    sectors.forEach(function(sec, i){
+      var b = document.createElement('button');
+      b.textContent = sec;
+      if(i===0) b.className = 'on';
+      b.onclick = function(){
+        el.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        curSector = sec==='\u5168\u90E8' ? null : sec;
+        curSignal = null;
+        render();
+      };
       el.appendChild(b);
     });
-    [['强烈','strong'],['推荐','buy'],['监控','watch'],['偏贵','expensive']].forEach(([l,v])=>{
-      const b=document.createElement('button');b.textContent=l;
-      b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');curSector=null;curSignal=v;render();};
+    [['\u5F3A\u70C8','strong'],['\u63A8\u8350','buy'],['\u76D1\u63A7','watch'],['\u504F\u8D35','expensive']].forEach(function(pair){
+      var b = document.createElement('button');
+      b.textContent = pair[0];
+      b.onclick = function(){
+        el.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        curSector = null;
+        curSignal = pair[1];
+        render();
+      };
       el.appendChild(b);
     });
   }
 
-  async function tick(){await fetchPrices();render();}
-  initFilters(); render(); tick(); setInterval(tick,30000);
+  initFilters();
+  render();
+  fetchPrices();
+  setInterval(fetchPrices, 30000);
 })();
 </script>
 </body>
