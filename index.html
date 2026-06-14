@@ -350,7 +350,13 @@ var STOCK_POOL_CONFIG = {
       hd.innerHTML = '<div></div><div>\u540D\u79F0</div><div style="text-align:right">\u73B0\u4EF7</div><div style="text-align:right">\u6DA8\u8DCC</div><div style="text-align:center">\u4F4D\u7F6E</div><div style="padding-left:8px">\u9608\u503C\u89C4\u5219</div>';
       pool.appendChild(hd);
 
-      var sorted = list.slice().sort(function(a,b){return ord[sig(a)]-ord[sig(b)];});
+      var sorted = list.slice().sort(function(a,b){
+        var pa = prices[a.code], pb = prices[b.code];
+        // ratio = (price - B) / (A - B), lower = closer to B = more worth buying
+        var ra = pa ? (pa.price - a.lineB) / (a.lineA - a.lineB) : 999;
+        var rb = pb ? (pb.price - b.lineB) / (b.lineA - b.lineB) : 999;
+        return ra - rb;
+      });
       sorted.forEach(function(s){
         var signal = sig(s);
         if(curSector && s.sector!==curSector) return;
