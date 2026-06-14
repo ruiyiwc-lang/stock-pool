@@ -137,6 +137,73 @@ body {
 
 .err-msg { text-align: center; color: #ef4444; font-size: 11px; margin: 10px 0; }
 
+/* Holdings panel */
+.hold-panel {
+  max-width: 1200px; margin: 0 auto;
+  padding: 10px 14px 14px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: none;
+  animation: fadeIn 0.15s;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.hold-panel.open { display: block; }
+.hold-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.hold-row label { font-size: 13px; color: #888; }
+.hold-row input {
+  width: 90px; padding: 4px 8px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+  color: #e8e8ec; font-size: 14px; font-variant-numeric: tabular-nums;
+  outline: none; transition: border-color 0.15s;
+}
+.hold-row input:focus { border-color: rgba(59,130,246,0.5); }
+.hold-row .btn-save {
+  padding: 4px 12px; border-radius: 6px; border: none;
+  background: rgba(59,130,246,0.2); color: #60a5fa; font-size: 12px;
+  cursor: pointer; transition: background 0.15s;
+}
+.hold-row .btn-save:hover { background: rgba(59,130,246,0.35); }
+.hold-row .btn-clear {
+  padding: 4px 10px; border-radius: 6px; border: none;
+  background: rgba(239,68,68,0.1); color: #f87171; font-size: 12px;
+  cursor: pointer;
+}
+.hold-info {
+  display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap; align-items: center;
+}
+.hold-info .hi { font-size: 13px; color: #888; }
+.hold-info .hi b { color: #e8e8ec; font-weight: 600; }
+.hold-info .pnl-up { color: #ef4444; }
+.hold-info .pnl-dn { color: #22c55e; }
+.hold-advice {
+  margin-top: 8px; padding: 6px 12px; border-radius: 6px;
+  font-size: 13px; line-height: 1.6;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+}
+.hold-advice .adv-tag {
+  display: inline-block; padding: 1px 8px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; margin-right: 8px;
+}
+.adv-strong-buy { background: rgba(34,197,94,0.2); color: #4ade80; }
+.adv-buy { background: rgba(59,130,246,0.2); color: #60a5fa; }
+.adv-add { background: rgba(34,197,94,0.15); color: #4ade80; }
+.adv-hold { background: rgba(234,179,8,0.15); color: #facc15; }
+.adv-reduce { background: rgba(249,115,22,0.2); color: #fb923c; }
+.adv-sell { background: rgba(239,68,68,0.2); color: #f87171; }
+.adv-wait { background: rgba(255,255,255,0.05); color: #888; }
+
+/* Holdings summary bar */
+.hold-summary {
+  max-width: 1200px; margin: 12px auto;
+  padding: 10px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  display: none; font-size: 14px; color: #888;
+}
+.hold-summary.visible { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.hold-summary b { color: #e8e8ec; }
+
 @media (max-width: 768px) {
   .row { grid-template-columns: 26px 90px 65px 55px minmax(100px,1fr) 200px; gap: 5px; padding: 9px 8px; }
   .col-rule { font-size: 12px; }
@@ -155,6 +222,7 @@ body {
   <div class="status" id="status">正在获取数据...</div>
 </div>
 <div class="summary" id="summary"></div>
+<div class="hold-summary" id="holdSummary"></div>
 <div class="filters" id="filters"></div>
 <div class="pool" id="pool"></div>
 
@@ -425,6 +493,21 @@ var STOCK_POOL_CONFIG = {
             '<span class="r tag-ctx">'+ctx+'</span>'+
           '</div>';
         pool.appendChild(row);
+
+        // Holdings panel
+        var panel = document.createElement('div');
+        panel.className = 'hold-panel';
+        panel.id = 'panel-'+s.code;
+        panel.innerHTML = buildPanel(s);
+        pool.appendChild(panel);
+
+        row.style.cursor = 'pointer';
+        (function(code){
+          row.onclick = function(){
+            var pnl = document.getElementById('panel-'+code);
+            pnl.classList.toggle('open');
+          };
+        })(s.code);
       });
     }
 
@@ -446,7 +529,118 @@ var STOCK_POOL_CONFIG = {
     if (wf.length > 0) {
       renderSection(watchStocks, '\u89C2\u5BDF\u533A <span class="badge">'+watchStocks.length+'\u53EA \u00B7 \u65B0\u5165\u6C60/\u7EA2\u706F\u964D\u7EA7</span>', true);
     }
+    updateHoldSummary();
   }
+
+  // === Holdings logic ===
+  function getHolding(code) {
+    try { var d = JSON.parse(localStorage.getItem('sp_hold_'+code)); return d||null; } catch(e){ return null; }
+  }
+  function setHolding(code, shares, cost) {
+    localStorage.setItem('sp_hold_'+code, JSON.stringify({shares:shares, cost:cost}));
+  }
+  function clearHolding(code) { localStorage.removeItem('sp_hold_'+code); }
+
+  function getAdvice(s) {
+    var p = prices[s.code]; if(!p) return {tag:'--',cls:'adv-wait',text:'等待价格数据...'};
+    var price = p.price;
+    var h = getHolding(s.code);
+    var hasPos = h && h.shares > 0;
+    var pnlPct = hasPos ? (price - h.cost)/h.cost*100 : 0;
+
+    if (!hasPos) {
+      if (price <= s.lineB) return {tag:'强烈买入',cls:'adv-strong-buy',text:'极端恐慌价，重仓信号。建议按B线仓位配置买入。'};
+      if (price <= s.lineA) return {tag:'建议买入',cls:'adv-buy',text:'已到历史低分位，适合建仓。可分2-3次逐步买入。'};
+      if (price < s.red) return {tag:'观望',cls:'adv-wait',text:'未到A线('+s.lineA+')，继续等待。距A线还差'+(((price-s.lineA)/price)*100).toFixed(1)+'%。'};
+      return {tag:'不建议',cls:'adv-wait',text:'当前价偏贵(超红线'+s.red+')，不建议此时建仓。'};
+    }
+
+    // Has position
+    if (price <= s.lineB) return {tag:'加仓',cls:'adv-add',text:'极端恐慌区，强烈建议加仓摊低成本。当前持仓'+(pnlPct>=0?'盈利':'浮亏')+Math.abs(pnlPct).toFixed(1)+'%。'};
+    if (price <= s.lineA) {
+      if (pnlPct < -10) return {tag:'加仓',cls:'adv-add',text:'仍在A线内，建议加仓摊低成本。浮亏'+Math.abs(pnlPct).toFixed(1)+'%属正常波动。'};
+      return {tag:'可加仓',cls:'adv-buy',text:'A线区间，可适当加仓。当前'+(pnlPct>=0?'盈利'+pnlPct.toFixed(1):'浮亏'+Math.abs(pnlPct).toFixed(1))+'%。'};
+    }
+    if (price < s.red) {
+      if (pnlPct > 40) return {tag:'止盈减仓',cls:'adv-reduce',text:'盈利'+pnlPct.toFixed(1)+'%且接近红线，建议减仓1/3锁定利润。'};
+      if (pnlPct > 25) return {tag:'持有观察',cls:'adv-hold',text:'盈利'+pnlPct.toFixed(1)+'%，持有为主。若突破红线'+s.red+'考虑止盈。'};
+      return {tag:'持有',cls:'adv-hold',text:'价格在A线和红线之间，'+(pnlPct>=0?'盈利'+pnlPct.toFixed(1)+'%':'浮亏'+Math.abs(pnlPct).toFixed(1)+'%')+'，继续持有。'};
+    }
+    // price >= red
+    if (pnlPct > 30) return {tag:'建议卖出',cls:'adv-sell',text:'已超红线(偏贵)+盈利'+pnlPct.toFixed(1)+'%，强烈建议止盈卖出至少一半。'};
+    if (pnlPct > 0) return {tag:'减仓',cls:'adv-reduce',text:'超红线偏贵区，盈利'+pnlPct.toFixed(1)+'%，建议减仓锁定利润。'};
+    return {tag:'持有',cls:'adv-hold',text:'超红线但仍浮亏'+Math.abs(pnlPct).toFixed(1)+'%，等待解套后逐步减仓。'};
+  }
+
+  function buildPanel(s) {
+    var h = getHolding(s.code);
+    var shares = h ? h.shares : '';
+    var cost = h ? h.cost : '';
+    var p = prices[s.code];
+    var html = '<div class="hold-row">' +
+      '<label>持仓股数</label><input type="number" id="inp-shares-'+s.code+'" value="'+shares+'" placeholder="0">' +
+      '<label>成本价</label><input type="number" step="0.01" id="inp-cost-'+s.code+'" value="'+cost+'" placeholder="0.00">' +
+      '<button class="btn-save" onclick="event.stopPropagation();saveHold(\''+s.code+'\')">保存</button>' +
+      '<button class="btn-clear" onclick="event.stopPropagation();clearHold(\''+s.code+'\')">清除</button>' +
+      '</div>';
+
+    if (h && h.shares > 0 && p) {
+      var mv = (p.price * h.shares).toFixed(0);
+      var pnl = ((p.price - h.cost) * h.shares).toFixed(0);
+      var pnlPct = ((p.price - h.cost)/h.cost*100).toFixed(2);
+      var cls = pnl >= 0 ? 'pnl-up' : 'pnl-dn';
+      html += '<div class="hold-info">' +
+        '<span class="hi">市值: <b>'+Number(mv).toLocaleString()+'</b></span>' +
+        '<span class="hi">成本: <b>'+h.cost+'</b></span>' +
+        '<span class="hi '+cls+'">盈亏: <b>'+(pnl>=0?'+':'')+Number(pnl).toLocaleString()+' ('+( pnlPct>=0?'+':'')+pnlPct+'%)</b></span>' +
+        '</div>';
+      var adv = getAdvice(s);
+      html += '<div class="hold-advice"><span class="adv-tag '+adv.cls+'">'+adv.tag+'</span>'+adv.text+'</div>';
+    } else if (!h || !h.shares) {
+      var adv2 = getAdvice(s);
+      html += '<div class="hold-advice" style="margin-top:8px"><span class="adv-tag '+adv2.cls+'">'+adv2.tag+'</span>'+adv2.text+'</div>';
+    }
+    return html;
+  }
+
+  function updateHoldSummary() {
+    var totalMv = 0, totalCost = 0, count = 0;
+    stocks.forEach(function(s){
+      var h = getHolding(s.code), p = prices[s.code];
+      if (h && h.shares > 0 && p) {
+        totalMv += p.price * h.shares;
+        totalCost += h.cost * h.shares;
+        count++;
+      }
+    });
+    var el = document.getElementById('holdSummary');
+    if (count > 0) {
+      var pnl = totalMv - totalCost;
+      var pnlPct = (pnl/totalCost*100).toFixed(2);
+      var cls = pnl >= 0 ? 'pnl-up' : 'pnl-dn';
+      el.className = 'hold-summary visible';
+      el.innerHTML = '<span>持仓: <b>'+count+'</b>只</span>' +
+        '<span>总市值: <b>'+Math.round(totalMv).toLocaleString()+'</b></span>' +
+        '<span>总成本: <b>'+Math.round(totalCost).toLocaleString()+'</b></span>' +
+        '<span class="'+cls+'">总盈亏: <b>'+(pnl>=0?'+':'')+Math.round(pnl).toLocaleString()+' ('+(pnlPct>=0?'+':'')+pnlPct+'%)</b></span>';
+    } else {
+      el.className = 'hold-summary';
+      el.innerHTML = '';
+    }
+  }
+
+  // Global functions for button onclick
+  window.saveHold = function(code) {
+    var shares = parseFloat(document.getElementById('inp-shares-'+code).value) || 0;
+    var cost = parseFloat(document.getElementById('inp-cost-'+code).value) || 0;
+    if (shares > 0 && cost > 0) { setHolding(code, shares, cost); render(); }
+  };
+  window.clearHold = function(code) {
+    clearHolding(code);
+    document.getElementById('inp-shares-'+code).value = '';
+    document.getElementById('inp-cost-'+code).value = '';
+    render();
+  };
 
   function initFilters() {
     var el = document.getElementById('filters');
