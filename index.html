@@ -76,19 +76,19 @@ body {
 .col-chg.dn { color: #22c55e; }
 
 /* Bar */
-.col-bar { position: relative; height: 30px; }
+.col-bar { position: relative; height: 46px; }
 .bar-track {
-  position: absolute; top: 13px; left: 0; right: 0; height: 4px;
+  position: absolute; top: 10px; left: 0; right: 0; height: 4px;
   background: rgba(255,255,255,0.06); border-radius: 2px;
 }
 .bar-mk {
-  position: absolute; top: 6px; width: 2px; height: 18px; border-radius: 1px;
+  position: absolute; top: 4px; width: 2px; height: 16px; border-radius: 1px;
 }
 .mk-b { background: #22c55e; left: 0; }
 .mk-a { background: #3b82f6; }
 .mk-r { background: rgba(239,68,68,0.5); right: 0; left: auto; }
 .bar-dot {
-  position: absolute; top: 8px;
+  position: absolute; top: 5px;
   width: 13px; height: 13px; border-radius: 50%;
   transform: translateX(-50%);
   transition: left 0.3s;
@@ -98,8 +98,9 @@ body {
 .bar-dot.watch { background: #eab308; }
 .bar-dot.expensive { background: #ef4444; }
 .bar-lbl {
-  position: absolute; bottom: -2px; font-size: 11px; color: #444;
+  position: absolute; top: 26px; font-size: 11px; color: #444;
   transform: translateX(-50%);
+  white-space: nowrap;
 }
 .bar-lbl input {
   width: 38px; padding: 0 2px; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
