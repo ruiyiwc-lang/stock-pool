@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逆向股票池 — AI泡沫错杀监控</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'SF Pro Display', sans-serif;
+  background: #0a0a0f;
+  color: #e8e8ec;
+  min-height: 100vh;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 20px;
+}
+.header h1 { font-size: 20px; font-weight: 600; color: #f0f0f5; margin-bottom: 4px; }
+.header .sub { font-size: 13px; color: #888; }
+.header .status { font-size: 12px; margin-top: 8px; }
+.status .live { color: #4ade80; }
+.status .stale { color: #eab308; }
+.status .offline { color: #666; }
+
+.summary {
+  display: flex; justify-content: center; gap: 18px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.summary .stat { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.stat .dot { width: 9px; height: 9px; border-radius: 50%; }
+.dot-strong { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
+.dot-buy { background: #3b82f6; box-shadow: 0 0 6px #3b82f688; }
+.dot-watch { background: #eab308; }
+.dot-expensive { background: #ef4444; }
+
+.filters {
+  display: flex; justify-content: center; gap: 6px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 5px 12px; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: #aaa; font-size: 12px;
+  cursor: pointer; transition: all 0.2s;
+}
+.filter-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+.filter-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); color: #fff; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px; max-width: 1200px; margin: 0 auto;
+}
+.card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px; padding: 14px;
+  position: relative; overflow: hidden; transition: all 0.2s;
+}
+.card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+}
+.card.strong::before { background: #22c55e; }
+.card.buy::before { background: #3b82f6; }
+.card.watch::before { background: #eab308; }
+.card.expensive::before { background: #ef4444; }
+.card.loading { opacity: 0.6; }
+
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.card-name { font-size: 15px; font-weight: 600; }
+.card-code { font-size: 11px; color: #666; margin-top: 1px; }
+.card-sector { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: rgba(255,255,255,0.05); color: #999; }
+
+.card-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.card-price .current { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.card-price .change { font-size: 12px; font-weight: 600; }
+.change-up { color: #ef4444; }
+.change-down { color: #22c55e; }
+.card-price .signal-text { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; margin-left: auto; }
+.signal-strong { background: rgba(34,197,94,0.12); color: #22c55e; }
+.signal-buy { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.signal-watch { background: rgba(234,179,8,0.1); color: #eab308; }
+.signal-expensive { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+.progress-bar { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; margin: 6px 0; position: relative; }
+.progress-fill { height: 100%; border-radius: 2px; }
+.progress-marker { position: absolute; top: -2px; width: 2px; height: 7px; border-radius: 1px; background: #3b82f6; }
+
+.card-thresholds { display: flex; gap: 10px; font-size: 11px; margin-bottom: 6px; flex-wrap: wrap; }
+.threshold { display: flex; align-items: center; gap: 3px; }
+.threshold .label { color: #555; }
+.threshold .val { font-weight: 600; font-variant-numeric: tabular-nums; }
+.th-strong .val { color: #22c55e; }
+.th-buy .val { color: #60a5fa; }
+.th-red .val { color: #ef4444; }
+
+.card-note { font-size: 11px; color: #666; line-height: 1.4; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 6px; }
+
+.signal-badge { position: absolute; top: 10px; right: 10px; font-size: 16px; }
+
+.legend {
+  max-width: 1200px; margin: 24px auto 0; padding: 14px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px; font-size: 11px; color: #777; line-height: 1.7;
+}
+.legend h3 { font-size: 12px; color: #999; margin-bottom: 4px; }
+
+@media (max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+  body { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>逆向股票池</h1>
+  <div class="sub" id="stockCount"></div>
+  <div class="status" id="status"><span class="offline">正在获取实时数据...</span></div>
+</div>
+
+<div class="summary" id="summary"></div>
+<div class="filters" id="filters"></div>
+<div class="grid" id="grid"></div>
+
+<div class="legend">
+  <h3>规则</h3>
+  <p><span style="color:#22c55e">● 强烈建议买入(B线)</span> 极端恐慌价 &nbsp;
+  <span style="color:#3b82f6">● 推荐买入(A线)</span> 估值历史低分位 &nbsp;
+  <span style="color:#eab308">● 监控中</span> 未到A线 &nbsp;
+  <span style="color:#ef4444">● 偏贵</span> 超红线·红灯60天淘汰</p>
+  <p style="margin-top:4px">入池逻辑：盈利健康 + 估值被AI虹吸压至历史低位 = "错杀"。价格每30秒自动刷新。</p>
+</div>
+
+<script src="stock-pool-data.js"></script>
+<script>
+(function() {
+  const config = STOCK_POOL_CONFIG;
+  const stocks = config.stocks;
+  let prices = {}; // code -> {price, change}
+  let currentSectorFilter = null;
+  let currentSignalFilter = null;
+
+  // Build secid for East Money API
+  function getSecId(s) {
+    if (s.market === 'SH') return '1.' + s.code;
+    if (s.market === 'SZ') return '0.' + s.code;
+    if (s.market === 'HK') return '116.' + s.code;
+    return '1.' + s.code;
+  }
+
+  // Fetch all prices via East Money batch API
+  async function fetchPrices() {
+    const secids = stocks.map(s => getSecId(s)).join(',');
+    const url = `https://push2.eastmoney.com/api/qt/ulist.np/get?secids=${secids}&fields=f12,f14,f2,f3,f18&cb=priceCallback&_=${Date.now()}`;
+    
+    return new Promise((resolve) => {
+      // JSONP approach
+      window.priceCallback = function(data) {
+        if (data && data.data && data.data.diff) {
+          data.data.diff.forEach(item => {
+            const code = item.f12;
+            const price = item.f2 / 100; // A股除100
+            const change = item.f3 / 100; // 涨跌幅%
+            const preClose = item.f18 / 100;
+            // 港股价格需要特殊处理
+            const stock = stocks.find(s => s.code === code);
+            if (stock && stock.market === 'HK') {
+              prices[code] = { price: item.f2 / 1000, change: item.f3 / 100 };
+            } else if (price > 0) {
+              prices[code] = { price, change };
+            }
+          });
+        }
+        resolve();
+        // cleanup
+        delete window.priceCallback;
+        document.body.removeChild(script);
+      };
+      const script = document.createElement('script');
+      script.src = url;
+      script.onerror = () => {
+        resolve(); // fail silently
+        try { document.body.removeChild(script); } catch(e) {}
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  function getSignal(s) {
+    const p = prices[s.code];
+    if (!p) return 'watch';
+    if (p.price <= s.lineB) return 'strong';
+    if (p.price <= s.lineA) return 'buy';
+    if (p.price >= s.red) return 'expensive';
+    return 'watch';
+  }
+
+  function getSignalLabel(sig) {
+    return { strong: '强烈建议', buy: '推荐买入', watch: '监控中', expensive: '偏贵' }[sig];
+  }
+
+  function getSignalEmoji(sig) {
+    return { strong: '🟢', buy: '🔵', watch: '🟡', expensive: '🔴' }[sig];
+  }
+
+  function renderAll() {
+    // Status
+    const statusEl = document.getElementById('status');
+    const loadedCount = Object.keys(prices).length;
+    if (loadedCount > 0) {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      const ss = String(now.getSeconds()).padStart(2,'0');
+      const isTrading = now.getDay() >= 1 && now.getDay() <= 5 && 
+        (now.getHours() * 100 + now.getMinutes()) >= 925 && 
+        (now.getHours() * 100 + now.getMinutes()) <= 1500;
+      statusEl.innerHTML = isTrading 
+        ? `<span class="live">● 实时 ${hh}:${mm}:${ss} · 每30秒自动刷新</span>`
+        : `<span class="stale">数据截至 ${hh}:${mm} · 非交易时段</span>`;
+    }
+
+    // Stock count & sectors
+    document.getElementById('stockCount').textContent = 
+      stocks.length + '只 · ' + [...new Set(stocks.map(s=>s.sector))].join(' · ');
+
+    // Count signals
+    let counts = { strong: 0, buy: 0, watch: 0, expensive: 0 };
+    stocks.forEach(s => { counts[getSignal(s)]++; });
+    
+    document.getElementById('summary').innerHTML = `
+      <div class="stat"><div class="dot dot-strong"></div><span>${counts.strong} 强烈建议</span></div>
+      <div class="stat"><div class="dot dot-buy"></div><span>${counts.buy} 推荐买入</span></div>
+      <div class="stat"><div class="dot dot-watch"></div><span>${counts.watch} 监控中</span></div>
+      <div class="stat"><div class="dot dot-expensive"></div><span>${counts.expensive} 偏贵</span></div>
+    `;
+
+    // Render grid
+    const gridEl = document.getElementById('grid');
+    gridEl.innerHTML = '';
+    const order = { strong: 0, buy: 1, watch: 2, expensive: 3 };
+    const sorted = [...stocks].sort((a, b) => order[getSignal(a)] - order[getSignal(b)]);
+
+    sorted.forEach(s => {
+      const signal = getSignal(s);
+      if (currentSectorFilter && s.sector !== currentSectorFilter) return;
+      if (currentSignalFilter && signal !== currentSignalFilter) return;
+
+      const p = prices[s.code];
+      const priceVal = p ? p.price.toFixed(2) : '--';
+      const changeVal = p ? (p.change >= 0 ? '+' : '') + p.change.toFixed(2) + '%' : '';
+      const changeClass = p ? (p.change >= 0 ? 'change-up' : 'change-down') : '';
+
+      let distText = '';
+      if (p) {
+        if (signal === 'strong') distText = '已达B线 ✓✓';
+        else if (signal === 'buy') distText = `已达A线 ✓ · 距B线 ${((p.price-s.lineB)/s.lineB*100).toFixed(1)}%`;
+        else if (signal === 'watch') distText = `距A线 ${((p.price-s.lineA)/s.lineA*100).toFixed(1)}%`;
+        else {
+          const days = s.redSince ? Math.round((Date.now()-new Date(s.redSince))/86400000) : 0;
+          distText = '偏贵' + (days > 0 ? ` · 红灯${days}天/60天淘汰` : '');
+        }
+      }
+
+      const range = s.red - s.lineB;
+      const pos = p ? Math.max(0, Math.min(100, (p.price - s.lineB) / range * 100)) : 50;
+      const posA = Math.max(0, Math.min(100, (s.lineA - s.lineB) / range * 100));
+      const barColor = signal === 'strong' ? '#22c55e' : signal === 'buy' ? '#3b82f6' : signal === 'watch' ? '#eab308' : '#ef4444';
+
+      const card = document.createElement('div');
+      card.className = `card ${signal}` + (p ? '' : ' loading');
+      card.innerHTML = `
+        <div class="signal-badge">${getSignalEmoji(signal)}</div>
+        <div class="card-top">
+          <div>
+            <div class="card-name">${s.name}</div>
+            <div class="card-code">${s.market}:${s.code} · ${s.anchor} ${s.anchorVal}</div>
+          </div>
+          <div class="card-sector">${s.sector}</div>
+        </div>
+        <div class="card-price">
+          <span class="current">${priceVal}</span>
+          <span class="change ${changeClass}">${changeVal}</span>
+          <span class="signal-text signal-${signal}">${getSignalLabel(signal)}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pos}%;background:${barColor};opacity:0.5"></div>
+          <div class="progress-marker" style="left:${posA}%"></div>
+        </div>
+        <div class="card-thresholds">
+          <div class="threshold th-strong"><span class="label">B线≤</span><span class="val">${s.lineB}</span></div>
+          <div class="threshold th-buy"><span class="label">A线≤</span><span class="val">${s.lineA}</span></div>
+          <div class="threshold th-red"><span class="label">红线≥</span><span class="val">${s.red}</span></div>
+        </div>
+        <div class="card-note">${distText}${distText ? '<br>' : ''}${s.note}</div>
+      `;
+      gridEl.appendChild(card);
+    });
+  }
+
+  // Filters (render once)
+  function initFilters() {
+    const filtersEl = document.getElementById('filters');
+    const sectors = ['全部', ...new Set(stocks.map(s => s.sector))];
+    sectors.forEach((sec, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = sec;
+      btn.onclick = () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSectorFilter = sec === '全部' ? null : sec;
+        currentSignalFilter = null;
+        renderAll();
+      };
+      filtersEl.appendChild(btn);
+    });
+    [['强烈建议','strong'],['推荐买入','buy'],['监控中','watch'],['偏贵','expensive']].forEach(([label, sig]) => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = label;
+      btn.onclick = () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSectorFilter = null;
+        currentSignalFilter = sig;
+        renderAll();
+      };
+      filtersEl.appendChild(btn);
+    });
+  }
+
+  // Main loop
+  async function tick() {
+    await fetchPrices();
+    renderAll();
+  }
+
+  initFilters();
+  renderAll(); // show skeleton
+  tick(); // first fetch
+  setInterval(tick, 30000); // every 30s
+})();
+</script>
+</body>
+</html>
