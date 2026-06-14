@@ -166,24 +166,33 @@ body {
   let curSector = null, curSignal = null;
 
   function secId(s) {
-    if (s.market==='SH') return '1.'+s.code;
-    if (s.market==='SZ') return '0.'+s.code;
-    return '116.'+s.code;
+    if (s.market==='SH') return 'sh'+s.code;
+    if (s.market==='SZ') return 'sz'+s.code;
+    return 'hk'+s.code;
   }
 
   async function fetchPrices() {
     const ids = stocks.map(s=>secId(s)).join(',');
-    const url = `https://push2.eastmoney.com/api/qt/ulist.np/get?secids=${ids}&fields=f12,f14,f2,f3&cb=_p&_=${Date.now()}`;
+    const url = `https://qt.gtimg.cn/q=${ids}&_=${Date.now()}`;
     return new Promise(r => {
-      window._p = function(d) {
-        if(d&&d.data&&d.data.diff) d.data.diff.forEach(i => {
-          const c=i.f12, s=stocks.find(x=>x.code===c);
-          if(s&&i.f2>0) prices[c]={price:i.f2/(s.market==='HK'?1000:100), change:i.f3/100};
+      const sc = document.createElement('script');
+      sc.src = url;
+      sc.onload = () => {
+        stocks.forEach(s => {
+          const varName = 'v_' + secId(s);
+          const val = window[varName];
+          if (val && val.length > 0) {
+            const parts = val.split('~');
+            // Format: parts[3]=current price, parts[32]=change%
+            const price = parseFloat(parts[3]);
+            const chg = parseFloat(parts[32]);
+            if (price > 0) prices[s.code] = { price, change: chg };
+          }
         });
-        r(); delete window._p; try{document.body.removeChild(sc);}catch(e){}
+        r();
+        try { document.body.removeChild(sc); } catch(e){}
       };
-      const sc=document.createElement('script'); sc.src=url;
-      sc.onerror=()=>{r();try{document.body.removeChild(sc);}catch(e){}};
+      sc.onerror = () => { r(); try{document.body.removeChild(sc);}catch(e){} };
       document.body.appendChild(sc);
     });
   }
