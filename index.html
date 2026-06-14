@@ -100,6 +100,15 @@ body {
   position: absolute; bottom: -2px; font-size: 11px; color: #444;
   transform: translateX(-50%);
 }
+.bar-lbl input {
+  width: 38px; padding: 0 2px; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: #666; font-size: 11px; text-align: center;
+  font-variant-numeric: tabular-nums; outline: none;
+}
+.bar-lbl input:focus { border-bottom-color: rgba(59,130,246,0.5); color: #e8e8ec; }
+.bar-lbl input.lbl-b { color: #4ade80; }
+.bar-lbl input.lbl-a { color: #60a5fa; }
+.bar-lbl input.lbl-r { color: #ef4444; }
 
 /* Rule column → replaced by advice */
 .col-hold {
@@ -397,9 +406,10 @@ var STOCK_POOL_CONFIG = {
 
   function sig(s) {
     var p = prices[s.code]; if(!p) return 'watch';
-    if(p.price<=s.lineB) return 'strong';
-    if(p.price<=s.lineA) return 'buy';
-    if(p.price>=s.red) return 'expensive';
+    var t = getThresholds(s);
+    if(p.price<=t.lineB) return 'strong';
+    if(p.price<=t.lineA) return 'buy';
+    if(p.price>=t.red) return 'expensive';
     return 'watch';
   }
   var emo = {strong:'\u{1F7E2}',buy:'\u{1F535}',watch:'\u{1F7E1}',expensive:'\u{1F534}'};
@@ -407,7 +417,7 @@ var STOCK_POOL_CONFIG = {
   function render() {
     // Skip render if user is typing in an input
     var active = document.activeElement;
-    if (active && active.tagName === 'INPUT' && active.id && active.id.startsWith('inp-')) return;
+    if (active && active.tagName === 'INPUT' && active.id && (active.id.startsWith('inp-') || active.id.startsWith('th-'))) return;
 
     var now = new Date(), loaded = Object.keys(prices).length;
     if(loaded > 0){
@@ -453,8 +463,9 @@ var STOCK_POOL_CONFIG = {
       var sorted = list.slice().sort(function(a,b){
         var pa = prices[a.code], pb = prices[b.code];
         // ratio = (price - B) / (A - B), lower = closer to B = more worth buying
-        var ra = pa ? (pa.price - a.lineB) / (a.lineA - a.lineB) : 999;
-        var rb = pb ? (pb.price - b.lineB) / (b.lineA - b.lineB) : 999;
+        var ta = getThresholds(a), tb = getThresholds(b);
+        var ra = pa ? (pa.price - ta.lineB) / (ta.lineA - ta.lineB) : 999;
+        var rb = pb ? (pb.price - tb.lineB) / (tb.lineA - tb.lineB) : 999;
         return ra - rb;
       });
       sorted.forEach(function(s){
@@ -466,9 +477,10 @@ var STOCK_POOL_CONFIG = {
         var cStr = p ? (p.change>=0?'+':'') + p.change.toFixed(2)+'%' : '';
         var cCls = p ? (p.change>=0?'up':'dn') : '';
 
-        var range = s.red - s.lineB;
-        var pPos = p ? Math.max(0, Math.min(100, (p.price-s.lineB)/range*100)) : 50;
-        var aPos = (s.lineA-s.lineB)/range*100;
+        var t = getThresholds(s);
+        var range = t.red - t.lineB;
+        var pPos = p ? Math.max(0, Math.min(100, (p.price-t.lineB)/range*100)) : 50;
+        var aPos = (t.lineA-t.lineB)/range*100;
 
         var row = document.createElement('div');
         row.className = 'row' + (isWatch ? ' watch-row' : '');
@@ -513,6 +525,9 @@ var STOCK_POOL_CONFIG = {
             '<div class="bar-mk mk-a" style="left:'+aPos+'%"></div>'+
             '<div class="bar-mk mk-r"></div>'+
             '<div class="bar-dot '+signal+'" style="left:'+pPos+'%"></div>'+
+            '<div class="bar-lbl" style="left:0"><input class="lbl-b" type="number" step="0.1" value="'+t.lineB+'" id="th-b-'+s.code+'" onblur="saveThresh(\''+s.code+'\',\'lineB\',this.value)"></div>'+
+            '<div class="bar-lbl" style="left:'+aPos+'%"><input class="lbl-a" type="number" step="0.1" value="'+t.lineA+'" id="th-a-'+s.code+'" onblur="saveThresh(\''+s.code+'\',\'lineA\',this.value)"></div>'+
+            '<div class="bar-lbl" style="left:100%"><input class="lbl-r" type="number" step="0.1" value="'+t.red+'" id="th-r-'+s.code+'" onblur="saveThresh(\''+s.code+'\',\'red\',this.value)"></div>'+
           '</div>'+
           '<div class="col-adv '+adv.cls+'">'+adv.tag+'</div>'+
           '<div class="col-rule">'+
@@ -544,6 +559,21 @@ var STOCK_POOL_CONFIG = {
     updateHoldSummary();
   }
 
+  // === Threshold overrides (localStorage) ===
+  function getThresholds(s) {
+    try {
+      var d = JSON.parse(localStorage.getItem('sp_thresh_'+s.code));
+      if (d) return { lineA: d.lineA||s.lineA, lineB: d.lineB||s.lineB, red: d.red||s.red };
+    } catch(e){}
+    return { lineA: s.lineA, lineB: s.lineB, red: s.red };
+  }
+  function setThreshold(code, key, val) {
+    var cur = {};
+    try { cur = JSON.parse(localStorage.getItem('sp_thresh_'+code)) || {}; } catch(e){}
+    cur[key] = val;
+    localStorage.setItem('sp_thresh_'+code, JSON.stringify(cur));
+  }
+
   // === Holdings logic ===
   function getHolding(code) {
     try { var d = JSON.parse(localStorage.getItem('sp_hold_'+code)); return d||null; } catch(e){ return null; }
@@ -556,26 +586,27 @@ var STOCK_POOL_CONFIG = {
   function getAdvice(s) {
     var p = prices[s.code]; if(!p) return {tag:'--',cls:'adv-wait',text:'等待价格数据...'};
     var price = p.price;
+    var t = getThresholds(s);
     var h = getHolding(s.code);
     var hasPos = h && h.shares > 0;
     var pnlPct = hasPos ? (price - h.cost)/h.cost*100 : 0;
 
     if (!hasPos) {
-      if (price <= s.lineB) return {tag:'强烈买入',cls:'adv-strong-buy',text:'极端恐慌价，重仓信号。建议按B线仓位配置买入。'};
-      if (price <= s.lineA) return {tag:'建议买入',cls:'adv-buy',text:'已到历史低分位，适合建仓。可分2-3次逐步买入。'};
-      if (price < s.red) return {tag:'观望',cls:'adv-wait',text:'未到A线('+s.lineA+')，继续等待。距A线还差'+(((price-s.lineA)/price)*100).toFixed(1)+'%。'};
-      return {tag:'不建议',cls:'adv-wait',text:'当前价偏贵(超红线'+s.red+')，不建议此时建仓。'};
+      if (price <= t.lineB) return {tag:'强烈买入',cls:'adv-strong-buy',text:'极端恐慌价，重仓信号。建议按B线仓位配置买入。'};
+      if (price <= t.lineA) return {tag:'建议买入',cls:'adv-buy',text:'已到历史低分位，适合建仓。可分2-3次逐步买入。'};
+      if (price < t.red) return {tag:'观望',cls:'adv-wait',text:'未到A线('+t.lineA+')，继续等待。距A线还差'+(((price-t.lineA)/price)*100).toFixed(1)+'%。'};
+      return {tag:'不建议',cls:'adv-wait',text:'当前价偏贵(超红线'+t.red+')，不建议此时建仓。'};
     }
 
     // Has position
-    if (price <= s.lineB) return {tag:'加仓',cls:'adv-add',text:'极端恐慌区，强烈建议加仓摊低成本。当前持仓'+(pnlPct>=0?'盈利':'浮亏')+Math.abs(pnlPct).toFixed(1)+'%。'};
-    if (price <= s.lineA) {
+    if (price <= t.lineB) return {tag:'加仓',cls:'adv-add',text:'极端恐慌区，强烈建议加仓摊低成本。当前持仓'+(pnlPct>=0?'盈利':'浮亏')+Math.abs(pnlPct).toFixed(1)+'%。'};
+    if (price <= t.lineA) {
       if (pnlPct < -10) return {tag:'加仓',cls:'adv-add',text:'仍在A线内，建议加仓摊低成本。浮亏'+Math.abs(pnlPct).toFixed(1)+'%属正常波动。'};
       return {tag:'可加仓',cls:'adv-buy',text:'A线区间，可适当加仓。当前'+(pnlPct>=0?'盈利'+pnlPct.toFixed(1):'浮亏'+Math.abs(pnlPct).toFixed(1))+'%。'};
     }
-    if (price < s.red) {
+    if (price < t.red) {
       if (pnlPct > 40) return {tag:'止盈减仓',cls:'adv-reduce',text:'盈利'+pnlPct.toFixed(1)+'%且接近红线，建议减仓1/3锁定利润。'};
-      if (pnlPct > 25) return {tag:'持有观察',cls:'adv-hold',text:'盈利'+pnlPct.toFixed(1)+'%，持有为主。若突破红线'+s.red+'考虑止盈。'};
+      if (pnlPct > 25) return {tag:'持有观察',cls:'adv-hold',text:'盈利'+pnlPct.toFixed(1)+'%，持有为主。若突破红线'+t.red+'考虑止盈。'};
       return {tag:'持有',cls:'adv-hold',text:'价格在A线和红线之间，'+(pnlPct>=0?'盈利'+pnlPct.toFixed(1)+'%':'浮亏'+Math.abs(pnlPct).toFixed(1)+'%')+'，继续持有。'};
     }
     // price >= red
@@ -613,6 +644,15 @@ var STOCK_POOL_CONFIG = {
       el.innerHTML = '';
     }
   }
+
+  // Global functions for threshold editing
+  window.saveThresh = function(code, key, val) {
+    var v = parseFloat(val);
+    if (!v || v <= 0) return;
+    setThreshold(code, key, v);
+    clearTimeout(window._renderTimer);
+    window._renderTimer = setTimeout(render, 300);
+  };
 
   // Global functions for inline input
   window.saveHold = function(code) {
