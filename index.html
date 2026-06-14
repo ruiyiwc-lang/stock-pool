@@ -490,8 +490,11 @@ var STOCK_POOL_CONFIG = {
         var pa = prices[a.code], pb = prices[b.code];
         // ratio = (price - B) / (A - B), lower = closer to B = more worth buying
         var ta = getThresholds(a), tb = getThresholds(b);
-        var ra = pa ? (pa.price - ta.lineB) / (ta.lineA - ta.lineB) : 999;
-        var rb = pb ? (pb.price - tb.lineB) / (tb.lineA - tb.lineB) : 999;
+        var dA = ta.lineA - ta.lineB, dB = tb.lineA - tb.lineB;
+        var ra = (pa && dA > 0) ? (pa.price - ta.lineB) / dA : 999;
+        var rb = (pb && dB > 0) ? (pb.price - tb.lineB) / dB : 999;
+        if (isNaN(ra)) ra = 999;
+        if (isNaN(rb)) rb = 999;
         return ra - rb;
       });
       sorted.forEach(function(s){
