@@ -610,15 +610,19 @@ var STOCK_POOL_CONFIG = {
   // === Threshold overrides (localStorage, stored as metric values) ===
   function getThresholds(s) {
     var vA = s.valA, vB = s.valB, vR = s.valRed;
+    // Default: use hardcoded prices (exact); only recalculate when user overrides
+    var pA = s.lineA, pB = s.lineB, pR = s.red;
     try {
       var d = JSON.parse(localStorage.getItem('sp_thresh_'+s.code));
-      if (d) { vA = d.valA || vA; vB = d.valB || vB; vR = d.valRed || vR; }
+      if (d) {
+        if (d.valA) { vA = d.valA; pA = metricToPrice(vA, s); }
+        if (d.valB) { vB = d.valB; pB = metricToPrice(vB, s); }
+        if (d.valRed) { vR = d.valRed; pR = metricToPrice(vR, s); }
+      }
     } catch(e){}
     return {
       valA: vA, valB: vB, valRed: vR,
-      lineA: metricToPrice(vA, s),
-      lineB: metricToPrice(vB, s),
-      red: metricToPrice(vR, s)
+      lineA: pA, lineB: pB, red: pR
     };
   }
   function setThreshold(code, key, val) {
