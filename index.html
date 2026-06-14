@@ -311,12 +311,15 @@ var STOCK_POOL_CONFIG = {
   function render() {
     var now = new Date(), loaded = Object.keys(prices).length;
     if(loaded > 0){
-      var t = now.toTimeString().slice(0,8);
-      var h = now.getHours(), m = now.getMinutes(), d = now.getDay();
-      var tr = d>=1 && d<=5 && (h*100+m)>=925 && (h*100+m)<=1500;
-      document.getElementById('status').innerHTML = tr
-        ? '<span class="live">\u25CF \u5B9E\u65F6 '+t+'</span>'
-        : t+' \u00B7 \u6536\u76D8\u4EF7';
+      var y = now.getFullYear(), mon = now.getMonth()+1, day = now.getDate();
+      var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      var pad = function(n){return n<10?'0'+n:n;};
+      var ts = y+'-'+pad(mon)+'-'+pad(day)+' '+pad(h)+':'+pad(m)+':'+pad(s);
+      var wd = now.getDay();
+      var trading = wd>=1 && wd<=5 && (h*100+m)>=925 && (h*100+m)<=1500;
+      document.getElementById('status').innerHTML = trading
+        ? '<span class="live">\u25CF \u5B9E\u65F6</span> '+ts
+        : '\u6700\u540E\u5237\u65B0: '+ts;
     } else if(fetchCount > 0) {
       document.getElementById('status').innerHTML = '<span style="color:#ef4444">未获取到数据</span>';
     }
