@@ -430,11 +430,16 @@ var STOCK_POOL_CONFIG = {
       valA: 22.3, valB: 14.9, valRed: 37.2,
       addedDate: '2026-06-15',
       note: '2026E EPS 0.94(+22%)｜互联网券商平台垄断PE 18%分位｜高运营杠杆正常化15%增速锚定｜A=PE22x｜B=PE15x｜红=PE37x｜⚠️非免疫' },
-    { code: '09992', name: '泡泡玛特', market: 'HK', sector: '消费', zone: 'pool',
-      lineA: 189, lineB: 139, red: 315, metric: 'PE', basis: 12.6,
-      valA: 15.0, valB: 11.0, valRed: 25.0,
+    { code: '09992', name: '泡泡玛特', market: 'HK', sector: '消费', zone: 'bet',
+      lineA: 176, lineB: 132, red: 252, metric: 'PE', basis: 12.6,
+      valA: 14.0, valB: 10.5, valRed: 20.0,
       addedDate: '2026-06-15',
-      note: '2026E EPS HKD12.6(+25%)｜潮玩IP平台全球龙头PE 3年7%分位｜多IP矩阵(Labubu/Molly/Dimoo)+海外44%｜A=PEG1.0→PE15x｜B=PEG0.73→PE11x｜红=PEG1.67→PE25x' }
+      note: '🎯品类定义者赌注｜2026E EPS HKD12.6(指引+20%)｜全球潮玩品类定义者,赌IP平台孵化能力｜⚠️美国3月-45%/LABUBU占42%/Beanie Baby风险｜A=PE14x(第一档30%)｜B=PE10.5x(第二档60%)' },
+    { code: '02359', name: '药明康德H', market: 'HK', sector: '医药', zone: 'bet',
+      lineA: 124, lineB: 101, red: 169, metric: 'PE', basis: 6.5,
+      valA: 19.0, valB: 15.5, valRed: 26.0,
+      addedDate: '2026-06-15',
+      note: '🎯品类定义者赌注｜2026E EPS HKD6.5(共识-10.9%)｜全球新药基础设施台积电,赌地缘解除｜⚠️1260H已确认6/8+72%美国收入｜A=PE19x(第一档30%)｜B=PE15.5x(第二档60%)' }
   ]
 };
 // ==== STOCK_POOL_DATA_END ====
@@ -442,8 +447,9 @@ var STOCK_POOL_CONFIG = {
 <script>
 (function() {
   var stocks = STOCK_POOL_CONFIG.stocks;
-  var poolStocks = stocks.filter(function(s){return s.zone!=='watch';});
+  var poolStocks = stocks.filter(function(s){return s.zone==='pool';});
   var watchStocks = stocks.filter(function(s){return s.zone==='watch';});
+  var betStocks = stocks.filter(function(s){return s.zone==='bet';});
   var prices = {};
   var curSector = null, curSignal = null;
   var fetchCount = 0;
@@ -522,13 +528,13 @@ var STOCK_POOL_CONFIG = {
     }
 
     var cnt = {strong:0,buy:0,watch:0,expensive:0};
-    poolStocks.forEach(function(s){cnt[sig(s)]++;});
+    poolStocks.concat(betStocks).forEach(function(s){cnt[sig(s)]++;});
     document.getElementById('summary').innerHTML =
       '<span><span class="d" style="background:#22c55e"></span>'+cnt.strong+'\u5F3A\u70C8</span>'+
       '<span><span class="d" style="background:#3b82f6"></span>'+cnt.buy+'\u63A8\u8350</span>'+
       '<span><span class="d" style="background:#eab308"></span>'+cnt.watch+'\u76D1\u63A7</span>'+
       '<span><span class="d" style="background:#ef4444"></span>'+cnt.expensive+'\u504F\u8D35</span>'+
-      '<span style="color:#555">| \u89C2\u5BDF\u533A'+watchStocks.length+'</span>';
+      '<span style="color:#555">| \u89C2\u5BDF\u533A'+watchStocks.length+' | \u8D4C\u6CE8'+betStocks.length+'</span>';
 
     var pool = document.getElementById('pool');
     pool.innerHTML = '';
@@ -646,6 +652,15 @@ var STOCK_POOL_CONFIG = {
     }) : watchStocks;
     if (wf.length > 0) {
       renderSection(watchStocks, '\u89C2\u5BDF\u533A <span class="badge">'+watchStocks.length+'\u53EA \u00B7 \u65B0\u5165\u6C60/\u7EA2\u706F\u964D\u7EA7</span>', true);
+    }
+
+    var bf = curSector||curSignal ? betStocks.filter(function(s){
+      if(curSector && s.sector!==curSector) return false;
+      if(curSignal && sig(s)!==curSignal) return false;
+      return true;
+    }) : betStocks;
+    if (bf.length > 0) {
+      renderSection(betStocks, '\uD83C\uDFAF \u54C1\u7C7B\u5B9A\u4E49\u8005\u8D4C\u6CE8 <span class="badge">'+betStocks.length+'\u53EA \u00B7 \u4E8F50%\u535A5x/10\u5E74</span>', false);
     }
     updateHoldSummary();
   }
