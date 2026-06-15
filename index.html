@@ -229,14 +229,99 @@ body {
   .col-price { font-size: 15px; }
   .col-hold input { width: 52px; font-size: 12px; }
 }
+
+/* ===== Tabs (v3.0 multi-pool) ===== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  max-width: 1200px;
+  margin: 0 auto 18px;
+  flex-wrap: wrap;
+  padding: 0 8px;
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px;
+  min-width: 180px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.015);
+  color: #777;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+.tab:hover {
+  border-color: rgba(255,255,255,0.18);
+  color: #ccc;
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-1px);
+}
+.tab.on {
+  border-color: rgba(99,102,241,0.5);
+  background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.10));
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(99,102,241,0.18);
+}
+.tab.on .tab-name { color: #f0f0ff; }
+.tab.on .tab-desc { color: #b3b3d8; }
+.tab.on .tab-cnt {
+  background: linear-gradient(135deg,#6366f1,#a855f7);
+  color: #fff;
+}
+.tab-icon { font-size: 22px; line-height: 1; }
+.tab-name { font-size: 16px; font-weight: 600; letter-spacing: 0.5px; }
+.tab-desc { font-size: 11px; color: #555; margin-top: 1px; letter-spacing: 0.2px; }
+.tab-cnt {
+  position: absolute; top: 8px; right: 12px;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 7px; border-radius: 9px;
+  background: rgba(255,255,255,0.07);
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .tabs { gap: 6px; }
+  .tab { min-width: 0; flex: 1 1 calc(33% - 4px); padding: 10px 8px; }
+  .tab-name { font-size: 13px; }
+  .tab-desc { display: none; }
+  .tab-icon { font-size: 18px; }
+  .tab-cnt { top: 4px; right: 6px; padding: 1px 5px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>AI估值泡沫破灭逆向股票池</h1>
+  <h1 id="mainTitle">AI估值泡沫破灭逆向股票池</h1>
   <div class="status" id="status">正在获取数据...</div>
   <div style="margin-top:8px"><a href="watchlist.html" style="display:inline-block;padding:6px 14px;background:linear-gradient(135deg,#7c3aed,#1e40af);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:500">📂 品类定义者监控档案 →</a></div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-tab="value">
+    <span class="tab-icon">💰</span>
+    <span class="tab-name">保值传统</span>
+    <span class="tab-cnt" id="cnt-value">0</span>
+    <span class="tab-desc">AI泡沫破灭防御 · 错杀蓝筹</span>
+  </button>
+  <button class="tab" data-tab="star">
+    <span class="tab-icon">⭐</span>
+    <span class="tab-name">未来之星</span>
+    <span class="tab-cnt" id="cnt-star">0</span>
+    <span class="tab-desc">品类定义者赌注 · 5x/10年</span>
+  </button>
+  <button class="tab" data-tab="youth">
+    <span class="tab-icon">🌟</span>
+    <span class="tab-name">年轻人钱包</span>
+    <span class="tab-cnt" id="cnt-youth">0</span>
+    <span class="tab-desc">不婚不育结构性赢家</span>
+  </button>
 </div>
 <div class="summary" id="summary"></div>
 <div class="hold-summary" id="holdSummary"></div>
@@ -254,7 +339,7 @@ body {
 <script>
 // ==== STOCK_POOL_DATA_START ====
 var STOCK_POOL_CONFIG = {
-  lastScan: '2026-06-15',
+  lastScan: '2026-06-15-tabs-v3',
   stocks: [
     { code: '600519', name: '贵州茅台', market: 'SH', sector: '消费', zone: 'pool',
       lineA: 1100, lineB: 890, red: 1715, metric: 'PE', basis: 68.6,
@@ -286,7 +371,7 @@ var STOCK_POOL_CONFIG = {
       valA: 34.0, valB: 26.0, valRed: 54.0,
       addedDate: '2026-06-14',
       note: '2026E EPS 1.43(+20%)｜创新药+全球出海｜医药PEG1.7｜A=PEG1.7→PE34x｜B=PEG1.3→PE26x｜红=PEG2.7→PE54x' },
-    { code: '603259', name: '药明康德', market: 'SH', sector: '医药', zone: 'bet',
+    { code: '603259', name: '药明康德', market: 'SH', sector: '医药', zone: 'bet', poolType: 'star',
       lineA: 138, lineB: 107, red: 191, metric: 'PE', basis: 7.65,
       valA: 18.0, valB: 14.0, valRed: 25.0,
       addedDate: '2026-06-15',
@@ -431,11 +516,47 @@ var STOCK_POOL_CONFIG = {
       valA: 22.3, valB: 14.9, valRed: 37.2,
       addedDate: '2026-06-15',
       note: '2026E EPS 0.94(+22%)｜互联网券商平台垄断PE 18%分位｜高运营杠杆正常化15%增速锚定｜A=PE22x｜B=PE15x｜红=PE37x｜⚠️非免疫' },
-    { code: '09992', name: '泡泡玛特', market: 'HK', sector: '消费', zone: 'bet',
+    { code: '09992', name: '泡泡玛特', market: 'HK', sector: '消费', zone: 'bet', poolType: 'star',
       lineA: 176, lineB: 132, red: 252, metric: 'PE', basis: 12.6,
       valA: 14.0, valB: 10.5, valRed: 20.0,
       addedDate: '2026-06-15',
-      note: '🎯品类定义者赌注｜2026E EPS HKD12.6(指引+20%)｜全球潮玩品类定义者,赌IP平台孵化能力｜⚠️美国3月-45%/LABUBU占42%/Beanie Baby风险｜A=PE14x(第一档30%)｜B=PE10.5x(第二档60%)' }
+      note: '🎯品类定义者赌注｜2026E EPS HKD12.6(指引+20%)｜全球潮玩品类定义者,赌IP平台孵化能力｜⚠️美国3月-45%/LABUBU占42%/Beanie Baby风险｜A=PE14x(第一档30%)｜B=PE10.5x(第二档60%)' },
+    // ===== 年轻人钱包 (Youth Wallet) =====
+    { code: '00325', name: '布鲁可', market: 'HK', sector: '消费', zone: 'watch', poolType: 'youth',
+      lineA: 75, lineB: 55, red: 130, metric: 'PE', basis: 2.5,
+      valA: 30.0, valB: 22.0, valRed: 52.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包｜2026E EPS HKD 2.5｜增速50%+｜IP衍生品中游(奥特曼/变形金刚/英雄联盟)｜A=PEG1.0→PE30x｜B=PEG0.7→PE22x｜红=PEG1.6→PE52x｜⚠️奥特曼授权2027到期需观察自有IP孵化' },
+    { code: '301498', name: '乖宝宠物', market: 'SZ', sector: '消费', zone: 'watch', poolType: 'youth',
+      lineA: 50.4, lineB: 37.8, red: 75.6, metric: 'PE', basis: 1.8,
+      valA: 28.0, valB: 21.0, valRed: 42.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包｜2026E EPS 1.8｜增速28%(麦富迪+弗列加特)｜国产宠粮第一品牌+毛利率40%+｜A=PEG1.0→PE28x｜B=PEG0.75→PE21x｜红=PEG1.5→PE42x' },
+    { code: '300896', name: '爱美客', market: 'SZ', sector: '医药', zone: 'watch', poolType: 'youth',
+      lineA: 90, lineB: 67, red: 135, metric: 'PE', basis: 5.0,
+      valA: 18.0, valB: 13.4, valRed: 27.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包｜2026E EPS 5.0｜增速18%(已从40%降档需重估)｜玻尿酸/再生材料医美龙头｜A=PEG1.0→PE18x｜B=PEG0.75→PE13.4x｜红=PEG1.5→PE27x' },
+    { code: '000963', name: '华东医药', market: 'SZ', sector: '医药', zone: 'watch', poolType: 'youth',
+      lineA: 44.8, lineB: 33.6, red: 78.4, metric: 'PE', basis: 2.8,
+      valA: 16.0, valB: 12.0, valRed: 28.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包｜2026E EPS 2.8｜增速16%+GLP-1出海期权｜利拉鲁肽国内已上市+三靶点DR10624｜医美双轮｜A=PE16x｜B=PE12x｜红=PE28x' },
+    { code: '01060', name: '阿里影业', market: 'HK', sector: '消费', zone: 'watch', poolType: 'youth',
+      lineA: 1.0, lineB: 0.6, red: 1.6, metric: 'PE', basis: 0.05,
+      valA: 20.0, valB: 12.0, valRed: 32.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包(期权)｜2026E EPS HKD 0.05(刚扭亏)｜Chiikawa中国独家代理+IP衍生隐藏王牌｜PS估值法A=2.5x/B=1.5x｜⚠️依赖IP代理续约,小赔大赚仓位' },
+    { code: '09626', name: '哔哩哔哩-W', market: 'HK', sector: '科技', zone: 'watch', poolType: 'youth',
+      lineA: 140, lineB: 110, red: 220, metric: 'PE', basis: 5.6,
+      valA: 25.0, valB: 19.6, valRed: 39.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包｜2026E EPS HKD 5.6(利润恢复期)｜Z世代独占社区+游戏发行+谷子电商三轮｜EV/EBITDA锚定法A=20x｜⚠️估值高,等深跌或盈利兑现' },
+    { code: '01801', name: '信达生物', market: 'HK', sector: '医药', zone: 'watch', poolType: 'youth',
+      lineA: 90, lineB: 60, red: 120, metric: 'PE', basis: 1.2,
+      valA: 75.0, valB: 50.0, valRed: 100.0,
+      addedDate: '2026-06-15',
+      note: '🌟年轻人钱包(期权)｜2026E EPS HKD 1.2(玛仕度肽放量首年)｜增速50%+｜国产GLP-1首批商业化+信迪利单抗稳态｜A=PEG1.5→PE75x｜B=PEG1.0→PE50x｜小仓位期权' }
   ]
 };
 // ==== STOCK_POOL_DATA_END ====
@@ -443,9 +564,53 @@ var STOCK_POOL_CONFIG = {
 <script>
 (function() {
   var stocks = STOCK_POOL_CONFIG.stocks;
-  var poolStocks = stocks.filter(function(s){return s.zone==='pool';});
-  var watchStocks = stocks.filter(function(s){return s.zone==='watch';});
-  var betStocks = stocks.filter(function(s){return s.zone==='bet';});
+  // ====== Tab system (v3.0) ======
+  var TAB_META = {
+    'value': { title: 'AI估值泡沫破灭逆向股票池 · 保值传统', desc: 'AI泡沫破灭防御' },
+    'star':  { title: '🎯 未来之星 · 品类定义者赌注', desc: '亏50%博5x/10年' },
+    'youth': { title: '🌟 年轻人钱包 · 结构性赢家', desc: '不婚不育钱去哪儿了' }
+  };
+  function getTab() {
+    try { return localStorage.getItem('sp_curtab') || 'value'; } catch(e) { return 'value'; }
+  }
+  function setTab(t) {
+    try { localStorage.setItem('sp_curtab', t); } catch(e){}
+    curTab = t;
+    document.querySelectorAll('.tab').forEach(function(b){
+      b.classList.toggle('on', b.getAttribute('data-tab')===t);
+    });
+    var ti = document.getElementById('mainTitle');
+    if (ti && TAB_META[t]) ti.textContent = TAB_META[t].title;
+    curSector = null; curSignal = null;
+    rebuildSets();
+    render();
+    renderFilters();
+  }
+  var curTab = getTab();
+  // pool/watch/bet sets are rebuilt whenever tab switches
+  var poolStocks = [], watchStocks = [], betStocks = [];
+  function rebuildSets() {
+    var subset = stocks.filter(function(s){
+      var pt = s.poolType || 'value';
+      return pt === curTab;
+    });
+    poolStocks  = subset.filter(function(s){return s.zone==='pool';});
+    watchStocks = subset.filter(function(s){return s.zone==='watch';});
+    betStocks   = subset.filter(function(s){return s.zone==='bet';});
+  }
+  rebuildSets();
+  // counts for tab badges (computed once on init)
+  function computeTabCounts() {
+    var counts = { value:0, star:0, youth:0 };
+    stocks.forEach(function(s){
+      var pt = s.poolType || 'value';
+      if (counts.hasOwnProperty(pt)) counts[pt]++;
+    });
+    Object.keys(counts).forEach(function(k){
+      var el = document.getElementById('cnt-'+k);
+      if (el) el.textContent = counts[k];
+    });
+  }
   var prices = {};
   var curSector = null, curSignal = null;
   var fetchCount = 0;
@@ -806,11 +971,13 @@ var STOCK_POOL_CONFIG = {
     render();
   };
 
-  function initFilters() {
+  function renderFilters() {
     var el = document.getElementById('filters');
+    el.innerHTML = '';
+    var subset = stocks.filter(function(s){ return (s.poolType||'value') === curTab; });
     var sectors = ['全部'];
     var seen = {};
-    stocks.forEach(function(s){ if(!seen[s.sector]){seen[s.sector]=1; sectors.push(s.sector);} });
+    subset.forEach(function(s){ if(!seen[s.sector]){seen[s.sector]=1; sectors.push(s.sector);} });
     sectors.forEach(function(sec, i){
       var b = document.createElement('button');
       b.textContent = sec;
@@ -838,7 +1005,23 @@ var STOCK_POOL_CONFIG = {
     });
   }
 
-  initFilters();
+  function initTabs() {
+    document.querySelectorAll('.tab').forEach(function(b){
+      b.addEventListener('click', function(){
+        setTab(b.getAttribute('data-tab'));
+      });
+    });
+    computeTabCounts();
+    // apply initial tab styling and title
+    document.querySelectorAll('.tab').forEach(function(b){
+      b.classList.toggle('on', b.getAttribute('data-tab')===curTab);
+    });
+    var ti = document.getElementById('mainTitle');
+    if (ti && TAB_META[curTab]) ti.textContent = TAB_META[curTab].title;
+  }
+
+  initTabs();
+  renderFilters();
   render();
   fetchPrices();
   setInterval(fetchPrices, 30000);
