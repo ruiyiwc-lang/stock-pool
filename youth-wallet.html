@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年轻人钱包 v1.1 · China Youth Wallet · Moat Fix</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(180deg, #fafbfc 0%, #f3f4f8 100%);
+  color: #1a1d23;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 64rem; margin: 0 auto; padding: 56px 28px 80px; }
+
+/* ===== Header ===== */
+.cover {
+  text-align: center;
+  padding: 32px 0 40px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 48px;
+}
+.cover .eyebrow { font-size: 12px; letter-spacing: 4px; color: #6b7280; text-transform: uppercase; font-weight: 500; }
+.cover h1 { font-size: 38px; font-weight: 700; margin: 12px 0 6px; letter-spacing: -0.5px; color: #0f172a; }
+.cover .sub-en { font-size: 16px; color: #64748b; font-style: italic; letter-spacing: 0.5px; }
+.cover .meta { margin-top: 18px; font-size: 13px; color: #94a3b8; }
+.cover .meta span { display: inline-block; padding: 0 12px; }
+.cover .meta span + span { border-left: 1px solid #e2e8f0; }
+
+/* ===== Part header ===== */
+.part {
+  margin-bottom: 56px;
+}
+.part-h {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 24px;
+}
+.part-num {
+  font-size: 14px; font-weight: 600; letter-spacing: 1px;
+  color: #6366f1; background: rgba(99,102,241,0.08);
+  padding: 4px 10px; border-radius: 6px;
+}
+.part-title { font-size: 26px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; }
+.part-sub-en { font-size: 13px; color: #94a3b8; font-style: italic; margin-left: auto; }
+
+/* ===== Glass card ===== */
+.glass {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 14px;
+  padding: 24px 26px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.03);
+}
+.glass h3 { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
+.glass p { color: #334155; margin-bottom: 10px; }
+.glass p:last-child { margin-bottom: 0; }
+
+.lead {
+  font-size: 17px; color: #334155;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(168,85,247,0.03));
+  border-left: 3px solid #6366f1;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+/* ===== Table ===== */
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.7);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0 16px;
+  font-size: 14px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.glass-table thead {
+  background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));
+}
+.glass-table th {
+  text-align: left; padding: 12px 14px;
+  font-weight: 600; color: #475569;
+  font-size: 12px; letter-spacing: 0.4px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.glass-table td {
+  padding: 11px 14px;
+  color: #334155;
+  border-bottom: 1px solid rgba(0,0,0,0.035);
+  vertical-align: top;
+}
+.glass-table tbody tr:nth-child(even) { background: rgba(248,250,252,0.5); }
+.glass-table tbody tr:hover { background: rgba(99,102,241,0.04); }
+.glass-table .num { font-variant-numeric: tabular-nums; text-align: right; }
+.glass-table .em { color: #0f172a; font-weight: 600; }
+
+/* ===== Badge ===== */
+.badge {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px;
+  letter-spacing: 0.3px;
+  margin-right: 4px;
+}
+.badge-ok { background: rgba(34,197,94,0.12); color: #15803d; }
+.badge-warn { background: rgba(234,179,8,0.14); color: #a16207; }
+.badge-bad { background: rgba(239,68,68,0.12); color: #b91c1c; }
+.badge-info { background: rgba(99,102,241,0.12); color: #4338ca; }
+.badge-purple { background: rgba(168,85,247,0.12); color: #7e22ce; }
+.badge-amber { background: rgba(251,146,60,0.14); color: #9a3412; }
+
+/* ===== Flow ===== */
+.flow-step {
+  display: flex; gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.flow-step .num-circle {
+  flex: 0 0 28px; height: 28px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #fff; font-size: 13px; font-weight: 700;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.flow-step .body { flex: 1; }
+.flow-step .body strong { color: #0f172a; display: block; margin-bottom: 4px; font-size: 15px; }
+.flow-step .body p { color: #475569; font-size: 14px; line-height: 1.6; }
+
+/* ===== Stock card ===== */
+.stock-card {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 20px;
+  align-items: start;
+}
+.stock-card .head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px dashed rgba(0,0,0,0.08); margin-bottom: 4px; }
+.stock-card .name { font-size: 18px; font-weight: 700; color: #0f172a; }
+.stock-card .code { font-size: 12px; color: #94a3b8; font-variant-numeric: tabular-nums; }
+.stock-card .reason { color: #334155; font-size: 14px; line-height: 1.65; }
+.stock-card .nums { font-size: 13px; color: #475569; }
+.stock-card .nums div { padding: 3px 0; }
+.stock-card .nums .n-key { color: #94a3b8; display: inline-block; min-width: 60px; }
+.stock-card .nums .n-val { color: #0f172a; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stock-card .moat { font-size: 13px; color: #475569; padding: 8px 0; border-top: 1px dashed rgba(0,0,0,0.06); grid-column: 1 / -1; margin-top: 4px; }
+
+.gridcols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.gridcols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) {
+  .gridcols-2, .gridcols-3 { grid-template-columns: 1fr; }
+  .stock-card { grid-template-columns: 1fr; }
+  .cover h1 { font-size: 28px; }
+  .part-title { font-size: 22px; }
+  .part-sub-en { display: none; }
+  .wrap { padding: 32px 16px 60px; }
+  .glass-table { font-size: 12px; }
+  .glass-table th, .glass-table td { padding: 8px 8px; }
+  .glass-table .scroll { overflow-x: auto; }
+}
+
+ul.clean { list-style: none; padding-left: 0; }
+ul.clean li {
+  padding: 6px 0 6px 18px;
+  position: relative;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+}
+ul.clean li:before {
+  content: '·';
+  position: absolute; left: 6px;
+  color: #6366f1; font-weight: 700;
+}
+
+.callout {
+  background: linear-gradient(135deg, rgba(251,146,60,0.06), rgba(239,68,68,0.04));
+  border-left: 3px solid #fb923c;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #44403c;
+}
+.callout strong { color: #9a3412; }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent);
+  margin: 32px 0;
+}
+
+footer {
+  text-align: center; color: #94a3b8;
+  font-size: 12px; padding: 32px 0 8px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <div class="eyebrow">FRAMEWORK · v1.1 · MOAT FIX</div>
+  <h1>年轻人钱包</h1>
+  <div class="sub-en">China Youth Wallet · Where the Money Goes After "No-Marriage, No-Kids, No-Mortgage"</div>
+  <div class="meta">
+    <span>2026-06-16 · v1.1</span>
+    <span>未来之星框架姊妹篇</span>
+    <span>4核心 + 3期权（v1.1修订）</span>
+  </div>
+</div>
+
+<!-- ===== ADDENDUM v1.1 — MOAT FIX ===== -->
+<div class="part" style="background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%); padding: 32px; border-radius: 12px; border: 1px solid #f59e0b;">
+  <div class="part-h">
+    <span class="part-num" style="background:#dc2626; color:white;">v1.1 修订</span>
+    <span class="part-title">护城河框架重写：渠道型 ≠ 护城河</span>
+    <span class="part-sub-en">Distribution Is Not a Moat in China's Internet Era</span>
+  </div>
+
+  <div class="lead">
+    用户 challenge 一针见血——中国发达的互联网体系让"分销/代理/平台/品牌运营"型故事统统不配叫护城河。年轻人在网上找性价比，演唱会票务渠道极度内卷；宠物食品依赖供应链，本质是品牌运营，且品牌护城河在抖音直播间一夜可被打穿。<strong>v1.0 误把租约/代理/品牌当护城河，v1.1 强制收紧，只承认四类真护城河。</strong>
+  </div>
+
+  <h3 style="margin-top:24px;margin-bottom:14px;">真护城河四类（适用于年轻人钱包）</h3>
+  <table class="thresh-table">
+    <thead><tr><th>类型</th><th>抗互联网扁平化</th><th>钱包内代表</th><th>判定锚</th></tr></thead>
+    <tbody>
+      <tr><td><strong>监管/牌照</strong>（注册证/审批/集采准入）</td><td style="color:#16a34a;">★★★ 强</td><td>爱美客 · 华东医药 · 信达生物</td><td>NMPA/FDA 审批稀缺，年-十年级</td></tr>
+      <tr><td><strong>专利/原创 IP</strong>（自有内容）</td><td style="color:#16a34a;">★★★ 强</td><td>泡泡玛特（未来之星）/ 米哈游（未上市）</td><td>专利期 / IP 自孵化能力</td></tr>
+      <tr><td><strong>网络效应</strong>（社交/内容沉淀）</td><td style="color:#eab308;">★★ 中</td><td>B 站（弱版，商业化未跑通）</td><td>用户粘性 + 创作者基数</td></tr>
+      <tr><td><strong>品牌+毛利率领先</strong>（成本-定价权重叠）</td><td style="color:#eab308;">★★ 中（脆弱）</td><td>乖宝（受外资降价威胁）</td><td>毛利率领先同业 ≥10pct 且持续</td></tr>
+      <tr style="background:#fee2e2;"><td><strong style="color:#dc2626;">伪护城河 · 渠道/代理/平台</strong></td><td style="color:#dc2626;">✗ 零</td><td>阿里影业 · 布鲁可（奥特曼授权）· 猫眼 · 美团票务</td><td>租约性质，无续约确定性</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:28px;margin-bottom:14px;">v1.0 → v1.1 调整明细</h3>
+  <table class="thresh-table">
+    <thead><tr><th>标的</th><th>v1.0 定位</th><th>v1.1 修订</th><th>护城河重判</th><th>仓位变化</th></tr></thead>
+    <tbody>
+      <tr><td>爱美客 300896</td><td>核心</td><td>核心</td><td>监管牌照（注册证）</td><td>5% → 5%</td></tr>
+      <tr><td>华东医药 000963</td><td>核心</td><td>核心</td><td>监管+渠道复用</td><td>8% → 8%</td></tr>
+      <tr><td>信达生物 01801</td><td>期权</td><td><strong style="color:#16a34a;">升核心</strong></td><td>专利+监管</td><td>2% → 3%</td></tr>
+      <tr><td>乖宝宠物 301498</td><td>核心</td><td>核心（降权）</td><td>品牌（脆弱）</td><td>6% → 4%</td></tr>
+      <tr><td>布鲁可 0325</td><td>核心</td><td><strong style="color:#eab308;">降期权</strong></td><td>代理租约（伪）</td><td>5% → 3%</td></tr>
+      <tr><td>哔哩哔哩 09626</td><td>核心</td><td><strong style="color:#eab308;">降期权</strong></td><td>网络效应（弱）</td><td>4% → 2%</td></tr>
+      <tr style="background:#fee2e2;"><td><strong>阿里影业 01060</strong></td><td>期权</td><td><strong style="color:#dc2626;">剔除</strong></td><td>票务渠道+代理租约</td><td>3% → 0</td></tr>
+      <tr><td colspan="4" style="text-align:right;"><strong>总仓位</strong></td><td><strong>33% → 25%</strong></td></tr>
+      <tr><td colspan="4" style="text-align:right;color:#16a34a;">释放 8% → 加仓药明（基础设施型真护城河）+ 安踏（品牌+毛利领先且已验证）</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:28px;margin-bottom:14px;">三个具体反思</h3>
+  <ol style="padding-left:24px;line-height:1.9;">
+    <li><strong>票务渠道无护城河：</strong>淘票票/猫眼/抖音/美团在同一片红海，毛利薄、议价能力为零。阿里影业的 Chiikawa 中国独家代理虽能讲故事，但代理是有期限的非永续合同，与布鲁可的奥特曼授权 2027 到期同属租约风险，不该被算作护城河。</li>
+    <li><strong>宠物食品品牌易被打穿：</strong>乖宝 40% 毛利率领先代工厂 10–15pct 是真实的，但天花板是玛氏/雀巢的全球品牌——只要外资愿意降价竞争，国产品牌护城河被压缩。中国互联网让消费者价格敏感度全球最高，宠粮"品牌溢价"在抖音直播间一夜可被打穿（参考 2024 完美日记/花西子翻车）。仓位降至 4% 观察玛氏/雀巢降价反应。</li>
+    <li><strong>IP 衍生品中游也是租约：</strong>布鲁可拿奥特曼授权做拼搭玩具，本质和阿里影业拿 Chiikawa 代理一样——是租约，不是自有 IP。真正的 IP 护城河只属于自孵化能力被验证的公司（泡泡玛特 Molly/Labubu、米哈游原神/崩坏）。布鲁可降至期权 3%，等其自有 IP（变形金刚是孩之宝租约、英雄联盟是腾讯租约）跑出无授权依赖的爆款再升核心。</li>
+  </ol>
+
+  <h3 style="margin-top:28px;margin-bottom:14px;">v1.1 终极配置（200 万本金）</h3>
+  <table class="thresh-table">
+    <thead><tr><th>标的</th><th>仓位 %</th><th>金额</th><th>建仓节奏</th><th>当前价 vs B 线</th></tr></thead>
+    <tbody>
+      <tr style="background:#dcfce7;"><td>爱美客 300896</td><td>5%</td><td>10 万</td><td>B 线 67 元开仓 60%</td><td>~93 元，距 B 线 -28%</td></tr>
+      <tr style="background:#dcfce7;"><td>华东医药 000963</td><td>8%</td><td>16 万</td><td>当前价 38 ≈ B 线 33.6，<strong>立即开仓 60%</strong></td><td>~38 元，已近 B 线 ✓</td></tr>
+      <tr style="background:#dcfce7;"><td>信达生物 01801</td><td>3%</td><td>6 万</td><td>B 线 60 港币开仓 50%</td><td>等 50% 大跌</td></tr>
+      <tr style="background:#dcfce7;"><td>乖宝宠物 301498</td><td>4%</td><td>8 万</td><td>B 线 37.8 元开仓 60%</td><td>~42 元，距 B 线 -10%</td></tr>
+      <tr style="background:#fef9c3;"><td>布鲁可 0325（期权）</td><td>3%</td><td>6 万</td><td>当前价 54 ≈ B 线 55，<strong>立即开仓 50%</strong></td><td>~54 港币，已近 B 线 ✓</td></tr>
+      <tr style="background:#fef9c3;"><td>B 站 09626（期权）</td><td>2%</td><td>4 万</td><td>等深跌至 110 港币</td><td>暂不动</td></tr>
+      <tr style="background:#fef9c3;"><td>药明康德 603259（加仓）</td><td>+5%</td><td>+10 万</td><td>当前价加仓 30%</td><td>基础设施型真护城河</td></tr>
+      <tr style="background:#fef9c3;"><td>安踏 02020（加仓）</td><td>+3%</td><td>+6 万</td><td>当前价加仓 30%</td><td>品牌+毛利已验证</td></tr>
+      <tr><td colspan="2"><strong>合计</strong></td><td><strong>66 万 / 33%</strong></td><td colspan="2">立即可启动 3 笔：华东+乖宝+布鲁可，约 30 万先手仓位</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:24px;font-size:13px;color:#78350f;">
+    <strong>认错纪律：</strong>每季度复核一次"渠道护城河"判定。如果 2027 年布鲁可奥特曼授权续约失败且自有 IP 仍未跑通，立即清仓。如果乖宝毛利率被玛氏价格战压到 35% 以下，立即清仓。如果信达玛仕度肽医保谈判失败，降回期权 1%。
+  </p>
+</div>
+
+<!-- ===== COVER (original) ===== -->
+<div class="cover" style="display:none;">
+  <div class="eyebrow">FRAMEWORK · v1.0</div>
+  <h1>年轻人钱包</h1>
+  <div class="sub-en">China Youth Wallet · Where the Money Goes After "No-Marriage, No-Kids, No-Mortgage"</div>
+  <div class="meta">
+    <span>2026-06-15</span>
+    <span>未来之星框架姊妹篇</span>
+    <span>8核心 + 2期权</span>
+  </div>
+</div>
+
+<!-- ===== PART 01 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 01</span>
+    <span class="part-title">为什么从零开始</span>
+    <span class="part-sub-en">Why Reset Everything</span>
+  </div>
+
+  <div class="lead">
+    一个 30 岁的城市青年，过去 10 年家庭支出结构的核心四件——首付月供、婚庆彩礼、生育育儿、K12 教培——已经全部归零或大幅萎缩。这不是周期性退潮，是结构性改写。<strong>问题不是钱去了哪里，而是当我们停止"为家庭和未来花钱"的时候，"为自己当下花钱"的容器被打开了，谁能接住这股水流。</strong>
+  </div>
+
+  <div class="glass">
+    <h3>第一次诊断的两个错误</h3>
+    <p>第一次回答把"居民部门"和"年轻人"混为一谈，以为保险/黄金/储蓄是结构性赢家。事实是：</p>
+    <ul class="clean">
+      <li>增额终身寿/年金险标杆案例是"30 岁男性年缴 10 万、5 年交"——年轻人买不起；真实主力是 35–55 岁中产</li>
+      <li>世界黄金协会 2025 报告里 18–24 岁金饰拥有率 62% 是"情绪小金额"（金豆/转运珠几百到几千元），不是资产配置</li>
+      <li>新三金（蚂蚁财富 2100 万用户）渗透率 1.5%，主力依然是 30+ 中年</li>
+    </ul>
+    <p style="margin-top:12px"><strong>修正结论</strong>：年轻人的钱<strong>没有存起来</strong>，几乎全部流向当期消费。储蓄/保险/黄金是中年中产故事，受人口结构压制；消费股的逻辑反而被强化。</p>
+  </div>
+</div>
+
+<!-- ===== PART 02 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 02</span>
+    <span class="part-title">钱包 9 大去向</span>
+    <span class="part-sub-en">Where the Money Actually Flows</span>
+  </div>
+
+  <div class="glass" style="padding: 8px 14px 14px;">
+    <div class="scroll">
+    <table class="glass-table">
+      <thead><tr>
+        <th>#</th><th>赛道</th><th class="num">钱包占比</th><th class="num">三年增速</th><th>龙头</th><th class="num">FwdPE</th><th>状态</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="em">餐饮（外卖+咖啡+奶茶）</td><td class="num">18–22%</td><td class="num">+12%</td><td>美团/瑞幸/蜜雪/古茗</td><td class="num">14–28x</td><td><span class="badge badge-warn">分化</span></td></tr>
+        <tr><td>2</td><td class="em">旅行（出境+周边）</td><td class="num">10–14%</td><td class="num">+20%</td><td>携程/同程</td><td class="num">14–17x</td><td><span class="badge badge-bad">AI颠覆</span></td></tr>
+        <tr><td>3</td><td class="em">演唱会/Live/脱口秀</td><td class="num">6–8%</td><td class="num">+30%</td><td>猫眼/阿里影业</td><td class="num">8–12x</td><td><span class="badge badge-ok">便宜</span></td></tr>
+        <tr><td>4</td><td class="em">户外+运动</td><td class="num">6–8%</td><td class="num">+25%</td><td>安踏/李宁</td><td class="num">14–16x</td><td><span class="badge badge-info">合理</span></td></tr>
+        <tr><td>5</td><td class="em">游戏</td><td class="num">5–7%</td><td class="num">+5%</td><td>网易/腾讯/米哈游</td><td class="num">14x</td><td><span class="badge badge-warn">老登</span></td></tr>
+        <tr><td>6</td><td class="em">IP/潮玩/谷子</td><td class="num">4–6%</td><td class="num">+50%</td><td>泡泡玛特/布鲁可/B站</td><td class="num">21–60x</td><td><span class="badge badge-purple">高赔率</span></td></tr>
+        <tr><td>7</td><td class="em">医美+减肥药+健身</td><td class="num">4–6%</td><td class="num">+25%</td><td>爱美客/华熙/华东</td><td class="num">16–35x</td><td><span class="badge badge-ok">华东最便宜</span></td></tr>
+        <tr><td>8</td><td class="em">宠物</td><td class="num">3–5%</td><td class="num">+20%</td><td>乖宝/中宠/佩蒂</td><td class="num">25–30x</td><td><span class="badge badge-info">乖宝胜出</span></td></tr>
+        <tr><td>9</td><td class="em">黄金饰品（情绪小金额）</td><td class="num">2–3%</td><td class="num">+30%</td><td>老铺/周大福</td><td class="num">14–30x</td><td><span class="badge badge-bad">老铺已透支</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px; color:#94a3b8; margin-top:10px">注：钱包占比为一线/新一线 30 岁以下、月收入 8k–20k 样本估算的相对支出分配。FwdPE 数据需用同花顺/东方财富一致预期复核。</p>
+  </div>
+
+  <div class="gridcols-3" style="margin-top:14px">
+    <div class="glass">
+      <h3 style="color:#15803d">餐饮+旅行+Live+户外</h3>
+      <p style="font-size:14px">合计占比 <strong>40–52%</strong>，是绝对大头。但赛道内分化严重，需精挑龙头。</p>
+    </div>
+    <div class="glass">
+      <h3 style="color:#7e22ce">IP+医美+宠物+游戏</h3>
+      <p style="font-size:14px">合计占比 <strong>20–25%</strong>，单价低但增速最快，IP 与宠物是真正的 0→1。</p>
+    </div>
+    <div class="glass">
+      <h3 style="color:#9a3412">黄金+储蓄</h3>
+      <p style="font-size:14px">合计占比 <strong>&lt;5%</strong>，验证"年轻人钱没存起来"的判断。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PART 03 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 03</span>
+    <span class="part-title">严格筛选 · 谁被淘汰</span>
+    <span class="part-sub-en">Who Got Cut</span>
+  </div>
+
+  <div class="lead" style="background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(251,146,60,0.03)); border-left-color:#ef4444">
+    <strong>5维筛选硬指标</strong>：① 防AI颠覆 ② 非效率创新 ③ ROE&gt;12% 或 增速&gt;25% ④ 护城河非渠道 ⑤ PEG&lt;1.5。
+    候选 30+ → 最终 8 核心 + 2 期权。
+  </div>
+
+  <div class="glass">
+    <h3>淘汰名单（13 只）及原因</h3>
+    <table class="glass-table">
+      <thead><tr><th>标的</th><th>淘汰原因</th></tr></thead>
+      <tbody>
+        <tr><td class="em">携程 9961.HK</td><td>AI travel agent 3 年内替代 60% 订机票订酒店场景，OTA 库存优势被 GPT+API 侵蚀</td></tr>
+        <tr><td class="em">网易 9999.HK</td><td>增长曲线乏力，米哈游虹吸 Z 世代，蛋仔派对边际收益递减，游戏老登</td></tr>
+        <tr><td class="em">美团 3690.HK</td><td>外卖天花板已现，闪购被抖音/淘宝即时零售三方夹击，AI agent 订餐替代</td></tr>
+        <tr><td class="em">蜜雪冰城 2097.HK</td><td>PE 28x 已定价完美，加盟模型成熟到天花板可见，海外扩张是叙事不是数字</td></tr>
+        <tr><td class="em">老铺黄金 6181.HK</td><td>30x+ PE 透支 3 年增长，"高奢化"叙事在三四线开店即破</td></tr>
+        <tr><td class="em">名创/Top Toy</td><td>效率创新被框架第④条直接排除</td></tr>
+        <tr><td class="em">中宠/佩蒂</td><td>代工占比 70%+/85%+，客户集中度高（沃尔玛/Costco），增收不增利证明品牌战烧钱期</td></tr>
+        <tr><td class="em">古茗/沪上阿姨</td><td>茶饮供给端拥挤，下沉红利透支后是肉搏战</td></tr>
+        <tr><td class="em">华熙生物 688363</td><td>C 端润百颜增速断崖（2024 下滑），B 端透明质酸同质化，已不是好生意</td></tr>
+        <tr><td class="em">滔搏/李宁</td><td>滔搏渠道商被 Nike/Adidas 品牌掉价拖累；李宁失去"中国李宁"溢价 DTC 转型坎坷</td></tr>
+        <tr><td class="em">猫眼 1896.HK</td><td>降级观察。演唱会 GMV 高增但电影票房（核心利润）2026 富瑞下调，2-3 年净利不一定增</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== PART 04 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 04</span>
+    <span class="part-title">8 核心 + 2 期权</span>
+    <span class="part-sub-en">The Selected Portfolio</span>
+  </div>
+
+  <div class="glass">
+    <h3>精选名单与阈值（PEG v2.1 框架）</h3>
+    <div class="scroll">
+    <table class="glass-table">
+      <thead><tr><th>优先级</th><th>标的</th><th>代码</th><th class="num">A线</th><th class="num">B线</th><th class="num">红线</th><th class="num">仓位上限</th><th>角色</th></tr></thead>
+      <tbody>
+        <tr><td>★★★</td><td class="em">泡泡玛特</td><td>9992.HK</td><td class="num">189</td><td class="num">139</td><td class="num">315</td><td class="num">已建</td><td><span class="badge badge-purple">未来之星</span></td></tr>
+        <tr><td>★★★</td><td class="em">安踏体育</td><td>2020.HK</td><td class="num">110</td><td class="num">73</td><td class="num">—</td><td class="num">已建</td><td><span class="badge badge-info">保值传统</span></td></tr>
+        <tr><td>★★★</td><td class="em">乖宝宠物</td><td>301498.SZ</td><td class="num">50</td><td class="num">38</td><td class="num">76</td><td class="num">50万</td><td><span class="badge badge-ok">核心</span></td></tr>
+        <tr><td>★★★</td><td class="em">华东医药</td><td>000963.SZ</td><td class="num">45</td><td class="num">34</td><td class="num">80</td><td class="num">60万</td><td><span class="badge badge-ok">核心</span></td></tr>
+        <tr><td>★★</td><td class="em">布鲁可</td><td>0325.HK</td><td class="num">75</td><td class="num">55</td><td class="num">130</td><td class="num">40万</td><td><span class="badge badge-purple">成长</span></td></tr>
+        <tr><td>★★</td><td class="em">爱美客</td><td>300896.SZ</td><td class="num">90</td><td class="num">67</td><td class="num">135</td><td class="num">40万</td><td><span class="badge badge-purple">成长</span></td></tr>
+        <tr><td>★★</td><td class="em">哔哩哔哩</td><td>9626.HK</td><td class="num">140</td><td class="num">110</td><td class="num">220</td><td class="num">30万</td><td><span class="badge badge-purple">成长</span></td></tr>
+        <tr><td>★</td><td class="em">阿里影业</td><td>1060.HK</td><td class="num">1.0</td><td class="num">0.6</td><td class="num">1.6</td><td class="num">20万</td><td><span class="badge badge-amber">期权</span></td></tr>
+        <tr><td>★</td><td class="em">信达生物</td><td>1801.HK</td><td class="num">90</td><td class="num">60</td><td class="num">120</td><td class="num">30万</td><td><span class="badge badge-amber">期权</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px; color:#94a3b8; margin-top:10px">所有阈值需用同花顺/东方财富一致预期复核 EPS basis 后再下手。括号货币：港股 HKD，A股 RMB。</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <h3 style="font-size:18px; color:#0f172a; margin-bottom:14px">核心标的逐只点评</h3>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">布鲁可</span><span class="code">0325.HK · 港股</span>
+      <span class="badge badge-purple">IP 衍生品中游</span>
+      <span class="badge badge-ok">当前=B线</span>
+    </div>
+    <div class="reason">
+      拼搭角色玩具龙头，奥特曼/变形金刚/英雄联盟/初音 IP 矩阵，2026 成人占比加速提升。当前 54 港币恰好在 B 线附近，已是入场区。最像下一个泡泡玛特，但护城河比泡泡玛特浅——依赖外部 IP 授权。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">21x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">50%+</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">75/55/130</span></div>
+    </div>
+    <div class="moat"><strong>关键风险</strong>：奥特曼授权 2027 年到期，需观察自有 IP 孵化能力。建议建仓 30%，自有 IP 跑出再加仓。</div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">乖宝宠物</span><span class="code">301498.SZ · 创业板</span>
+      <span class="badge badge-ok">国产宠粮第一</span>
+    </div>
+    <div class="reason">
+      麦富迪是国产宠粮第一品牌、弗列加特是唯一冲到高端价位带（80元/kg+）成功的国产品牌，毛利率 40%+，海外代工业务作为现金奶牛反哺品牌。2026 年品牌投放期收尾后，毛利率有望从 40% 回到 43-45%。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">28x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">28%</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">50/38/76</span></div>
+    </div>
+    <div class="moat"><strong>买点</strong>：当前 42 元在 A-B 之间，B 线 38 元分批入。中宠/佩蒂淘汰理由见 PART 03。</div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">华东医药</span><span class="code">000963.SZ · 深主板</span>
+      <span class="badge badge-ok">最便宜</span>
+      <span class="badge badge-info">GLP-1 期权</span>
+    </div>
+    <div class="reason">
+      利拉鲁肽国内已上市贡献现金流，三靶点 DR10624（FGF21R/GCGR/GLP-1R）启动头对头玛仕度肽 III 期，是 GLP-1 出海的真期权。同时医美业务作为第二曲线。当前 38 元 PE 仅 16x，A 线在 45 上方——低估显著。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">16x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">16%+期权</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">45/34/80</span></div>
+    </div>
+    <div class="moat"><strong>仓位上限破例</strong>：60万（高于其他 40 万的硬上限），因为基本面强 + 估值便宜 + 期权属性。</div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">爱美客</span><span class="code">300896.SZ · 创业板</span>
+      <span class="badge badge-info">医美龙头</span>
+    </div>
+    <div class="reason">
+      玻尿酸/再生材料医美龙头，已从 PE 100x 跌到 22x，估值已经消化降速。但增速从 40%+ 降档到 18%，PE 中枢永久重估。等 B 线 67 元（深跌）才入场。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">22x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">18%</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">90/67/135</span></div>
+    </div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">哔哩哔哩-W</span><span class="code">9626.HK · 港股</span>
+      <span class="badge badge-purple">Z世代独占</span>
+    </div>
+    <div class="reason">
+      Z 世代独占社区 + 番剧版权 + UP 主孵化 + 谷子电商 + 游戏发行三轮驱动。利润恢复期，估值用 EV/EBITDA 锚定。短期估值偏高，等深跌或盈利兑现。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">25x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">利润转正期</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">140/110/220</span></div>
+    </div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">阿里影业</span><span class="code">1060.HK · 港股</span>
+      <span class="badge badge-amber">期权</span>
+      <span class="badge badge-ok">当前=B线</span>
+    </div>
+    <div class="reason">
+      Chiikawa 中国独家代理 + 三丽鸥中国合作（"阿里鱼"运营）+ 淘票票，是 IP 流量变现的隐藏王牌。EPS 0.05 太小用 PS 估值（A=2.5x/B=1.5x）。当前 0.6 港币恰好在 B 线，小赔大赚。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">PS</span><span class="n-val">1.5x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">30%+</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">1.0/0.6/1.6</span></div>
+    </div>
+  </div>
+
+  <div class="stock-card">
+    <div class="head">
+      <span class="name">信达生物</span><span class="code">1801.HK · 港股</span>
+      <span class="badge badge-amber">期权</span>
+    </div>
+    <div class="reason">
+      玛仕度肽（GLP-1R/GCGR）国内首批商业化的国产 GLP-1，2026 商业化首年放量，同时信迪利单抗稳定盘。增速 50%+ 但当前 PE 50x+ 处于期权区，小仓位。
+    </div>
+    <div class="nums">
+      <div><span class="n-key">FwdPE</span><span class="n-val">50–70x</span></div>
+      <div><span class="n-key">增速</span><span class="n-val">50%+</span></div>
+      <div><span class="n-key">A/B/红</span><span class="n-val">90/60/120</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PART 05 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 05</span>
+    <span class="part-title">宠物经济专题 · 乖宝胜出</span>
+    <span class="part-sub-en">Pet Economy Deep-Dive</span>
+  </div>
+
+  <div class="glass">
+    <h3>为什么宠物是不可逆赛道</h3>
+    <p>KPMG 2025 报告：90 后已是最大宠物主群体。中国宠物市场 8000 亿，但渗透率：</p>
+    <ul class="clean">
+      <li><strong>中国</strong>：城镇家庭养宠率 22%，户均 1.0 只</li>
+      <li><strong>日本</strong>：35%，户均 1.2 只 → 中国还有 60% 渗透空间</li>
+      <li><strong>美国</strong>：70%，户均 1.6 只 → 中国还有 3 倍空间</li>
+    </ul>
+    <p style="margin-top:10px">宠物需求 = 替代生育需求，<strong>少子化结构性赛道</strong>，不可逆。Z 世代的"毛孩子"心态比 80 后强 3 倍。</p>
+  </div>
+
+  <div class="glass">
+    <h3>三对比 · 乖宝 vs 中宠 vs 佩蒂</h3>
+    <div class="scroll">
+    <table class="glass-table">
+      <thead><tr>
+        <th>维度</th><th>乖宝</th><th>中宠</th><th>佩蒂</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>商业模式</td><td class="em">自主品牌为主</td><td>代工 70%+品牌追赶</td><td>代工 85%+品牌弱</td></tr>
+        <tr><td>核心品牌</td><td>麦富迪+弗列加特</td><td>顽皮+领先（追赶）</td><td>爵宴（规模小）</td></tr>
+        <tr><td>国内品牌力</td><td><span class="badge badge-ok">第一</span></td><td>第二</td><td>第三</td></tr>
+        <tr><td>国内毛利率</td><td class="em">40%+</td><td>28%</td><td>25%</td></tr>
+        <tr><td>海外占比</td><td>35%</td><td>65%</td><td>80%</td></tr>
+        <tr><td>2025 营收</td><td class="em">67.7 亿 (+29%)</td><td>~50 亿 (+20%)</td><td>~17 亿 (+15%)</td></tr>
+        <tr><td>利润弹性</td><td>品牌溢价</td><td>代工微利+品牌烧钱</td><td>汇率波动</td></tr>
+        <tr><td>核心风险</td><td>估值偏高</td><td>客户集中(沃尔玛/Costco)</td><td>关税/汇率</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>乖宝独占的护城河（4 条）</strong><br>
+    1. 麦富迪是<strong>国产宠粮第一品牌</strong>，定义了"国产高品质"品类（类似 2015 安踏、2020 元气森林）<br>
+    2. 弗列加特是<strong>唯一冲到高端价位带（80元/kg+）成功的国产品牌</strong>，对标皇家/比瑞吉<br>
+    3. 2026 年品牌投放收尾，<strong>毛利率有望从 40% 回到 43-45%</strong><br>
+    4. 海外代工（35%）作为现金奶牛反哺品牌，<strong>结构最健康</strong>
+  </div>
+
+  <p style="color:#475569; font-size:14px"><strong>结论</strong>：宠物经济只买乖宝。中宠/佩蒂是 β 不是 α。</p>
+</div>
+
+<!-- ===== PART 06 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 06</span>
+    <span class="part-title">风险与认错线</span>
+    <span class="part-sub-en">Risk & Tripwires</span>
+  </div>
+
+  <div class="gridcols-2">
+    <div class="glass">
+      <h3>AI 颠覆敞口（每只标的）</h3>
+      <ul class="clean">
+        <li><span class="badge badge-ok">低</span> 泡泡玛特/布鲁可/乖宝/爱美客 — 实物消费品 + 情感属性，AI 不替代</li>
+        <li><span class="badge badge-ok">低</span> 信达/华东 — 物理药品研发，AI 加速但不颠覆</li>
+        <li><span class="badge badge-warn">中</span> B 站 — AI 内容生产可能稀释 UP 主价值，但社区属性强</li>
+        <li><span class="badge badge-warn">中</span> 阿里影业 — IP 代理依赖关系，AI 影响有限</li>
+        <li><span class="badge badge-bad">高</span> 安踏（OEM 链）— 设计/打版/营销 AI 化压低成本，但品牌不变</li>
+      </ul>
+    </div>
+
+    <div class="glass">
+      <h3>三年认错线（2029.6.15）</h3>
+      <ul class="clean">
+        <li>宠物市场渗透率不到 28% → 乖宝赛道证伪</li>
+        <li>布鲁可奥特曼授权 2027 续约失败 + 自有 IP 未跑出 → 清仓</li>
+        <li>玛仕度肽进入医保前年销售&lt;30 亿 → 信达期权失败</li>
+        <li>泡泡玛特海外占比从 60% 跌回 40% 以下 → 全球化叙事破灭</li>
+        <li>整体组合 -25% → 触发 v8.0 应急程序，时间衰减阈值放宽</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>与现有 v8.0 / 逆向池协同</strong>：本组合是逆向池的子集，不是平行组合。所有 7 只新标的（布鲁可/乖宝/爱美客/华东/阿里影业/B站/信达）已写入逆向池 v3.0「年轻人钱包」tab，与「保值传统」（34 只）、「未来之星」（2 只）平行展示。
+  </div>
+</div>
+
+<!-- ===== PART 07 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 07</span>
+    <span class="part-title">最终配置表</span>
+    <span class="part-sub-en">Final Allocation</span>
+  </div>
+
+  <div class="glass">
+    <h3>年轻人钱包组合（资金 200–270 万）</h3>
+    <div class="flow-step">
+      <div class="num-circle">1</div>
+      <div class="body">
+        <strong>核心层 60% (~150 万)</strong>
+        <p>乖宝宠物 50 万（B线 38 分批）+ 华东医药 60 万（B线 34 分批）+ 安踏 40 万（沿用现池阈值）</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="num-circle">2</div>
+      <div class="body">
+        <strong>成长层 30% (~80 万)</strong>
+        <p>布鲁可 40 万（现价 54 = B线，可启动 30%）+ 爱美客 40 万（B线 67 深跌入）</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="num-circle">3</div>
+      <div class="body">
+        <strong>期权层 10% (~30 万)</strong>
+        <p>阿里影业 10 万（Chiikawa 期权）+ B 站 10 万（Z 世代社区期权）+ 信达生物 10 万（玛仕度肽放量期权）</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass">
+    <h3>立刻可启动的标的（当前价≈B线）</h3>
+    <ul class="clean">
+      <li><strong>布鲁可 0325.HK</strong> · 现价 54 港币 ≈ B 线 55 → 30% 仓位</li>
+      <li><strong>阿里影业 1060.HK</strong> · 现价 0.6 港币 = B 线 → 30% 仓位（小赔大赚）</li>
+      <li><strong>华东医药 000963</strong> · 现价 38 元 在 A-B 之间 → 30% 仓位</li>
+    </ul>
+  </div>
+
+  <div class="glass">
+    <h3>等深跌的标的</h3>
+    <p>乖宝（B线 38）/ 爱美客（B线 67）/ B 站（B线 110）/ 信达（B线 60）</p>
+  </div>
+</div>
+
+<footer>
+  China Youth Wallet · v1.0 · 2026-06-15<br>
+  与"未来之星框架 v1.1"配合使用 · 与"逆向股票池 v3.0"打通展示
+</footer>
+
+</div>
+</body>
+</html>
