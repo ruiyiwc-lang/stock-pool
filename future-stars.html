@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>未来之星 v1.0 · China Future Stars · Framework Whitepaper</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(180deg, #fafbfc 0%, #f3f4f8 100%);
+  color: #1a1d23;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 64rem; margin: 0 auto; padding: 56px 28px 80px; }
+
+.cover {
+  text-align: center;
+  padding: 32px 0 40px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 48px;
+}
+.cover .eyebrow { font-size: 12px; letter-spacing: 4px; color: #6b7280; text-transform: uppercase; font-weight: 500; }
+.cover h1 { font-size: 38px; font-weight: 700; margin: 12px 0 6px; letter-spacing: -0.5px; color: #0f172a; }
+.cover .sub-en { font-size: 16px; color: #64748b; font-style: italic; letter-spacing: 0.5px; }
+.cover .meta { margin-top: 18px; font-size: 13px; color: #94a3b8; }
+.cover .meta span { display: inline-block; padding: 0 12px; }
+.cover .meta span + span { border-left: 1px solid #e2e8f0; }
+
+.part { margin-bottom: 56px; }
+.part-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
+.part-num {
+  font-size: 14px; font-weight: 600; letter-spacing: 1px;
+  color: #6366f1; background: rgba(99,102,241,0.08);
+  padding: 4px 10px; border-radius: 6px;
+}
+.part-title { font-size: 26px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; }
+.part-sub-en { font-size: 13px; color: #94a3b8; font-style: italic; margin-left: auto; }
+
+.glass {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 14px;
+  padding: 24px 26px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.03);
+}
+.glass h3 { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
+.glass p { color: #334155; margin-bottom: 10px; }
+.glass p:last-child { margin-bottom: 0; }
+
+.lead {
+  font-size: 17px; color: #334155;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(168,85,247,0.03));
+  border-left: 3px solid #6366f1;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.thresh-table, .glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.7);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0 16px;
+  font-size: 14px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.thresh-table thead, .glass-table thead {
+  background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));
+}
+.thresh-table th, .glass-table th {
+  text-align: left; padding: 12px 14px;
+  font-weight: 600; color: #475569;
+  font-size: 12px; letter-spacing: 0.4px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.thresh-table td, .glass-table td {
+  padding: 11px 14px;
+  color: #334155;
+  border-bottom: 1px solid rgba(0,0,0,0.035);
+  vertical-align: top;
+}
+.thresh-table tbody tr:nth-child(even), .glass-table tbody tr:nth-child(even) { background: rgba(248,250,252,0.5); }
+.thresh-table tbody tr:hover, .glass-table tbody tr:hover { background: rgba(99,102,241,0.04); }
+
+.badge {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px;
+  letter-spacing: 0.3px;
+  margin-right: 4px;
+}
+.badge-A { background: rgba(34,197,94,0.14); color: #15803d; }
+.badge-B { background: rgba(99,102,241,0.14); color: #4338ca; }
+.badge-C { background: rgba(234,179,8,0.14); color: #a16207; }
+.badge-cut { background: rgba(239,68,68,0.12); color: #b91c1c; }
+
+.flow-step {
+  display: flex; gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.flow-step .num-circle {
+  flex: 0 0 28px; height: 28px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #fff; font-size: 13px; font-weight: 700;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.flow-step .body { flex: 1; }
+.flow-step .body strong { color: #0f172a; display: block; margin-bottom: 4px; font-size: 15px; }
+.flow-step .body p { color: #475569; font-size: 14px; line-height: 1.6; }
+
+.gridcols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.gridcols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) {
+  .gridcols-2, .gridcols-3 { grid-template-columns: 1fr; }
+  .cover h1 { font-size: 28px; }
+  .part-title { font-size: 22px; }
+  .part-sub-en { display: none; }
+  .wrap { padding: 32px 16px 60px; }
+  .thresh-table, .glass-table { font-size: 12px; }
+  .thresh-table th, .thresh-table td, .glass-table th, .glass-table td { padding: 8px 8px; }
+}
+
+ul.clean { list-style: none; padding-left: 0; }
+ul.clean li {
+  padding: 6px 0 6px 18px;
+  position: relative;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+}
+ul.clean li:before {
+  content: '·';
+  position: absolute; left: 6px;
+  color: #6366f1; font-weight: 700;
+}
+
+.callout {
+  background: linear-gradient(135deg, rgba(251,146,60,0.06), rgba(239,68,68,0.04));
+  border-left: 3px solid #fb923c;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #44403c;
+}
+.callout strong { color: #9a3412; }
+.callout-green {
+  background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(16,185,129,0.04));
+  border-left: 3px solid #16a34a;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #14532d;
+}
+
+.cta-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.cta-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: transform 0.15s;
+}
+.cta-link:hover { transform: translateY(-1px); }
+.cta-link.alt { background: linear-gradient(135deg, #ec4899, #7c3aed); }
+.cta-link.outline { background: transparent; border: 1px solid #6366f1; color: #4f46e5; }
+
+footer {
+  text-align: center; color: #94a3b8;
+  font-size: 12px; padding: 32px 0 8px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <div class="eyebrow">FRAMEWORK WHITEPAPER · v1.0</div>
+  <h1>未来之星</h1>
+  <div class="sub-en">China Future Stars · Category Definers Hunting Framework</div>
+  <div class="meta">
+    <span>2026-06-16 · v1.0</span>
+    <span>年轻人钱包姊妹篇</span>
+    <span>A档3家 + B档2家 + C档2家</span>
+  </div>
+  <div class="cta-row" style="justify-content:center;margin-top:22px;">
+    <a class="cta-link" href="./">↩ 返回 stock-pool 主页</a>
+    <a class="cta-link outline" href="watchlist.html">📂 完整监控档案</a>
+    <a class="cta-link alt" href="youth-wallet.html">🌟 年轻人钱包</a>
+  </div>
+</div>
+
+<!-- ===== PART 01 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 01</span>
+    <span class="part-title">为什么找未来之星</span>
+    <span class="part-sub-en">Why Hunt Category Definers</span>
+  </div>
+
+  <div class="lead">
+    <strong>"如果这家公司消失了，这个世界会不一样吗？"</strong>——这是评估未来之星的唯一灵魂拷问。不看历史 PE/PEG/CAGR，不看现期报表，因为成长股的本质是<strong>终局市值想象空间 × 实现概率</strong>，是赌中国能不能跑出全球级品类定义者。
+  </div>
+
+  <div class="glass">
+    <h3>三个非共识判断</h3>
+    <ul class="clean">
+      <li><strong>制造业天花板封顶 2-3x：</strong>哪怕你做到丰田/美的的体量，全球资本市场只给你 PE 10-12x，因为你是规则参与者，不是制定者。宁德、比亚迪、隆基、恒立都属于此档。</li>
+      <li><strong>文化/科技/创新药才有 10x+ 想象：</strong>这些行业一旦成为全球品类标准，PE 可以给到 30-50x（药明康德全球 CXO 标准、泡泡玛特全球潮玩文化标准、百济神州全球创新药信任）。</li>
+      <li><strong>"中国监管松"不可持续：</strong>DJI 空域今天北京已全域禁飞，K12 双减把新东方-90%。任何"暂时宽松窗口"不构成结构性竞争力。</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <strong>未来之星 vs 年轻人钱包：</strong>未来之星是<strong>终局赔率</strong>故事（亏 50% 博 5x/10年），主仓位由中年中产/高净值储蓄供给；年轻人钱包是<strong>结构性赢家</strong>故事（不婚不育钱去哪儿了的当期消费容器）。两个池估值锚和持仓周期完全不同，必须分开管理。看 <a href="youth-wallet.html" style="color:#6366f1;">年轻人钱包姊妹篇 →</a>
+  </div>
+</div>
+
+<!-- ===== PART 02 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 02</span>
+    <span class="part-title">五维筛选 + 三层决策叠加</span>
+    <span class="part-sub-en">Five Filters + Three-Layer Decision</span>
+  </div>
+
+  <div class="lead">
+    五维筛选是"硬条件"——任何一维不达标直接淘汰；三层决策是"软排序"——决定 A/B/C 档分类与仓位权重。两个工具叠加使用，先过五维，再用三层定档。
+  </div>
+
+  <h3 style="margin:18px 0 10px;font-size:17px;color:#0f172a;">五维硬筛（缺一不可）</h3>
+  <table class="thresh-table">
+    <thead><tr><th>维度</th><th>标准</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>毛利率</td><td>&gt; 30%</td><td>&lt; 20% 是产能商品；30-45% 规模壁垒；&gt; 45% 技术壁垒</td></tr>
+      <tr><td>Forward PE</td><td>≤ 2× 海外同行</td><td>超过 2 倍直接判定"估值不可投"，无谈判余地</td></tr>
+      <tr><td>利润 CAGR</td><td>&gt; 50%</td><td>30-50% 可观察；&lt; 30% 视为价值陷阱</td></tr>
+      <tr><td>PEG = PE ÷ 增速%</td><td>&lt; 0.5 重仓 / &lt; 1.0 标配 / &gt; 1.5 偏贵</td><td>&gt; 3 视为泡沫不投</td></tr>
+      <tr><td>护城河</td><td>四类硬约束之一</td><td>监管牌照 / 专利原创 IP / 网络效应 / 品牌+毛利领先（详见 <a href="youth-wallet.html#moat" style="color:#6366f1;">护城河四类表</a>）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:17px;color:#0f172a;">三层决策叠加</h3>
+
+  <div class="flow-step">
+    <div class="num-circle">1</div>
+    <div class="body">
+      <strong>规则地位（天花板高度）</strong>
+      <p>A 档·规则制定者：能重新定义全球品类标准 → 不封顶（10x+） · 代表：泡泡玛特/百济/药明<br>
+      B 档·规则参与者：在现有规则内以中国制造效率取胜 → 封顶 2-3x · 代表：宁德/比亚迪<br>
+      C 档·规则模糊：跟随者，命运取决于别人定义的规则 → 0-2x · 代表：传奇生物/绿的谐波</p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="num-circle">2</div>
+    <div class="body">
+      <strong>社会和谐红线（中国政策风险）</strong>
+      <p>三问筛查：① 是否与"广大普通人核心利益"（教育/医疗/住房/就业）冲突？② 商业模式是否依赖信息不对称/成瘾性/垄断定价？③ 成为行业垄断者后社会舆论是"国之光"还是"资本作恶"？任一问 Yes → 永久避雷。</p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="num-circle">3</div>
+    <div class="body">
+      <strong>核心能力 10 年趋势</strong>
+      <p>研发/IP/算法 → 通常升值（百济/泡泡玛特）<br>
+      纯硬件制造/规模效率 → 被软件定义后贬值（比亚迪降级原因）<br>
+      化学/材料科学 → 稳定但可能被新范式替代（宁德固态电池风险）<br>
+      平台/网络效应 → 升值但可能触发红线（不在清单内）</p>
+    </div>
+  </div>
+
+  <div class="callout-green">
+    <strong>组合判定法则：</strong>三层全正面 → 重仓（百济、泡泡玛特）；A 档但 2/3 层有瑕疵 → 正常仓位+持续监控（药明：双边政策风险）；B 档+正面 → 底仓配置（宁德）；B 档+能力贬值 → 降权或不配（比亚迪）。
+  </div>
+</div>
+
+<!-- ===== PART 03 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 03</span>
+    <span class="part-title">钱包对照：未来之星 vs 年轻人钱包</span>
+    <span class="part-sub-en">Two-Wallet Architecture</span>
+  </div>
+
+  <div class="lead">
+    用户在 2026 年 6 月明确把"内需冠军"清零重做后，确立了双池并行架构——未来之星看终局赔率，年轻人钱包看结构性赢家。两池在估值锚、持仓周期、护城河门槛上完全不同。
+  </div>
+
+  <table class="thresh-table">
+    <thead><tr><th>维度</th><th>未来之星（本框架）</th><th>年轻人钱包</th></tr></thead>
+    <tbody>
+      <tr><td><strong>核心问题</strong></td><td>哪家中国公司能成为全球品类定义者？</td><td>不婚不育不买房后年轻人钱去哪儿了？</td></tr>
+      <tr><td><strong>持仓周期</strong></td><td>5-10 年长期</td><td>3-5 年中期</td></tr>
+      <tr><td><strong>赔率结构</strong></td><td>亏 50% 博 5x/10年</td><td>稳态结构性赢家，2-3x 翻倍</td></tr>
+      <tr><td><strong>估值锚</strong></td><td>PEG 0.5-1.0 / 终局 PE 30-50x</td><td>PEG 1.0-1.5（消费档）/ PE 12-25x</td></tr>
+      <tr><td><strong>护城河门槛</strong></td><td>必须四类之一且强（药明=基础设施）</td><td>四类之一即可，可接受脆弱型（乖宝品牌）</td></tr>
+      <tr><td><strong>政策红线</strong></td><td>三问全过</td><td>三问全过</td></tr>
+      <tr><td><strong>地缘韧性</strong></td><td>必须能走出去（创新药FDA/制造出海）</td><td>不必（内需结构性故事）</td></tr>
+      <tr><td><strong>典型标的</strong></td><td>药明康德 / 泡泡玛特 / 百济神州</td><td>爱美客 / 华东医药 / 信达 / 乖宝</td></tr>
+      <tr><td><strong>资金来源</strong></td><td>中年中产/高净值储蓄</td><td>年轻人当期消费容器（非储蓄）</td></tr>
+      <tr><td><strong>仓位上限</strong></td><td>40%（含赌注）</td><td>25%（含期权）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>注意：</strong>同一标的可能同时进两池——例如信达生物。在未来之星池它是"创新药 B 档赌注"（10年看 GLP-1+IO 全球放量赔率），在年轻人钱包它是"GLP-1 减肥药结构性赢家"（3-5年看玛仕度肽国内放量）。仓位独立计算，不重复加仓。
+  </div>
+</div>
+
+<!-- ===== PART 04 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 04</span>
+    <span class="part-title">A/B/C 档名单与赌点</span>
+    <span class="part-sub-en">Categorized Candidates</span>
+  </div>
+
+  <div class="lead">
+    A 档 = 重仓候选；B 档 = 底仓候选；C 档 = 降级观察。完整深度档案（管线/财务/催化剂/巨头关系）见 <a href="watchlist.html" style="color:#6366f1;">watchlist 监控档案 →</a>，本页只列定档逻辑与赌点。
+  </div>
+
+  <h3 style="margin:18px 0 10px;font-size:17px;color:#0f172a;"><span class="badge badge-A">A 档</span>规则制定者（3 家·最大仓位）</h3>
+  <table class="glass-table">
+    <thead><tr><th>标的</th><th>品类</th><th>赌点（10年终局）</th><th>核心风险</th></tr></thead>
+    <tbody>
+      <tr><td><strong>药明康德 603259</strong></td><td>全球新药基础设施</td><td>CXO 全球渗透率持续提升，独家 D&M 模式被 MNC 视为不可替代后端</td><td>地缘政治双边风险（生物安全法案/反向制裁）</td></tr>
+      <tr><td><strong>泡泡玛特 09992</strong></td><td>全球潮玩文化标准</td><td>Labubu/Molly 成为类 Disney 级 IP 矩阵，海外营收占比超 50%</td><td>IP 老化风险，需持续验证自孵化能力</td></tr>
+      <tr><td><strong>百济神州 06160 / BGNE</strong></td><td>全球创新药信任</td><td>泽布替尼全球 BTK 第一，PD-1 出海突破，成为中国 Top1 创新药全球玩家</td><td>盈利兑现慢（FY 净利仅 $2.87 亿）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:17px;color:#0f172a;"><span class="badge badge-B">B 档</span>规则参与者（2 家·底仓配置）</h3>
+  <table class="glass-table">
+    <thead><tr><th>标的</th><th>品类</th><th>赌点（5-10年）</th><th>天花板</th></tr></thead>
+    <tbody>
+      <tr><td><strong>宁德时代 300750</strong></td><td>全球电池制造</td><td>固态电池过渡期保持市占率，麒麟电池+换电生态护城河</td><td>2-3x（被材料科学新范式替代风险）</td></tr>
+      <tr><td><strong>美的集团 000333</strong></td><td>全球白电制造</td><td>东芝/库卡/COLMO 高端化，机器人+B2B 第二曲线</td><td>2x（白电品类已成熟）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:17px;color:#0f172a;"><span class="badge badge-C">C 档</span>规则模糊·降级观察（2 家）</h3>
+  <table class="glass-table">
+    <thead><tr><th>标的</th><th>降级原因</th><th>升级条件</th></tr></thead>
+    <tbody>
+      <tr><td><strong>比亚迪 002594</strong></td><td>软件定义汽车时代核心能力贬值（硬件制造效率）；软件/智驾仍依赖 Momenta 等</td><td>仰望/方程豹自有智驾跑出爆款 → 升 B 档</td></tr>
+      <tr><td><strong>传奇生物 LEGN</strong></td><td>J&J 50/50 分账永远只拿一半，Tecvayli 双抗蚕食 2L</td><td>一线 MM 适应症获批 + 实体瘤管线兑现 → 升 B 档</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:17px;color:#0f172a;"><span class="badge badge-cut">永久避雷</span>留档备查</h3>
+  <table class="glass-table">
+    <thead><tr><th>标的</th><th>避雷理由</th></tr></thead>
+    <tbody>
+      <tr><td>新东方</td><td>K12 双减直接归零（社会和谐红线触发）</td></tr>
+      <tr><td>恒大/碧桂园</td><td>三条红线归零（系统性风险）</td></tr>
+      <tr><td>瑞幸/Temu/名创</td><td>效率创新非品类定义，封顶 2x</td></tr>
+      <tr><td>大疆 DJI</td><td>北京全域禁飞=监管窗口已关</td></tr>
+      <tr><td>阿里影业 01060</td><td>票务渠道+代理租约，无护城河（详见 youth-wallet）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== PART 05 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 05</span>
+    <span class="part-title">终局市值推演方法</span>
+    <span class="part-sub-en">End-Game Market Cap Projection</span>
+  </div>
+
+  <div class="lead">
+    成长股估值不能用历史 PE。必须算两步：① 10 年后该公司主营所在的全球品类 TAM 多大？② 它能拿到的市占率是多少？两者相乘 × 行业平均 PS/PE 倍数 = 终局市值。然后折现回今天，对比当前市值得到赔率。
+  </div>
+
+  <table class="thresh-table">
+    <thead><tr><th>标的</th><th>10年品类 TAM</th><th>市占率假设</th><th>终局营收</th><th>合理 PE</th><th>终局市值</th><th>当前市值</th><th>赔率</th></tr></thead>
+    <tbody>
+      <tr><td>泡泡玛特</td><td>全球潮玩 $300 亿</td><td>25%</td><td>$75 亿</td><td>30x PE</td><td>$2,250 亿</td><td>$430 亿</td><td>5.2x</td></tr>
+      <tr><td>药明康德</td><td>全球 CXO $1,200 亿</td><td>15%</td><td>$180 亿</td><td>22x PE</td><td>$3,960 亿</td><td>$280 亿</td><td>14x（含双边政策折扣）</td></tr>
+      <tr><td>百济神州</td><td>全球创新药 Top10 玩家</td><td>$200 亿营收</td><td>$200 亿</td><td>8x PS</td><td>$1,600 亿</td><td>$300 亿</td><td>5.3x</td></tr>
+      <tr><td>宁德时代</td><td>全球电池 $4,000 亿</td><td>30%</td><td>$1,200 亿</td><td>15x PE × 12% 净利率</td><td>$2,160 亿</td><td>$1,600 亿</td><td>1.35x（B 档天花板印证）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>推演纪律：</strong>市占率假设必须有"为什么是它而不是别人"的理由（药明的 D&M 一站式、泡泡玛特的 IP 自孵化能力、百济的全球临床+商业化能力）。给不出具体理由的市占率假设视为讲故事不算分。
+  </div>
+</div>
+
+<!-- ===== PART 06 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 06</span>
+    <span class="part-title">期望值排名与认错线</span>
+    <span class="part-sub-en">Expected Value & Stop-Loss</span>
+  </div>
+
+  <div class="lead">
+    赔率 × 概率 = 期望值。任何高赔率没有概率支撑都不重仓；任何低概率没有赔率覆盖都不投。每个标的必须明确"哪些事件发生时立刻减仓/清仓"。
+  </div>
+
+  <h3 style="margin:14px 0 10px;font-size:16px;color:#0f172a;">期望值矩阵</h3>
+  <table class="thresh-table">
+    <thead><tr><th>标的</th><th>赔率</th><th>实现概率</th><th>期望值</th><th>建议仓位</th></tr></thead>
+    <tbody>
+      <tr><td>泡泡玛特</td><td>5.2x</td><td>50%</td><td>2.6x</td><td>10-15%（A 重仓）</td></tr>
+      <tr><td>药明康德</td><td>14x（双边折扣后 4x）</td><td>40%</td><td>1.6x</td><td>10%（A 含政策折扣）</td></tr>
+      <tr><td>百济神州</td><td>5.3x</td><td>40%</td><td>2.1x</td><td>8%（A 等盈利兑现）</td></tr>
+      <tr><td>宁德时代</td><td>1.35x</td><td>70%</td><td>0.95x</td><td>5%（B 底仓）</td></tr>
+      <tr><td>美的集团</td><td>2.0x</td><td>60%</td><td>1.2x</td><td>5%（B 底仓+股息）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:16px;color:#0f172a;">五年认错线（任一触发立即重判）</h3>
+  <ul class="clean">
+    <li><strong>泡泡玛特：</strong>海外占比连续 2 年原地踏步 → 海外品类定义失败 → 降 B 档</li>
+    <li><strong>药明康德：</strong>美国生物安全法案最终立法 + 大客户撤单 → 降 C 档或清仓</li>
+    <li><strong>百济神州：</strong>泽布替尼全球份额被 BTK 新一代分子（如 BeOne 自身 BGB-16673）替代失败 → 降 B 档</li>
+    <li><strong>宁德时代：</strong>固态电池量产被丰田/QuantumScape 抢先 18 个月 → 清仓</li>
+    <li><strong>比亚迪：</strong>仰望/方程豹自有智驾持续跑不出爆款且 Momenta 退出 → 永久剔除</li>
+  </ul>
+</div>
+
+<!-- ===== PART 07 ===== -->
+<div class="part">
+  <div class="part-h">
+    <span class="part-num">PART 07</span>
+    <span class="part-title">关键催化剂与下一步</span>
+    <span class="part-sub-en">Catalysts & Next Actions</span>
+  </div>
+
+  <h3 style="margin:14px 0 10px;font-size:16px;color:#0f172a;">未来 12 个月催化剂时间表</h3>
+  <table class="thresh-table">
+    <thead><tr><th>时间</th><th>事件</th><th>影响标的</th><th>预案</th></tr></thead>
+    <tbody>
+      <tr><td>2026.11.14</td><td>康方依沃西 FDA PDUFA</td><td>康方 / 创新药板块情绪</td><td>正面 → 加仓百济+信达；负面 → 重判中国创新药全球预期</td></tr>
+      <tr><td>2026 Q4</td><td>美国生物安全法案众议院投票</td><td>药明康德</td><td>立法通过 → 清仓 50%；否决 → 加仓 20%</td></tr>
+      <tr><td>2027 H1</td><td>泡泡玛特海外门店超 100 家进度</td><td>泡泡玛特</td><td>达标 → 维持 A 档；不达标 → 降权重</td></tr>
+      <tr><td>2027</td><td>宁德麒麟电池+大固态电池量产时点</td><td>宁德时代</td><td>领先丰田/QuantumScape → 维持；落后 → 降仓</td></tr>
+      <tr><td>持续</td><td>百济泽布替尼全球 BTK 份额季度数据</td><td>百济神州</td><td>季度跟踪 IQVIA / Symphony 数据</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 10px;font-size:16px;color:#0f172a;">下一步动作（200 万本金示意）</h3>
+  <table class="thresh-table">
+    <thead><tr><th>标的</th><th>仓位 %</th><th>金额</th><th>建仓节奏</th></tr></thead>
+    <tbody>
+      <tr><td>泡泡玛特 09992</td><td>12%</td><td>24 万</td><td>当前价 ≈ A 线，分 3 次买入</td></tr>
+      <tr><td>药明康德 603259</td><td>10%</td><td>20 万</td><td>等生物安全法案投票，B 线下买入 60%</td></tr>
+      <tr><td>百济神州 06160</td><td>8%</td><td>16 万</td><td>等盈利季报兑现后加仓</td></tr>
+      <tr><td>宁德时代 300750</td><td>5%</td><td>10 万</td><td>底仓不动，麒麟+固态电池催化加仓</td></tr>
+      <tr><td>美的集团 000333</td><td>5%</td><td>10 万</td><td>股息派发后定投</td></tr>
+      <tr><td colspan="2"><strong>合计未来之星仓位</strong></td><td><strong>40% / 80 万</strong></td><td>另 25% 给年轻人钱包，剩 35% 现金弹药</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout-green">
+    <strong>组合再平衡纪律：</strong>每季度复核一次三层决策。规则升降级 → 仓位调整；红线变化 → 重判；能力趋势变化 → 重判。watchlist.html 的升降级触发规则是本框架的执行手册。
+  </div>
+
+  <div class="cta-row" style="margin-top:24px;">
+    <a class="cta-link" href="./">↩ 返回 stock-pool 主页</a>
+    <a class="cta-link outline" href="watchlist.html">📂 完整监控档案</a>
+    <a class="cta-link alt" href="youth-wallet.html">🌟 年轻人钱包姊妹篇</a>
+  </div>
+</div>
+
+<footer>
+  China Future Stars · v1.0 · 2026-06-16<br>
+  关联 skill：category-definer-screening · category-definer-monitoring · wc-valuation-framework · threshold-recalc · innovative-drug-screening<br>
+  在线：ruiyiwc-lang.github.io/stock-pool/future-stars.html
+</footer>
+
+</div>
+</body>
+</html>
