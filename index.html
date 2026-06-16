@@ -87,19 +87,13 @@ body {
   border-radius: 6px; transition: width 0.4s;
 }
 .bar-mk {
-  position: absolute; top: -2px; width: 2px; height: 16px; border-radius: 1px;
+  position: absolute; top: -3px; width: 2.5px; height: 18px; border-radius: 1.5px;
+  z-index: 2;
 }
 .mk-b { display: none; }
-.mk-a { background: #1e3a5f; opacity: 0.7; }
+.mk-a { background: #1e3a5f; box-shadow: 0 1px 3px rgba(30,58,95,0.3); }
 .mk-r { display: none; }
-.bar-dot {
-  position: absolute; top: -3px;
-  width: 3px; height: 18px; border-radius: 1.5px;
-  background: #1a2332;
-  transform: translateX(-50%);
-  transition: left 0.3s;
-}
-.bar-dot.strong, .bar-dot.buy, .bar-dot.watch, .bar-dot.expensive { background: #1a2332; }
+.bar-dot { display: none; }
 .bar-price-lbl {
   position: absolute; top: 22px; font-size: 11px; color: #1a2332;
   font-weight: 700; white-space: nowrap;
