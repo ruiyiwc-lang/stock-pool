@@ -7,9 +7,9 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  background: linear-gradient(180deg, #fafbfc 0%, #f3f4f8 100%);
-  color: #1a1d23;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  background: #f2f2f7;
+  color: #1c1c1e;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
@@ -39,7 +39,7 @@ body {
 }
 .part-num {
   font-size: 14px; font-weight: 600; letter-spacing: 1px;
-  color: #6366f1; background: rgba(99,102,241,0.08);
+  color: #007aff; background: rgba(0,122,255,0.08);
   padding: 4px 10px; border-radius: 6px;
 }
 .part-title { font-size: 26px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; }
@@ -47,24 +47,22 @@ body {
 
 /* ===== Glass card ===== */
 .glass {
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.7);
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 14px;
   padding: 24px 26px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 12px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.03);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
-.glass h3 { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
-.glass p { color: #334155; margin-bottom: 10px; }
+.glass h3 { font-size: 17px; font-weight: 600; color: #1c1c1e; margin-bottom: 12px; }
+.glass p { color: #3a3a3c; margin-bottom: 10px; }
 .glass p:last-child { margin-bottom: 0; }
 
 .lead {
-  font-size: 17px; color: #334155;
+  font-size: 17px; color: #3a3a3c;
   padding: 22px 26px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(168,85,247,0.03));
-  border-left: 3px solid #6366f1;
+  background: rgba(0,122,255,0.04);
+  border-left: 3px solid #007aff;
   border-radius: 8px;
   margin-bottom: 24px;
 }
@@ -73,26 +71,26 @@ body {
 .glass-table {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255,255,255,0.7);
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   margin: 8px 0 16px;
   font-size: 14px;
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid #e5e5ea;
 }
 .glass-table thead {
-  background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));
+  background: rgba(0,122,255,0.04);
 }
 .glass-table th {
   text-align: left; padding: 12px 14px;
-  font-weight: 600; color: #475569;
+  font-weight: 600; color: #3a3a3c;
   font-size: 12px; letter-spacing: 0.4px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid #e5e5ea;
 }
 .glass-table td {
   padding: 11px 14px;
-  color: #334155;
-  border-bottom: 1px solid rgba(0,0,0,0.035);
+  color: #3a3a3c;
+  border-bottom: 1px solid #f2f2f7;
   vertical-align: top;
 }
 .glass-table tbody tr:nth-child(even) { background: rgba(248,250,252,0.5); }
