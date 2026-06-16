@@ -26,15 +26,15 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .price-meta span b { color:#1a2332; }
 
 /* 进度条 */
-.gauge { margin-top:16px; }
-.gauge-bar { height:8px; border-radius:4px; background:#e5e5ea; position:relative; overflow:visible; }
-.gauge-fill { height:100%; border-radius:4px; transition:width .6s; }
-.gauge-labels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
+.gauge { margin-top:32px; position:relative; }
+.gauge-bar { height:10px; border-radius:5px; background:linear-gradient(90deg, rgba(26,122,76,0.15) 0%, rgba(30,58,95,0.10) 50%, rgba(192,57,43,0.10) 100%); position:relative; overflow:visible; }
+.gauge-fill { height:100%; border-radius:5px; transition:width .6s; }
+.gauge-labels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:8px; }
 .gauge-labels .lbl-b { color:#1a7a4c; }
 .gauge-labels .lbl-a { color:#1e3a5f; }
 .gauge-labels .lbl-r { color:#c0392b; }
-.gauge-marker { position:absolute; top:-6px; width:2px; height:20px; background:#1c1c1e; border-radius:1px; transition:left .6s; }
-.gauge-marker-label { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#1a2332; white-space:nowrap; font-weight:600; }
+.gauge-marker { position:absolute; top:-4px; width:2.5px; height:18px; background:#1a2332; border-radius:1.5px; transition:left .6s; }
+.gauge-marker-label { position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:12px; color:#1a2332; white-space:nowrap; font-weight:600; }
 
 /* 段永平卡片 */
 .dyp-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
@@ -426,9 +426,9 @@ function updateGauge(price) {
 
   var A = PM_CONFIG.lineA;
   if (price <= B) { fill.style.background = '#1a7a4c'; }
-  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff)'; }
-  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500)'; }
-  else { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500,#ff3b30)'; }
+  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f)'; }
+  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c)'; }
+  else { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c,#c0392b)'; }
 
   fill.style.width = pct + '%';
   marker.style.left = 'calc(' + pct + '% - 1px)';
@@ -439,7 +439,7 @@ function updateGauge(price) {
   if (!aMarker) {
     aMarker = document.createElement('div');
     aMarker.id = 'a-marker';
-    aMarker.style.cssText = 'position:absolute;top:0;width:1px;height:8px;background:#007aff;opacity:0.6;';
+    aMarker.style.cssText = 'position:absolute;top:-2px;width:1.5px;height:14px;background:#1e3a5f;opacity:0.5;border-radius:1px;';
     bar.appendChild(aMarker);
   }
   aMarker.style.left = aPct + '%';
