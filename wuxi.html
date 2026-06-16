@@ -187,8 +187,8 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
         <div class="gauge-marker" id="a-marker"><div class="gauge-marker-label" id="a-marker-lbl"></div></div>
       </div>
       <div class="gauge-labels">
-        <span class="lbl-b">B ¥75</span>
-        <span class="lbl-a">A ¥85</span>
+        <span class="lbl-b">B ¥85</span>
+        <span class="lbl-a">A ¥110</span>
         <span class="lbl-r">红 ¥190</span>
       </div>
     </div>
@@ -212,9 +212,9 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
         <div class="gauge-marker" id="h-marker"><div class="gauge-marker-label" id="h-marker-lbl"></div></div>
       </div>
       <div class="gauge-labels">
-        <span class="lbl-b">B HK$95</span>
-        <span class="lbl-a">A HK$110</span>
-        <span class="lbl-r">红 HK$220</span>
+        <span class="lbl-b">B HK$110</span>
+        <span class="lbl-a">A HK$140</span>
+        <span class="lbl-r">红 HK$240</span>
       </div>
     </div>
   </div>
@@ -366,7 +366,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   <div class="sig-card">
     <h3 style="color:#1a7a4c">🟢 加速建仓信号</h3>
     <ul class="sig-buy">
-      <li>A 股跌至 ¥85 以下（已在 A 档）</li>
+      <li>A 股跌至 ¥85 以下（进入 B 档）</li>
       <li>1260H 诉讼初裁有利公司</li>
       <li>BIOSECURE 法案在 NDAA 投票被剔除</li>
       <li>2026Q2/Q3 业绩超预期 + 上调指引</li>
@@ -410,12 +410,12 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   <table class="strat-table">
     <thead><tr><th>档位</th><th>A 股价格</th><th>H 股价格</th><th>仓位</th><th>PE</th><th>逻辑</th></tr></thead>
     <tbody>
-      <tr><td>第一档</td><td>¥85-95</td><td>HK$110-130</td><td>30%</td><td>11-12x</td><td>1260H 持续中已是历史 5-10 分位</td></tr>
-      <tr><td>第二档</td><td>¥75-85</td><td>HK$95-110</td><td>60%</td><td>10-11x</td><td>诉讼不利 / NDAA 辩论时</td></tr>
-      <tr><td>第三档</td><td>¥65-75</td><td>HK$80-95</td><td>满仓</td><td>8.5-10x</td><td>BIOSECURE 真通过的极端恐慌</td></tr>
+      <tr><td>第一档（A档内）</td><td>≤ ¥110</td><td>≤ HK$140</td><td>30%</td><td>≤ 14x</td><td><b>当前 ¥96.56 已触发</b>，1260H 把 PE 打到历史 5-10 分位</td></tr>
+      <tr><td>第二档（B档内）</td><td>≤ ¥85</td><td>≤ HK$110</td><td>60%</td><td>≤ 11x</td><td>1260H 诉讼初裁不利 / NDAA 辩论时</td></tr>
+      <tr><td>第三档（深恐慌）</td><td>≤ ¥65</td><td>≤ HK$85</td><td>满仓</td><td>≤ 8.3x</td><td>BIOSECURE 真通过的极端恐慌</td></tr>
     </tbody>
   </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">基准 EPS = ¥7.85 (2026E 一致预期中位数) · 同时监控两市场，便宜的先买</p>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">基准 EPS = ¥7.85 (2026E 一致预期中位数) · 同时监控两市场，便宜的先买 · 红线 ¥190 / HK$240 = PE 24x 减仓</p>
 </div>
 
 <!-- 催化剂日历 -->
@@ -453,8 +453,8 @@ var WUXI_CONFIG = {
   a: {
     code: 'sh603259',
     basis: 7.85,        // 2026E EPS 一致预期 (RMB)
-    lineA: 85,
-    lineB: 75,
+    lineA: 110,
+    lineB: 85,
     red: 190,
     shares: 25.62e8,
     growthE: 25
@@ -462,9 +462,9 @@ var WUXI_CONFIG = {
   h: {
     code: 'hk02359',
     basis: 8.65,        // 2026E EPS HK 折算 (HKD)
-    lineA: 110,
-    lineB: 95,
-    red: 220,
+    lineA: 140,
+    lineB: 110,
+    red: 240,
     shares: 3.12e8,
     growthE: 25
   }
