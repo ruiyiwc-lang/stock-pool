@@ -6,74 +6,74 @@
 <title>泡泡玛特 9992.HK - 跟踪面板</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#f2f2f7; color:#1c1c1e; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; }
+body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; }
 h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
-.subtitle { color:#8e8e93; font-size:14px; margin-bottom:20px; }
-.subtitle a { color:#007aff; text-decoration:none; }
+.subtitle { color:#6b7b8d; font-size:14px; margin-bottom:20px; }
+.subtitle a { color:#1e3a5f; text-decoration:none; }
 
 .section-divider { border:none; border-top:1px solid #e5e5ea; margin:28px 0 20px; }
-.section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#8e8e93; margin-bottom:16px; font-weight:600; }
+.section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
 
 /* 价格大卡片 */
-.price-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:20px 24px; margin-bottom:16px; }
+.price-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:20px 24px; margin-bottom:16px; }
 .price-row { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
-.price-big { font-size:48px; font-weight:700; color:#1c1c1e; letter-spacing:-1px; }
+.price-big { font-size:48px; font-weight:700; color:#1a2332; letter-spacing:-1px; }
 .price-change { font-size:18px; font-weight:600; }
-.price-change.up { color:#34c759; }
-.price-change.down { color:#ff3b30; }
-.price-change.flat { color:#8e8e93; }
-.price-meta { display:flex; gap:20px; margin-top:10px; font-size:14px; color:#8e8e93; flex-wrap:wrap; }
-.price-meta span b { color:#1c1c1e; }
+.price-change.up { color:#1a7a4c; }
+.price-change.down { color:#c0392b; }
+.price-change.flat { color:#6b7b8d; }
+.price-meta { display:flex; gap:20px; margin-top:10px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
+.price-meta span b { color:#1a2332; }
 
 /* 进度条 */
 .gauge { margin-top:16px; }
 .gauge-bar { height:8px; border-radius:4px; background:#e5e5ea; position:relative; overflow:visible; }
 .gauge-fill { height:100%; border-radius:4px; transition:width .6s; }
-.gauge-labels { display:flex; justify-content:space-between; font-size:12px; color:#8e8e93; margin-top:4px; }
-.gauge-labels .lbl-b { color:#34c759; }
-.gauge-labels .lbl-a { color:#007aff; }
-.gauge-labels .lbl-r { color:#ff3b30; }
+.gauge-labels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
+.gauge-labels .lbl-b { color:#1a7a4c; }
+.gauge-labels .lbl-a { color:#1e3a5f; }
+.gauge-labels .lbl-r { color:#c0392b; }
 .gauge-marker { position:absolute; top:-6px; width:2px; height:20px; background:#1c1c1e; border-radius:1px; transition:left .6s; }
-.gauge-marker-label { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#1c1c1e; white-space:nowrap; font-weight:600; }
+.gauge-marker-label { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#1a2332; white-space:nowrap; font-weight:600; }
 
 /* 段永平卡片 */
-.dyp-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.dyp-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .dyp-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
 .dyp-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 .dyp-item { text-align:center; }
-.dyp-item .val { font-size:20px; font-weight:700; color:#1c1c1e; }
-.dyp-item .lbl { font-size:12px; color:#8e8e93; margin-top:2px; }
+.dyp-item .val { font-size:20px; font-weight:700; color:#1a2332; }
+.dyp-item .lbl { font-size:12px; color:#6b7b8d; margin-top:2px; }
 
 /* 新闻卡片 */
-.news-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.news-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .news-card h2 { font-size:16px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
-.news-item { padding:10px 0; border-bottom:1px solid #f2f2f7; }
+.news-item { padding:10px 0; border-bottom:1px solid #f0f3f6; }
 .news-item:last-child { border-bottom:none; }
 .news-item .news-tag { display:inline-block; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
-.news-tag.sales { background:rgba(52,199,89,0.1); color:#28a745; }
-.news-tag.product { background:rgba(255,149,0,0.1); color:#e67e00; }
-.news-tag.org { background:rgba(88,86,214,0.1); color:#5856d6; }
-.news-tag.market { background:rgba(0,122,255,0.1); color:#007aff; }
-.news-tag.risk { background:rgba(255,59,48,0.1); color:#ff3b30; }
-.news-item .news-title { font-size:14px; font-weight:500; color:#1c1c1e; }
-.news-item .news-title a { color:#1c1c1e; text-decoration:none; }
-.news-item .news-title a:hover { color:#007aff; text-decoration:underline; }
-.news-item .news-summary { font-size:13px; color:#636366; margin-top:4px; line-height:1.6; }
-.news-item .news-date { font-size:12px; color:#aeaeb2; margin-top:4px; }
-.news-empty { font-size:14px; color:#aeaeb2; text-align:center; padding:20px; }
+.news-tag.sales { background:rgba(26,122,76,0.08); color:#1a7a4c; }
+.news-tag.product { background:rgba(201,168,76,0.08); color:#9a7d2e; }
+.news-tag.org { background:rgba(30,58,95,0.06); color:#4a3a8a; }
+.news-tag.market { background:rgba(30,58,95,0.06); color:#1e3a5f; }
+.news-tag.risk { background:rgba(192,57,43,0.08); color:#c0392b; }
+.news-item .news-title { font-size:14px; font-weight:500; color:#1a2332; }
+.news-item .news-title a { color:#1a2332; text-decoration:none; }
+.news-item .news-title a:hover { color:#1e3a5f; text-decoration:underline; }
+.news-item .news-summary { font-size:13px; color:#4a5d6e; margin-top:4px; line-height:1.6; }
+.news-item .news-date { font-size:12px; color:#8fa0b3; margin-top:4px; }
+.news-empty { font-size:14px; color:#8fa0b3; text-align:center; padding:20px; }
 
 /* 南向资金 */
-.flow-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.flow-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .flow-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
 .flow-table { width:100%; border-collapse:collapse; font-size:13px; }
-.flow-table th { text-align:left; color:#8e8e93; font-weight:500; padding:6px 8px; border-bottom:1px solid #e5e5ea; }
-.flow-table td { padding:6px 8px; border-bottom:1px solid #f2f2f7; }
-.flow-table .pos { color:#34c759; font-weight:600; }
-.flow-table .neg { color:#ff3b30; font-weight:600; }
+.flow-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; }
+.flow-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
+.flow-table .pos { color:#1a7a4c; font-weight:600; }
+.flow-table .neg { color:#c0392b; font-weight:600; }
 
 /* 信号卡片 */
 .signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.sig-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:10px; padding:14px 16px; }
+.sig-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:10px; padding:14px 16px; }
 .sig-card h3 { font-size:14px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:4px; }
 .sig-card ul { list-style:none; font-size:13px; line-height:1.8; }
 .sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
@@ -83,38 +83,38 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .sig-sell li::before { background:#5856d6; }
 
 /* IP 热度 */
-.ip-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.ip-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .ip-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
 .ip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-.ip-item { background:#f2f2f7; border-radius:8px; padding:10px; text-align:center; }
-.ip-item .ip-name { font-size:13px; font-weight:600; color:#007aff; }
-.ip-item .ip-rev { font-size:16px; font-weight:700; color:#1c1c1e; margin:4px 0; }
-.ip-item .ip-share { font-size:12px; color:#8e8e93; }
+.ip-item { background:#f8f9fc; border-radius:8px; padding:10px; text-align:center; }
+.ip-item .ip-name { font-size:13px; font-weight:600; color:#1e3a5f; }
+.ip-item .ip-rev { font-size:16px; font-weight:700; color:#1a2332; margin:4px 0; }
+.ip-item .ip-share { font-size:12px; color:#6b7b8d; }
 .ip-item .ip-trend { font-size:12px; font-weight:600; }
 
 /* 建仓策略 */
-.strat-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.strat-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .strat-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
 .strat-table { width:100%; border-collapse:collapse; font-size:13px; }
-.strat-table th { text-align:left; color:#8e8e93; font-weight:500; padding:6px 8px; border-bottom:1px solid #e5e5ea; }
-.strat-table td { padding:6px 8px; border-bottom:1px solid #f2f2f7; }
+.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; }
+.strat-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
 
 /* 催化剂日历 */
-.cal-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.cal-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .cal-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
-.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f2f2f7; font-size:13px; }
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f3f6; font-size:13px; }
 .cal-item:last-child { border-bottom:none; }
-.cal-date { color:#007aff; font-weight:600; min-width:90px; }
-.cal-desc { color:#1c1c1e; }
+.cal-date { color:#1e3a5f; font-weight:600; min-width:90px; }
+.cal-desc { color:#1a2332; }
 
 /* 论点摘要 */
-.thesis-card { background:#ffffff; border:1px solid #e5e5ea; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.thesis-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
 .thesis-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
-.thesis-card p { font-size:13px; line-height:1.8; color:#636366; }
-.thesis-card strong { color:#1c1c1e; }
+.thesis-card p { font-size:13px; line-height:1.8; color:#4a5d6e; }
+.thesis-card strong { color:#1a2332; }
 
-.update-time { text-align:center; font-size:12px; color:#aeaeb2; margin-top:20px; padding-bottom:40px; }
-.back-link { display:inline-block; margin-bottom:16px; font-size:13px; color:#007aff; text-decoration:none; }
+.update-time { text-align:center; font-size:12px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:13px; color:#1e3a5f; text-decoration:none; }
 .back-link:hover { text-decoration:underline; }
 
 @media(max-width:600px) {
@@ -164,7 +164,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 <div class="dyp-card">
   <h2>段永平持仓 (第二大股东 6.04%)</h2>
   <div class="dyp-grid">
-    <div class="dyp-item"><div class="val" id="dyp-pnl" style="color:#8e8e93">--</div><div class="lbl">估算盈亏</div></div>
+    <div class="dyp-item"><div class="val" id="dyp-pnl" style="color:#6b7b8d">--</div><div class="lbl">估算盈亏</div></div>
     <div class="dyp-item"><div class="val" id="dyp-val">--</div><div class="lbl">持仓市值</div></div>
     <div class="dyp-item"><div class="val">~HK$150</div><div class="lbl">估算成本</div></div>
     <div class="dyp-item"><div class="val">8,103万</div><div class="lbl">持股数量</div></div>
@@ -207,7 +207,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 <!-- ===== 决策信号 ===== -->
 <div class="signals">
   <div class="sig-card">
-    <h3 style="color:#34c759">加速建仓信号</h3>
+    <h3 style="color:#1a7a4c">加速建仓信号</h3>
     <ul class="sig-buy">
       <li>股价跌至160以下(靠近B线140)</li>
       <li>南向资金连续5日净买入</li>
@@ -216,7 +216,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
     </ul>
   </div>
   <div class="sig-card">
-    <h3 style="color:#ff9500">暂缓建仓信号</h3>
+    <h3 style="color:#c9a84c">暂缓建仓信号</h3>
     <ul class="sig-wait">
       <li>Labubu门店客流断崖式下降报道</li>
       <li>管理层发布盈利预警</li>
@@ -225,7 +225,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
     </ul>
   </div>
   <div class="sig-card">
-    <h3 style="color:#ff3b30">认错止损条件</h3>
+    <h3 style="color:#c0392b">认错止损条件</h3>
     <ul class="sig-stop">
       <li>连续2季Labubu同比负增长 + 非Labubu也减速</li>
       <li>毛利率跌破55%(定价权丧失)</li>
@@ -234,7 +234,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
     </ul>
   </div>
   <div class="sig-card">
-    <h3 style="color:#5856d6">止盈卖出条件</h3>
+    <h3 style="color:#4a3a8a">止盈卖出条件</h3>
     <ul class="sig-sell">
       <li>股价>HK$315且增速<25%</li>
       <li>PEG>2.0(泡沫区)</li>
@@ -266,37 +266,37 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
       <div class="ip-name">THE MONSTERS</div>
       <div class="ip-rev">142亿</div>
       <div class="ip-share">占比 38.1%</div>
-      <div class="ip-trend" style="color:#34c759">+366% YoY</div>
+      <div class="ip-trend" style="color:#1a7a4c">+366% YoY</div>
     </div>
     <div class="ip-item">
       <div class="ip-name">SKULLPANDA</div>
       <div class="ip-rev">35.4亿</div>
       <div class="ip-share">占比 9.5%</div>
-      <div class="ip-trend" style="color:#34c759">稳健增长</div>
+      <div class="ip-trend" style="color:#1a7a4c">稳健增长</div>
     </div>
     <div class="ip-item">
       <div class="ip-name">CRYBABY</div>
       <div class="ip-rev">29.3亿</div>
       <div class="ip-share">占比 7.9%</div>
-      <div class="ip-trend" style="color:#34c759">3x YoY 关注接力</div>
+      <div class="ip-trend" style="color:#1a7a4c">3x YoY 关注接力</div>
     </div>
     <div class="ip-item">
       <div class="ip-name">DIMOO</div>
       <div class="ip-rev">27.8亿</div>
       <div class="ip-share">占比 7.5%</div>
-      <div class="ip-trend" style="color:#34c759">稳健</div>
+      <div class="ip-trend" style="color:#1a7a4c">稳健</div>
     </div>
     <div class="ip-item">
       <div class="ip-name">MOLLY</div>
       <div class="ip-rev">29.3亿</div>
       <div class="ip-share">占比 7.9%</div>
-      <div class="ip-trend" style="color:#34c759">复活新高</div>
+      <div class="ip-trend" style="color:#1a7a4c">复活新高</div>
     </div>
     <div class="ip-item">
       <div class="ip-name">其他11个过亿IP</div>
       <div class="ip-rev">107亿</div>
       <div class="ip-share">占比 29%</div>
-      <div class="ip-trend" style="color:#007aff">组合宽度</div>
+      <div class="ip-trend" style="color:#1e3a5f">组合宽度</div>
     </div>
   </div>
 </div>
@@ -314,15 +314,15 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 
 <!-- ===== 双框架交叉验证 ===== -->
 <div class="thesis-card" style="border-left:3px solid #e67e00;">
-  <h2 style="color:#e67e00">双框架交叉验证</h2>
+  <h2 style="color:#9a7d2e">双框架交叉验证</h2>
   <p>
     泡泡玛特是唯一同时通过两个独立筛选框架的标的：<br><br>
-    <strong style="color:#007aff">未来之星 (品类定义者)</strong><br>
+    <strong style="color:#1e3a5f">未来之星 (品类定义者)</strong><br>
     A档规则制定者。定义了"设计师IP盲盒"这个全球新品类。五维通过：全球TAM / 全球竞争力 / 护城河(有条件) / 管理层 / 不可复制。中国公司全球化能力崛起的纯正代表。<br><br>
-    <strong style="color:#34c759">年轻人的钱包 (消费结构变迁)</strong><br>
+    <strong style="color:#1a7a4c">年轻人的钱包 (消费结构变迁)</strong><br>
     不婚不育不买房后可支配收入流向"可负担多巴胺+情感陪伴"赛道的最纯正受益者。底层需求三层永恒：情感陪伴(孤独感加剧) / 身份信号(永恒需求) / 廉价多巴胺(经济越差越繁荣)。<br><br>
-    <strong style="color:#e67e00">交叉点含义</strong><br>
-    两个框架从完全不同的起点出发——一个看供给侧全球竞争力，一个看需求侧消费结构重配——却指向同一标的。这不是角度偏见，而是泡泡玛特确实坐在两个结构性趋势的交叉点上：<span style="color:#1c1c1e;font-weight:600">中国公司全球化能力崛起 &times; 年轻人消费结构永久性重配</span>。双框架独立验证的conviction强度 &gt; 任一单框架。
+    <strong style="color:#9a7d2e">交叉点含义</strong><br>
+    两个框架从完全不同的起点出发——一个看供给侧全球竞争力，一个看需求侧消费结构重配——却指向同一标的。这不是角度偏见，而是泡泡玛特确实坐在两个结构性趋势的交叉点上：<span style="color:#1a2332;font-weight:600">中国公司全球化能力崛起 &times; 年轻人消费结构永久性重配</span>。双框架独立验证的conviction强度 &gt; 任一单框架。
   </p>
 </div>
 
@@ -389,23 +389,23 @@ Object.defineProperty(window, 'v_hk09992', {
     var dypPnl = ((price - PM_CONFIG.dypCost) / PM_CONFIG.dypCost * 100).toFixed(1);
     var dypEl = document.getElementById('dyp-pnl');
     dypEl.textContent = (dypPnl >= 0 ? '+' : '') + dypPnl + '%';
-    dypEl.style.color = dypPnl >= 0 ? '#34c759' : '#ff3b30';
+    dypEl.style.color = dypPnl >= 0 ? '#1a7a4c' : '#c0392b';
     var dypMv = (price * PM_CONFIG.dypShares / 1e8).toFixed(1);
     document.getElementById('dyp-val').textContent = dypMv + '亿HKD';
 
     var t1 = document.getElementById('tier1-status');
     if (price <= PM_CONFIG.lineB) {
       t1.textContent = 'B线内!重仓';
-      t1.style.color = '#34c759';
+      t1.style.color = '#1a7a4c';
     } else if (price <= PM_CONFIG.lineA) {
       t1.textContent = 'A线内 PE' + pe + 'x';
-      t1.style.color = '#007aff';
+      t1.style.color = '#1e3a5f';
     } else if (price < PM_CONFIG.red) {
       t1.textContent = '观望 PE' + pe + 'x';
-      t1.style.color = '#ff9500';
+      t1.style.color = '#c9a84c';
     } else {
       t1.textContent = '红线上方!';
-      t1.style.color = '#ff3b30';
+      t1.style.color = '#c0392b';
     }
 
     updateGauge(price);
@@ -425,7 +425,7 @@ function updateGauge(price) {
   var bar = document.getElementById('gauge-bar');
 
   var A = PM_CONFIG.lineA;
-  if (price <= B) { fill.style.background = '#34c759'; }
+  if (price <= B) { fill.style.background = '#1a7a4c'; }
   else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff)'; }
   else if (price < R) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500)'; }
   else { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500,#ff3b30)'; }
