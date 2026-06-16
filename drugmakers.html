@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>创新药三家并列 - 翰森 / 百济 / 康方</title>
+<title>医药四家并列 - 翰森 / 百济 / 康方 / 迈瑞</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; }
@@ -11,20 +11,21 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .subtitle { color:#6b7b8d; font-size:14px; margin-bottom:20px; }
 .subtitle a { color:#1e3a5f; text-decoration:none; }
 
-/* Hero 三标的迷你卡片 */
-.hero { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
-.hero-card { background:#fff; border:1px solid #e8ecf0; border-radius:10px; padding:12px 14px; text-align:center; }
+/* Hero 四标的迷你卡片 */
+.hero { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:16px; }
+.hero-card { background:#fff; border:1px solid #e8ecf0; border-radius:10px; padding:10px 10px; text-align:center; }
 .hero-card a { text-decoration:none; color:inherit; }
 .hero-card .h-name { font-size:13px; color:#6b7b8d; }
 .hero-card .h-code { font-size:11px; color:#8fa0b3; margin-top:2px; }
-.hero-card .h-price { font-size:24px; font-weight:700; color:#1a2332; margin:6px 0; }
+.hero-card .h-price { font-size:22px; font-weight:700; color:#1a2332; margin:6px 0; }
 .hero-card .h-change { font-size:12px; font-weight:600; }
 .hero-card .h-change.up { color:#1a7a4c; }
 .hero-card .h-change.down { color:#c0392b; }
-.hero-card .h-tag { font-size:10px; padding:2px 6px; border-radius:4px; margin-top:6px; display:inline-block; font-weight:600; }
+.hero-card .h-tag { font-size:10px; padding:2px 5px; border-radius:4px; margin-top:6px; display:inline-block; font-weight:600; white-space:nowrap; }
 .hero-card .h-tag.factory { background:rgba(26,122,76,0.1); color:#1a7a4c; }
 .hero-card .h-tag.global { background:rgba(30,58,95,0.1); color:#1e3a5f; }
 .hero-card .h-tag.disrupt { background:rgba(155,77,210,0.1); color:#9b4dd2; }
+.hero-card .h-tag.device { background:rgba(10,110,140,0.1); color:#0a6e8c; }
 
 /* 警报横幅 */
 .alert-banner { background:linear-gradient(135deg,#ff3b30,#c0392b); color:#fff; border-radius:12px; padding:14px 18px; margin-bottom:16px; font-size:13px; line-height:1.6; }
@@ -45,6 +46,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .role-card.factory { border-left:4px solid #1a7a4c; }
 .role-card.global { border-left:4px solid #1e3a5f; }
 .role-card.disrupt { border-left:4px solid #9b4dd2; }
+.role-card.device { border-left:4px solid #0a6e8c; }
 .role-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
 .role-title { font-size:20px; font-weight:700; color:#1a2332; }
 .role-subtitle { font-size:12px; color:#6b7b8d; margin-top:3px; }
@@ -52,6 +54,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .role-badge.factory { background:rgba(26,122,76,0.1); color:#1a7a4c; }
 .role-badge.global { background:rgba(30,58,95,0.1); color:#1e3a5f; }
 .role-badge.disrupt { background:rgba(155,77,210,0.1); color:#9b4dd2; }
+.role-badge.device { background:rgba(10,110,140,0.1); color:#0a6e8c; }
 
 /* 价格条 */
 .price-row { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
@@ -79,10 +82,12 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .focus-card.factory { background:#f0fdf4; border:1px solid #b6e6c8; }
 .focus-card.global { background:#f0f4fa; border:1px solid #b8c8df; }
 .focus-card.disrupt { background:#faf3ff; border:1px solid #e0c8f0; }
+.focus-card.device { background:#eff8fb; border:1px solid #b8d8e0; }
 .focus-card h4 { font-size:13px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
 .focus-card.factory h4 { color:#1a7a4c; }
 .focus-card.global h4 { color:#1e3a5f; }
 .focus-card.disrupt h4 { color:#9b4dd2; }
+.focus-card.device h4 { color:#0a6e8c; }
 .focus-list { list-style:none; padding-left:0; }
 .focus-list li { padding:4px 0 4px 18px; position:relative; font-size:12.5px; color:#1a2332; }
 .focus-list li::before { content:'▸'; position:absolute; left:4px; color:#8fa0b3; }
@@ -123,7 +128,7 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 .back-link:hover { text-decoration:underline; }
 
 @media(max-width:600px) {
-  .hero { grid-template-columns:1fr; }
+  .hero { grid-template-columns:1fr 1fr; }
   .kpi-grid { grid-template-columns:1fr 1fr; }
   .dual-market { grid-template-columns:1fr; }
   .price-big { font-size:30px; }
@@ -133,10 +138,10 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 <body>
 
 <a class="back-link" href="index.html">&larr; 返回股票池</a>
-<h1>创新药三家并列</h1>
-<div class="subtitle">三角色分层 · 管线工厂 / 全球竞争者 / 颠覆者 · <a href="https://www.hkex.com.hk/" target="_blank">港交所</a> · 数据 2026-06-16 16:08</div>
+<h1>医药四家并列</h1>
+<div class="subtitle">四角色分层 · 管线工厂 / 全球竞争者 / 颠覆者 / 医疗器械国际化 · 数据 2026-06-16 19:21</div>
 
-<!-- Hero 三标的迷你卡 -->
+<!-- Hero 四标的迷你卡 -->
 <div class="hero">
   <div class="hero-card">
     <a href="#hansoh">
@@ -163,6 +168,15 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
       <div class="h-price" id="hero-a-price">84.65</div>
       <div class="h-change down" id="hero-a-change">-5.26%</div>
       <div class="h-tag disrupt">🎲 颠覆者</div>
+    </a>
+  </div>
+  <div class="hero-card">
+    <a href="#mindray">
+      <div class="h-name">迈瑞医疗</div>
+      <div class="h-code">300760.SZ</div>
+      <div class="h-price" id="hero-m-price">142.90</div>
+      <div class="h-change down" id="hero-m-change">-2.46%</div>
+      <div class="h-tag device">🔬 医疗器械</div>
     </a>
   </div>
 </div>
@@ -410,6 +424,84 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  ④ 迈瑞医疗 - 医疗器械国际化               ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="section-mega-title">④ 医疗器械国际化角色</div>
+<div class="role-card device" id="mindray">
+  <div class="role-header">
+    <div>
+      <div class="role-title">迈瑞医疗 300760.SZ</div>
+      <div class="role-subtitle">监护仪全球第三 · 海外占比 53% · 创新药磨底期反向对冲 · 已在 A 档附近</div>
+    </div>
+    <div class="role-badge device">🔬 医疗器械 · 唯一已国际化</div>
+  </div>
+
+  <div class="price-row">
+    <span class="price-big" id="m-price">142.90</span>
+    <span class="price-change down" id="m-change">-3.60 (-2.46%)</span>
+  </div>
+  <div class="price-meta">
+    <span>Forward 26E PE <b id="m-pe">19.7x</b></span>
+    <span>PEG <b id="m-peg">2.0</b></span>
+    <span>市值 <b>~1,734亿</b></span>
+    <span>2026E EPS <b>¥7.25</b></span>
+    <span>2025 净利 <b>¥81.36亿</b><span style="color:#c0392b">(-30%)</span></span>
+  </div>
+
+  <div class="gauge">
+    <div class="gauge-bar" id="m-bar">
+      <div class="gauge-fill" id="m-fill" style="width:0"></div>
+      <div class="gauge-marker" id="m-marker"><div class="gauge-marker-label" id="m-marker-lbl"></div></div>
+    </div>
+    <div class="gauge-labels">
+      <span class="lbl-b">B ¥105</span>
+      <span class="lbl-a">A ¥130</span>
+      <span class="lbl-r">红 ¥220</span>
+    </div>
+  </div>
+
+  <!-- 关注点 -->
+  <div class="focus-card device">
+    <h4>🔬 核心关注点（决定加减仓）</h4>
+    <ul class="focus-list">
+      <li><b>海外占比 53%</b>——所有医药公司里最国际化，监护仪英国市占已超 GE，欧洲 +20% <span class="pos">真护城河兑现</span></li>
+      <li><b>监护仪全球第三（约 20% 份额）</b>——前三：Philips 38% / GE 22% / 迈瑞 20%。中国市占 >55% 绝对第一</li>
+      <li><b>2025 净利首次下滑 -30%</b>——汇兑亏 3.15 亿 + 集采压制双击，2026Q1 营收增速仅 +1.4%（增长 25% 时代结束）<span class="neg">阵痛</span></li>
+      <li><b>2026 增速能否触底反弹</b>——共识 2026E 净利 87.88 亿（+8%），需观察 Q2/Q3 海外是否加速回补</li>
+      <li><b>化学发光 IVD 落后 Roche 1 代</b>——中国份额 8-9% vs Roche 14%，全球 &lt;3% vs Roche 27%，仍是追赶者</li>
+      <li><b>176 亿现金 + 净现金状态</b>——磨底期不会出事，护城河时间换空间</li>
+      <li><b>创新药磨底期反向对冲资产</b>——和翰森/百济/康方的"管线读出逻辑"完全不同，互补而非相关</li>
+    </ul>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-item"><div class="val">53%</div><div class="lbl">海外营收占比</div><div class="delta up">医药最国际化</div></div>
+    <div class="kpi-item"><div class="val">第3</div><div class="lbl">监护仪全球排名</div><div class="delta up">中国 55%</div></div>
+    <div class="kpi-item"><div class="val">19%</div><div class="lbl">2025 ROE</div><div class="delta">10年&gt;20% 首跌破</div></div>
+    <div class="kpi-item"><div class="val">¥176亿</div><div class="lbl">现金储备</div><div class="delta up">/ 市值 10%</div></div>
+    <div class="kpi-item"><div class="val">60.3%</div><div class="lbl">毛利率</div><div class="delta up">高端器械标准</div></div>
+    <div class="kpi-item"><div class="val">+1.4%</div><div class="lbl">2026Q1 营收增速</div><div class="delta down">增长降档</div></div>
+  </div>
+
+  <!-- 触发档 -->
+  <table class="trigger-table">
+    <thead><tr><th>档位</th><th>价格</th><th>仓位</th><th>PE</th><th>逻辑</th></tr></thead>
+    <tbody>
+      <tr><td>A 档（首仓）</td><td>≤ ¥130</td><td>30%</td><td>≤ 18x</td><td>当前 ¥142.90，距 A 档 -9%（可分 3 笔逐步建仓 ¥143/¥130/¥120）</td></tr>
+      <tr><td>B 档（满仓）</td><td>≤ ¥105</td><td>60%</td><td>≤ 14.5x</td><td>极端悲观情景（集采加码 + 海外汇兑双击）</td></tr>
+      <tr><td>满仓</td><td>≤ ¥85</td><td>100%</td><td>≤ 12x</td><td>系统性危机价（2018 集采底估值水平）</td></tr>
+      <tr><td>红线</td><td>¥220</td><td>减仓</td><td>30x</td><td>估值脱离基本面（2026 净利反弹+全球化加速兑现）</td></tr>
+      <tr><td colspan="5" style="background:#eff8fb; color:#0a6e8c; font-size:11px"><b>认错线</b>：①海外营收占比连续 2 季度跌破 45%，②化学发光在中国份额连续 2 年下滑（被 Roche/迈安/安图替代），③监护仪全球前三地位被替代（任一触发 → 卖出 + 永久剔除）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="thesis-text">
+    <strong>迈瑞论点</strong>：唯一已"走出去"的中国医疗器械公司——不是参数最强（光子计数 CT 输给 Siemens），而是<strong>全球化最深</strong>。这条赛道里"卖到世界各地"比"参数全球第一"重要得多。<strong>风险</strong>：①增长降档至 8-12%，从成长股变现金奶牛；②集采持续压制 IVD 业务；③汇兑波动放大利润波动。<strong>不是赌爆发，是赌"中国能不能在医疗器械全球前 10 站稳"——已经站稳了，剩下的只是估值修复时点</strong>。
+  </div>
+</div>
+
 <div class="update-time" id="update-time">数据更新中...</div>
 
 <script>
@@ -417,12 +509,13 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 var DRUG_CONFIG = {
   hansoh: { code:'hk03692', basis:1.40, lineA:32, lineB:26, red:50, growthE:25, peEl:'h-pe', pegEl:'h-peg' },
   beone:  { code:'hk06160', basis:5.65, lineA:165, lineB:140, red:240, growthE:30 },  // 6160 only
-  akeso:  { code:'hk09926', lineA:90, lineB:70, red:200 }   // 颠覆者无 PE 估值，用市值/Peak Sales
+  akeso:  { code:'hk09926', lineA:90, lineB:70, red:200 },   // 颠覆者无 PE 估值，用市值/Peak Sales
+  mindray:{ code:'sz300760', basis:7.25, lineA:130, lineB:105, red:220, growthE:10, peEl:'m-pe', pegEl:'m-peg' }
 };
 
 // ===== 价格抓取 =====
 function fetchPrices() {
-  ['hansoh','beone','akeso'].forEach(function(name) {
+  ['hansoh','beone','akeso','mindray'].forEach(function(name) {
     var s = document.createElement('script');
     s.src = 'https://qt.gtimg.cn/q=' + DRUG_CONFIG[name].code + '&_=' + Date.now();
     s.onload = function() { s.remove(); };
@@ -441,8 +534,8 @@ function priceCallback(market, val) {
   var changeAmt = (price - prevClose).toFixed(2);
   var changePct = ((price - prevClose) / prevClose * 100).toFixed(2);
   var sign = changeAmt >= 0 ? '+' : '';
-  var idMap = { hansoh:'h', beone:'b-h', akeso:'a' };
-  var heroMap = { hansoh:'hero-h', beone:'hero-b', akeso:'hero-a' };
+  var idMap = { hansoh:'h', beone:'b-h', akeso:'a', mindray:'m' };
+  var heroMap = { hansoh:'hero-h', beone:'hero-b', akeso:'hero-a', mindray:'hero-m' };
   var prefix = idMap[market];
   var heroPrefix = heroMap[market];
 
@@ -464,7 +557,7 @@ function priceCallback(market, val) {
     heroChEl.className = 'h-change ' + (changeAmt > 0 ? 'up' : changeAmt < 0 ? 'down' : 'flat');
   }
 
-  // PE/PEG 翰森专属
+  // PE/PEG（翰森+迈瑞）
   var cfg = DRUG_CONFIG[market];
   if (cfg.peEl) {
     var pe = (price / cfg.basis).toFixed(1);
@@ -491,10 +584,14 @@ Object.defineProperty(window, 'v_hk09926', {
   set: function(val) { priceCallback('akeso', val); },
   configurable: true
 });
+Object.defineProperty(window, 'v_sz300760', {
+  set: function(val) { priceCallback('mindray', val); },
+  configurable: true
+});
 
 function updateGauge(market, price, cfg) {
   if (!cfg) return;
-  var idMap = { hansoh:'h', beone:'b', akeso:'a' };
+  var idMap = { hansoh:'h', beone:'b', akeso:'a', mindray:'m' };
   var prefix = idMap[market];
   var fill = document.getElementById(prefix + '-fill');
   var marker = document.getElementById(prefix + '-marker');
@@ -512,7 +609,8 @@ function updateGauge(market, price, cfg) {
 
   fill.style.width = pct + '%';
   marker.style.left = 'calc(' + pct + '% - 1px)';
-  label.textContent = 'HK$' + price.toFixed(0);
+  var prefixSym = market === 'mindray' ? '¥' : 'HK$';
+  label.textContent = prefixSym + price.toFixed(0);
 }
 
 fetchPrices();
