@@ -6,13 +6,13 @@
 <title>药明康德 603259 / 02359 - 跟踪面板</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; }
-h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
-.subtitle { color:#6b7b8d; font-size:14px; margin-bottom:20px; }
+body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; font-size:16px; }
+h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
 .subtitle a { color:#1e3a5f; text-decoration:none; }
 
 .section-divider { border:none; border-top:1px solid #e5e5ea; margin:28px 0 20px; }
-.section-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
+.section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
 
 /* 红色警报横幅 */
 .alert-banner {
@@ -21,13 +21,13 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
   border-radius:12px;
   padding:14px 18px;
   margin-bottom:16px;
-  font-size:13px;
+  font-size:14px;
   line-height:1.6;
 }
 .alert-banner strong { font-weight:700; }
 .alert-banner .alert-tag {
   display:inline-block;
-  font-size:11px;
+  font-size:12px;
   background:rgba(255,255,255,0.2);
   padding:2px 8px;
   border-radius:4px;
@@ -38,107 +38,107 @@ h1 { font-size:24px; font-weight:700; margin-bottom:4px; }
 
 /* 价格大卡片（双轨） */
 .price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.price-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 20px; }
-.price-card .market-tag { font-size:11px; color:#1e3a5f; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.price-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:20px 22px; }
+.price-card .market-tag { font-size:12px; color:#1e3a5f; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
 .price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-.price-big { font-size:36px; font-weight:700; color:#1a2332; letter-spacing:-1px; }
-.price-change { font-size:14px; font-weight:600; }
+.price-big { font-size:40px; font-weight:700; color:#1a2332; letter-spacing:-1px; }
+.price-change { font-size:16px; font-weight:600; }
 .price-change.up { color:#1a7a4c; }
 .price-change.down { color:#c0392b; }
 .price-change.flat { color:#6b7b8d; }
-.price-meta { display:flex; gap:14px; margin-top:8px; font-size:12px; color:#6b7b8d; flex-wrap:wrap; }
+.price-meta { display:flex; gap:14px; margin-top:8px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
 .price-meta span b { color:#1a2332; }
 
 /* 进度条 */
-.gauge { margin-top:14px; }
-.gauge-bar { height:8px; border-radius:4px; background:#e5e5ea; position:relative; overflow:visible; }
-.gauge-fill { height:100%; border-radius:4px; transition:width .6s; }
-.gauge-labels { display:flex; justify-content:space-between; font-size:11px; color:#6b7b8d; margin-top:4px; }
-.gauge-labels .lbl-b { color:#1a7a4c; }
-.gauge-labels .lbl-a { color:#1e3a5f; }
-.gauge-labels .lbl-r { color:#c0392b; }
-.gauge-marker { position:absolute; top:-6px; width:2px; height:20px; background:#1c1c1e; border-radius:1px; transition:left .6s; }
-.gauge-marker-label { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; color:#1a2332; white-space:nowrap; font-weight:600; }
+.gauge { margin-top:20px; position:relative; padding-bottom:36px; }
+.gauge-bar { height:12px; border-radius:6px; background:#d0d7e0; position:relative; overflow:visible; }
+.gauge-fill { height:100%; border-radius:6px; transition:width .6s; }
+.gauge-labels { display:flex; justify-content:space-between; font-size:13px; color:#6b7b8d; margin-top:10px; }
+.gauge-labels .lbl-b { color:#1a7a4c; font-weight:500; }
+.gauge-labels .lbl-a { color:#1e3a5f; font-weight:500; }
+.gauge-labels .lbl-r { color:#c0392b; font-weight:500; }
+.gauge-marker { position:absolute; top:-4px; width:3px; height:20px; background:#1a2332; border-radius:1.5px; transition:left .6s; }
+.gauge-marker-label { position:absolute; top:22px; left:50%; transform:translateX(-50%); font-size:13px; color:#1a2332; white-space:nowrap; font-weight:700; background:#f8f9fc; padding:1px 4px; border-radius:3px; }
 
 /* 通用卡片 */
-.kpi-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
-.kpi-card h2 { font-size:16px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.kpi-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
 .kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 .kpi-item { text-align:center; padding:8px; background:#f8f9fc; border-radius:8px; }
-.kpi-item .val { font-size:20px; font-weight:700; color:#1a2332; }
-.kpi-item .lbl { font-size:11px; color:#6b7b8d; margin-top:2px; }
-.kpi-item .delta { font-size:11px; margin-top:2px; font-weight:600; }
+.kpi-item .val { font-size:22px; font-weight:700; color:#1a2332; }
+.kpi-item .lbl { font-size:13px; color:#6b7b8d; margin-top:2px; }
+.kpi-item .delta { font-size:12px; margin-top:2px; font-weight:600; }
 .kpi-item .delta.up { color:#1a7a4c; }
 .kpi-item .delta.down { color:#c0392b; }
 
 /* BIOSECURE 温度计 */
-.bio-card { background:#fff8f0; border:1px solid #ffd9a8; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
-.bio-card h2 { font-size:16px; font-weight:600; margin-bottom:12px; color:#9a4d00; }
+.bio-card { background:#fff8f0; border:1px solid #ffd9a8; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.bio-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#9a4d00; }
 .bio-thermo { background:linear-gradient(90deg,#34c759 0%,#ffcc00 35%,#ff9500 70%,#ff3b30 100%); height:14px; border-radius:7px; position:relative; }
 .bio-thermo-marker { position:absolute; top:-4px; width:4px; height:22px; background:#1c1c1e; border-radius:2px; }
-.bio-levels { display:flex; justify-content:space-between; font-size:10px; color:#6b7b8d; margin-top:4px; }
-.bio-status { margin-top:12px; padding:10px; background:#fff; border-radius:8px; font-size:13px; line-height:1.6; }
+.bio-levels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
+.bio-status { margin-top:12px; padding:10px; background:#fff; border-radius:8px; font-size:14px; line-height:1.6; }
 .bio-status b { color:#c0392b; }
 
 /* 新闻卡片 */
-.news-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
-.news-card h2 { font-size:16px; font-weight:600; margin-bottom:12px; }
+.news-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; }
 .news-item { padding:10px 0; border-bottom:1px solid #f0f3f6; }
 .news-item:last-child { border-bottom:none; }
-.news-tag { display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
+.news-tag { display:inline-block; font-size:12px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
 .news-tag.policy { background:rgba(192,57,43,0.08); color:#c0392b; }
 .news-tag.order { background:rgba(26,122,76,0.08); color:#1a7a4c; }
 .news-tag.client { background:rgba(30,58,95,0.08); color:#1e3a5f; }
 .news-tag.capital { background:rgba(74,58,138,0.08); color:#4a3a8a; }
 .news-tag.earn { background:rgba(201,168,76,0.08); color:#9a7d2e; }
-.news-item .news-title { font-size:13px; font-weight:500; color:#1a2332; line-height:1.4; }
+.news-item .news-title { font-size:15px; font-weight:500; color:#1a2332; line-height:1.4; }
 .news-item .news-title a { color:#1a2332; text-decoration:none; }
 .news-item .news-title a:hover { color:#1e3a5f; text-decoration:underline; }
-.news-item .news-summary { font-size:12px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
-.news-item .news-date { font-size:11px; color:#8fa0b3; margin-top:4px; }
-.news-empty { font-size:14px; color:#8fa0b3; text-align:center; padding:20px; }
+.news-item .news-summary { font-size:14px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
+.news-item .news-date { font-size:13px; color:#8fa0b3; margin-top:4px; }
+.news-empty { font-size:15px; color:#8fa0b3; text-align:center; padding:20px; }
 
 /* 订单表 */
-.order-table { width:100%; border-collapse:collapse; font-size:13px; }
-.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:12px; }
+.order-table { width:100%; border-collapse:collapse; font-size:14px; }
+.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
 .order-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
 .order-table .pos { color:#1a7a4c; font-weight:600; }
 .order-table .neg { color:#c0392b; font-weight:600; }
 
 /* 信号 */
 .signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.sig-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:10px; padding:12px 14px; }
-.sig-card h3 { font-size:13px; font-weight:600; margin-bottom:8px; }
-.sig-card ul { list-style:none; font-size:12px; line-height:1.7; }
+.sig-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:10px; padding:14px 16px; }
+.sig-card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.sig-card ul { list-style:none; font-size:14px; line-height:1.8; }
 .sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
-.sig-buy li::before { background:#34c759; }
-.sig-wait li::before { background:#ff9500; }
-.sig-stop li::before { background:#ff3b30; }
-.sig-sell li::before { background:#5856d6; }
+.sig-buy li::before { background:#1a7a4c; }
+.sig-wait li::before { background:#c9a84c; }
+.sig-stop li::before { background:#c0392b; }
+.sig-sell li::before { background:#4a3a8a; }
 
 /* 建仓策略 */
-.strat-table { width:100%; border-collapse:collapse; font-size:13px; }
-.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:12px; }
+.strat-table { width:100%; border-collapse:collapse; font-size:14px; }
+.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
 .strat-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
 
 /* 催化剂日历 */
-.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f3f6; font-size:13px; }
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f3f6; font-size:14px; }
 .cal-item:last-child { border-bottom:none; }
-.cal-date { color:#1e3a5f; font-weight:600; min-width:120px; font-size:12px; }
-.cal-desc { color:#1a2332; flex:1; font-size:13px; }
-.cal-tag { display:inline-block; font-size:10px; padding:1px 6px; border-radius:3px; font-weight:600; }
+.cal-date { color:#1e3a5f; font-weight:600; min-width:120px; font-size:13px; }
+.cal-desc { color:#1a2332; flex:1; font-size:14px; }
+.cal-tag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
 .cal-tag.hot { background:rgba(255,59,48,0.12); color:#c0392b; }
 .cal-tag.med { background:rgba(255,149,0,0.12); color:#9a4d00; }
 .cal-tag.cool { background:rgba(26,122,76,0.12); color:#1a7a4c; }
 
 /* 论点 */
-.thesis-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
-.thesis-card h2 { font-size:16px; font-weight:600; margin-bottom:10px; }
-.thesis-card p { font-size:13px; line-height:1.8; color:#4a5d6e; }
+.thesis-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
+.thesis-card p { font-size:14px; line-height:1.8; color:#4a5d6e; }
 .thesis-card strong { color:#1a2332; }
 
-.update-time { text-align:center; font-size:12px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
-.back-link { display:inline-block; margin-bottom:16px; font-size:13px; color:#1e3a5f; text-decoration:none; }
+.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#1e3a5f; text-decoration:none; }
 .back-link:hover { text-decoration:underline; }
 
 @media(max-width:600px) {
@@ -533,9 +533,9 @@ function updateGauge(market, price, cfg) {
   var label = document.getElementById(market + '-marker-lbl');
 
   if (price <= B) { fill.style.background = '#1a7a4c'; }
-  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff)'; }
-  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500)'; }
-  else { fill.style.background = 'linear-gradient(90deg,#34c759,#007aff,#ff9500,#ff3b30)'; }
+  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f)'; }
+  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c)'; }
+  else { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c,#c0392b)'; }
 
   fill.style.width = pct + '%';
   marker.style.left = 'calc(' + pct + '% - 1px)';
