@@ -11,6 +11,9 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 .subtitle { color:#8b949e; font-size:13px; margin-bottom:20px; }
 .subtitle a { color:#58a6ff; text-decoration:none; }
 
+.section-divider { border:none; border-top:1px solid #21262d; margin:28px 0 20px; }
+.section-title { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#484f58; margin-bottom:16px; font-weight:600; }
+
 /* 价格大卡片 */
 .price-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:20px 24px; margin-bottom:16px; }
 .price-row { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
@@ -41,6 +44,33 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 .dyp-item .val { font-size:20px; font-weight:700; color:#f0f6fc; }
 .dyp-item .lbl { font-size:11px; color:#8b949e; margin-top:2px; }
 
+/* 新闻卡片 */
+.news-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.news-card h2 { font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.news-item { padding:10px 0; border-bottom:1px solid #21262d; }
+.news-item:last-child { border-bottom:none; }
+.news-item .news-tag { display:inline-block; font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
+.news-tag.sales { background:#132a13; color:#3fb950; }
+.news-tag.product { background:#1c1917; color:#f59e0b; }
+.news-tag.org { background:#1e1b4b; color:#a78bfa; }
+.news-tag.market { background:#172554; color:#60a5fa; }
+.news-tag.risk { background:#2d0709; color:#f87171; }
+.news-item .news-title { font-size:13px; font-weight:500; color:#e6edf3; }
+.news-item .news-title a { color:#e6edf3; text-decoration:none; }
+.news-item .news-title a:hover { color:#58a6ff; text-decoration:underline; }
+.news-item .news-summary { font-size:12px; color:#8b949e; margin-top:4px; line-height:1.6; }
+.news-item .news-date { font-size:11px; color:#484f58; margin-top:4px; }
+.news-empty { font-size:13px; color:#484f58; text-align:center; padding:20px; }
+
+/* 南向资金 */
+.flow-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.flow-card h2 { font-size:15px; font-weight:600; margin-bottom:10px; }
+.flow-table { width:100%; border-collapse:collapse; font-size:12px; }
+.flow-table th { text-align:left; color:#8b949e; font-weight:500; padding:6px 8px; border-bottom:1px solid #21262d; }
+.flow-table td { padding:6px 8px; border-bottom:1px solid #21262d; }
+.flow-table .pos { color:#3fb950; font-weight:600; }
+.flow-table .neg { color:#f85149; font-weight:600; }
+
 /* 信号卡片 */
 .signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
 .sig-card { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px 16px; }
@@ -51,15 +81,6 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 .sig-wait li::before { background:#d29922; }
 .sig-stop li::before { background:#f85149; }
 .sig-sell li::before { background:#bc8cff; }
-
-/* 南向资金 */
-.flow-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
-.flow-card h2 { font-size:15px; font-weight:600; margin-bottom:10px; }
-.flow-table { width:100%; border-collapse:collapse; font-size:12px; }
-.flow-table th { text-align:left; color:#8b949e; font-weight:500; padding:6px 8px; border-bottom:1px solid #21262d; }
-.flow-table td { padding:6px 8px; border-bottom:1px solid #21262d; }
-.flow-table .pos { color:#3fb950; font-weight:600; }
-.flow-table .neg { color:#f85149; font-weight:600; }
 
 /* IP 热度 */
 .ip-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px 20px; margin-bottom:16px; }
@@ -110,7 +131,11 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 <h1>泡泡玛特 9992.HK</h1>
 <div class="subtitle">品类定义者 A档 &middot; VC赌注 &middot; 全球年轻人情感消费基础设施 &middot; <a href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym=9992&sc_lang=zh-hk" target="_blank">港交所</a></div>
 
-<!-- ===== 价格卡片 ===== -->
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║     每日变动区 (Daily Updates)            ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+
+<!-- ===== 实时价格 ===== -->
 <div class="price-card">
   <div class="price-row">
     <span class="price-big" id="price">--</span>
@@ -135,23 +160,30 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
-<!-- ===== 段永平卡片 ===== -->
+<!-- ===== 段永平持仓(实时盈亏) ===== -->
 <div class="dyp-card">
-  <h2>段永平持仓 (第二大股东)</h2>
+  <h2>段永平持仓 (第二大股东 6.04%)</h2>
   <div class="dyp-grid">
-    <div class="dyp-item"><div class="val">6.04%</div><div class="lbl">持股比例 (6/3)</div></div>
-    <div class="dyp-item"><div class="val">8,103万</div><div class="lbl">持股数量</div></div>
-    <div class="dyp-item"><div class="val">~HK$150</div><div class="lbl">估算成本</div></div>
     <div class="dyp-item"><div class="val" id="dyp-pnl" style="color:#8b949e">--</div><div class="lbl">估算盈亏</div></div>
-    <div class="dyp-item"><div class="val">3,750万</div><div class="lbl">Put敞口(行权140-150)</div></div>
     <div class="dyp-item"><div class="val" id="dyp-val">--</div><div class="lbl">持仓市值</div></div>
+    <div class="dyp-item"><div class="val">~HK$150</div><div class="lbl">估算成本</div></div>
+    <div class="dyp-item"><div class="val">8,103万</div><div class="lbl">持股数量</div></div>
+    <div class="dyp-item"><div class="val">3,750万</div><div class="lbl">Put敞口(行权140-150)</div></div>
+    <div class="dyp-item"><div class="val" id="tier1-status" style="font-size:14px;color:#58a6ff">--</div><div class="lbl">建仓状态</div></div>
   </div>
+</div>
+
+<!-- ===== 每日新闻 ===== -->
+<div class="news-card">
+  <h2>今日动态</h2>
+  <!-- NEWS_DATA_START -->
+  <div class="news-empty">等待首次新闻更新...</div>
+  <!-- NEWS_DATA_END -->
 </div>
 
 <!-- ===== 南向资金 ===== -->
 <div class="flow-card">
   <h2>南向资金动态</h2>
-  <p style="font-size:12px;color:#8b949e;margin-bottom:10px">数据来源：东方财富/港交所每日CCASS，每日收盘后更新</p>
   <table class="flow-table">
     <thead><tr><th>日期</th><th>净买入(万股)</th><th>持股占比</th><th>变化</th></tr></thead>
     <tbody id="flow-body">
@@ -165,6 +197,12 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
     </tbody>
   </table>
 </div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║     静态策略区 (Reference)               ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<hr class="section-divider">
+<div class="section-title">投资策略 &amp; 参考信息</div>
 
 <!-- ===== 决策信号 ===== -->
 <div class="signals">
@@ -204,6 +242,20 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
       <li>估值透支 → 分批减仓</li>
     </ul>
   </div>
+</div>
+
+<!-- ===== 建仓策略 ===== -->
+<div class="strat-card">
+  <h2>分档建仓策略 (VC赌注 3-5%总仓位)</h2>
+  <table class="strat-table">
+    <thead><tr><th>档位</th><th>价格区间</th><th>仓位</th><th>PE倍数</th><th>逻辑</th></tr></thead>
+    <tbody>
+      <tr><td>第一档</td><td>HK$177-189</td><td>30%</td><td>12.6-13.5x</td><td>A线内 VC首仓</td></tr>
+      <tr><td>第二档</td><td>HK$139-150</td><td>60%</td><td>10.0-10.7x</td><td>段永平成本区</td></tr>
+      <tr><td>第三档</td><td>HK$100-110</td><td>满仓</td><td>7-8x</td><td>纯恐慌 极端低估</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">港股通开通倒计时：约20个交易日 (预计7月中旬可交易)</p>
 </div>
 
 <!-- ===== IP矩阵 ===== -->
@@ -249,20 +301,6 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
-<!-- ===== 建仓策略 ===== -->
-<div class="strat-card">
-  <h2>分档建仓策略 (VC赌注 3-5%总仓位)</h2>
-  <table class="strat-table">
-    <thead><tr><th>档位</th><th>价格区间</th><th>仓位</th><th>PE倍数</th><th>状态</th></tr></thead>
-    <tbody>
-      <tr><td>第一档</td><td>HK$177-189</td><td>30%</td><td>12.6-13.5x</td><td id="tier1-status" style="color:#58a6ff">-- 等港股通开通</td></tr>
-      <tr><td>第二档</td><td>HK$139-150</td><td>60%</td><td>10.0-10.7x</td><td style="color:#8b949e">等极端恐慌</td></tr>
-      <tr><td>第三档</td><td>HK$100-110</td><td>满仓</td><td>7-8x</td><td style="color:#8b949e">纯恐慌才有</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">港股通开通倒计时：约20个交易日 (预计7月中旬可交易)</p>
-</div>
-
 <!-- ===== 催化剂日历 ===== -->
 <div class="cal-card">
   <h2>催化剂日历</h2>
@@ -278,11 +316,11 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 <div class="thesis-card">
   <h2>投资论点摘要</h2>
   <p>
-    <strong>护城河：</strong>不是盲盒/Labubu/社交传播，而是"IP发现-孵化-测试-放大"的平台系统（350+设计师 × 59M会员 × 630门店 × 盲盒低成本测试 × 数据闭环）。类比做IP的红杉资本。<br><br>
+    <strong>护城河：</strong>不是盲盒/Labubu/社交传播，而是"IP发现-孵化-测试-放大"的平台系统（350+设计师 &times; 59M会员 &times; 630门店 &times; 盲盒低成本测试 &times; 数据闭环）。类比做IP的红杉资本。<br><br>
     <strong>核心赌注：</strong>系统能否在Labubu之后再出一个大IP。10亿级已证明6个，百亿级待验证。<br><br>
     <strong>风险回报：</strong>灾难(0增长+12xPE)仅-5%下行，中性(30%增长+22xPE)+126%上行。期望值1.88x。<br><br>
     <strong>段永平逻辑：</strong>"在这个价格上不需要解决10年问题。" HK$150的12x PE是极好的赔率位置。<br><br>
-    <strong>终极问题：</strong>年轻人对手办/玩偶的需求会消失吗？底层需求(情感陪伴/身份信号/廉价多巴胺)不变，产品形态会迭代。日本失去30年三丽鸥反而繁荣。赌的是王宁能否持续抓住不变的人性需求。
+    <strong>终极问题：</strong>年轻人对手办/玩偶的需求会消失吗？底层需求(情感陪伴/身份信号/廉价多巴胺)不变，产品形态会迭代。日本失去30年三丽�的反而繁荣。赌的是王宁能否持续抓住不变的人性需求。
   </p>
 </div>
 
@@ -292,14 +330,14 @@ h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
 // ===== 配置 =====
 var PM_CONFIG = {
   code: 'hk09992',
-  basis: 14.0,        // 2026E EPS (HKD)
+  basis: 14.0,
   lineA: 189,
   lineB: 140,
   red: 315,
-  shares: 1.32e9,     // 总股本
-  dypCost: 150,       // 段永平估算成本
-  dypShares: 81031600, // 段永平持股数
-  growthE: 35          // 2026E增速%
+  shares: 1.32e9,
+  dypCost: 150,
+  dypShares: 81031600,
+  growthE: 35
 };
 
 // ===== 实时价格 =====
@@ -311,7 +349,6 @@ function fetchPrice() {
   document.head.appendChild(s);
 }
 
-// 腾讯回调
 Object.defineProperty(window, 'v_hk09992', {
   set: function(val) {
     if (!val) return;
@@ -321,24 +358,20 @@ Object.defineProperty(window, 'v_hk09992', {
     var changeAmt = (price - prevClose).toFixed(2);
     var changePct = ((price - prevClose) / prevClose * 100).toFixed(2);
 
-    // 更新价格
     document.getElementById('price').textContent = price.toFixed(2);
     var chEl = document.getElementById('change');
     var sign = changeAmt >= 0 ? '+' : '';
     chEl.textContent = sign + changeAmt + ' (' + sign + changePct + '%)';
     chEl.className = 'price-change ' + (changeAmt > 0 ? 'up' : changeAmt < 0 ? 'down' : 'flat');
 
-    // PE & PEG
     var pe = (price / PM_CONFIG.basis).toFixed(1);
     document.getElementById('fwd-pe').textContent = pe + 'x';
     var pegVal = (parseFloat(pe) / PM_CONFIG.growthE).toFixed(2);
     document.getElementById('peg').textContent = pegVal;
 
-    // 市值
     var mc = price * PM_CONFIG.shares / 1e8;
     document.getElementById('mktcap').textContent = mc.toFixed(0) + '亿HKD';
 
-    // 段永平盈亏
     var dypPnl = ((price - PM_CONFIG.dypCost) / PM_CONFIG.dypCost * 100).toFixed(1);
     var dypEl = document.getElementById('dyp-pnl');
     dypEl.textContent = (dypPnl >= 0 ? '+' : '') + dypPnl + '%';
@@ -346,20 +379,23 @@ Object.defineProperty(window, 'v_hk09992', {
     var dypMv = (price * PM_CONFIG.dypShares / 1e8).toFixed(1);
     document.getElementById('dyp-val').textContent = dypMv + '亿HKD';
 
-    // 进度条
-    updateGauge(price);
-
-    // 建仓状态
     var t1 = document.getElementById('tier1-status');
-    if (price <= PM_CONFIG.lineA) {
-      t1.textContent = '✦ 当前在A线内(PE ' + pe + 'x)';
+    if (price <= PM_CONFIG.lineB) {
+      t1.textContent = 'B线内!重仓';
+      t1.style.color = '#3fb950';
+    } else if (price <= PM_CONFIG.lineA) {
+      t1.textContent = 'A线内 PE' + pe + 'x';
       t1.style.color = '#58a6ff';
+    } else if (price < PM_CONFIG.red) {
+      t1.textContent = '观望 PE' + pe + 'x';
+      t1.style.color = '#d29922';
     } else {
-      t1.textContent = '高于A线(PE ' + pe + 'x)';
-      t1.style.color = '#8b949e';
+      t1.textContent = '红线上方!';
+      t1.style.color = '#f85149';
     }
 
-    document.getElementById('update-time').textContent = '实时价格 · 每30秒刷新 · ' + new Date().toLocaleString('zh-CN');
+    updateGauge(price);
+    document.getElementById('update-time').textContent = '实时价格 · 30s刷新 · ' + new Date().toLocaleString('zh-CN') + ' · 新闻每日08:30更新';
   },
   configurable: true
 });
@@ -369,12 +405,11 @@ function updateGauge(price) {
   var range = R - B;
   var pct = Math.max(0, Math.min(100, (price - B) / range * 100));
 
-  var bar = document.getElementById('gauge-bar');
   var fill = document.getElementById('gauge-fill');
   var marker = document.getElementById('gauge-marker');
   var label = document.getElementById('gauge-marker-label');
+  var bar = document.getElementById('gauge-bar');
 
-  // 颜色
   var A = PM_CONFIG.lineA;
   if (price <= B) { fill.style.background = '#3fb950'; }
   else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#3fb950,#58a6ff)'; }
@@ -385,7 +420,6 @@ function updateGauge(price) {
   marker.style.left = 'calc(' + pct + '% - 1px)';
   label.textContent = 'HK$' + price.toFixed(0);
 
-  // A线标记位置
   var aPct = (A - B) / range * 100;
   var aMarker = document.getElementById('a-marker');
   if (!aMarker) {
@@ -397,7 +431,6 @@ function updateGauge(price) {
   aMarker.style.left = aPct + '%';
 }
 
-// 启动
 fetchPrice();
 setInterval(fetchPrice, 30000);
 </script>
