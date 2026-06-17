@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>中芯国际 A股 vs H股 走势对比 (2020.7 IPO=100)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;background:#0a0f1a;color:#e0e6ed;padding:24px;min-height:100vh}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:22px;margin-bottom:6px}
+.sub{color:#6b7b8d;font-size:13px;margin-bottom:24px}
+.card{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin-bottom:20px}
+.card h2{font-size:15px;color:#c9a84c;margin-bottom:12px}
+.chart-wrap{height:420px;position:relative;background:#1a1f2e;border-radius:8px;padding:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid #1a1f2e}
+th{color:#6b7b8d;font-weight:600;background:#0a0f1a}
+td:first-child,th:first-child{text-align:left}
+.up{color:#c0392b}.dn{color:#1a7a4c}.gold{color:#c9a84c}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi-card{background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:14px;text-align:center}
+.kpi-card .label{font-size:11px;color:#6b7b8d}
+.kpi-card .value{font-size:24px;font-weight:800;margin-top:4px}
+.insight{background:#1a1f2e;border-left:3px solid #c9a84c;padding:14px;margin:12px 0;font-size:13px;line-height:1.6}
+.insight strong{color:#c9a84c}
+.back{display:inline-block;padding:6px 14px;border:1px solid #c9a84c;color:#c9a84c;text-decoration:none;border-radius:8px;font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>中芯国际 A股 vs H股 历史走势对比</h1>
+<div class="sub">2020/7/16 (A股IPO日) = 100 基准 · 数据截至 2026/06/17 · 用各自货币归一化（无汇率换算）</div>
+
+<div class="kpi">
+  <div class="kpi-card"><div class="label">IPO日AH溢价</div><div class="value gold">+213%</div></div>
+  <div class="kpi-card"><div class="label">当前AH溢价</div><div class="value gold">+93%</div></div>
+  <div class="kpi-card"><div class="label">A股累计涨幅</div><div class="value up">+62%</div></div>
+  <div class="kpi-card"><div class="label">H股累计涨幅</div><div class="value up">+164%</div></div>
+</div>
+
+<div class="card">
+  <h2>归一化指数走势 (IPO日=100)</h2>
+  <div class="chart-wrap"><canvas id="indexChart"></canvas></div>
+</div>
+
+<div class="card">
+  <h2>AH溢价率走势</h2>
+  <div class="chart-wrap"><canvas id="premiumChart"></canvas></div>
+</div>
+
+<div class="card">
+  <h2>历史关键节点数据</h2>
+  <table>
+    <thead><tr>
+      <th>日期</th><th>A股价(元)</th><th>H股价(港元)</th>
+      <th>A指数</th><th>H指数</th><th>指数差(A-H)</th><th>AH溢价</th>
+    </tr></thead>
+    <tbody id="dataTable"></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>核心结论</h2>
+  <div class="insight">
+    <strong>1. A股从娘胎里就贵 ——</strong> 发行价27.46元和H股IPO日价28.75港元基本平价，但A股IPO首日开盘95、收盘82.92，被炒高到+213%溢价。这是科创板"打新文化"+"国产替代信仰"的双重定价。
+  </div>
+  <div class="insight">
+    <strong>2. AH溢价持续收敛 ——</strong> 从+213%压到+93%，6年压了120个百分点。市场在给A股的"信仰泡沫"挤水。
+  </div>
+  <div class="insight">
+    <strong>3. H股累计涨幅是A股2.6倍 ——</strong> +164% vs +62%。看似A股一直贵，但收益率反而是H股完胜。这说明海外资金在中芯的产业链定价上更敏锐——AI产能拍卖逻辑、7nm垄断溢价、台积电对标这些alpha都是H股先反应。
+  </div>
+  <div class="insight">
+    <strong>4. 2026年最近6个月H股暴涨47% vs A股22% ——</strong> 75.75/51.5 vs 134.7/110.5。H股反而把差距进一步缩小。这印证了你的判断：智能定价方先行（外资），A股反应钝化。
+  </div>
+  <div class="insight">
+    <strong>5. 为什么A股始终贵？</strong> ① 资本管制——A股资金出不去 ② 沪港通额度上限 ③ 科创板散户化叙事溢价 ④ 国产替代政治信仰加价 ⑤ 流动性差异（A股日成交127亿 vs H股73亿港元）。这些结构性因素决定了AH溢价不会归零，但90%+的溢价已经远超合理区间（同行业A+H平均溢价约30%）。
+  </div>
+  <div class="insight" style="border-left-color:#1a7a4c">
+    <strong>结论：买H股 ——</strong> 同样的资产，用一半价格买。即使溢价收敛到合理区间(+30%)还需要让出50%空间，H股仍有确定性的相对收益。当前H股 HK$76 = A股 ¥135 / 1.78（按93%溢价折算），如果AH溢价回归到+50%中等水平，H股目标≈HK$98（+30%空间），到+30%合理水平H股目标≈HK$113（+50%）。
+  </div>
+</div>
+
+<a class="back" href="index.html">返回逆向股票池</a>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+var dates = ['2020-07','2020-12','2021-12','2022-12','2023-12','2024-12','2025-06','2025-12','2026-03','2026-06'];
+var A_price = [82.92, 53.69, 50.30, 38.05, 50.92, 88.50, 97.20, 110.50, 105.30, 134.70];
+var H_price = [28.75, 21.10, 18.96, 15.20, 22.45, 35.20, 41.80, 51.50, 50.00, 75.75];
+var A_idx = A_price.map(function(p){return (p/A_price[0]*100).toFixed(1);});
+var H_idx = H_price.map(function(p){return (p/H_price[0]*100).toFixed(1);});
+var premium = A_price.map(function(a,i){
+  var h_rmb = H_price[i] * 0.92;
+  return ((a - h_rmb) / h_rmb * 100).toFixed(0);
+});
+
+// Index chart
+new Chart(document.getElementById('indexChart'), {
+  type:'line',
+  data:{
+    labels:dates,
+    datasets:[
+      {label:'A股 (688981)',data:A_idx,borderColor:'#c0392b',borderWidth:2.5,tension:0.3,pointRadius:5,pointBackgroundColor:'#c0392b',fill:false},
+      {label:'H股 (00981)',data:H_idx,borderColor:'#c9a84c',borderWidth:2.5,tension:0.3,pointRadius:5,pointBackgroundColor:'#c9a84c',fill:false},
+      {label:'基准线 (=100)',data:Array(10).fill(100),borderColor:'#6b7b8d',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{color:'#e0e6ed',font:{size:12}}},
+      tooltip:{backgroundColor:'#1e3a5f',titleColor:'#c9a84c',bodyColor:'#e0e6ed',padding:10,cornerRadius:6}
+    },
+    scales:{
+      y:{title:{display:true,text:'归一化指数 (IPO=100)',color:'#6b7b8d'},grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d'}},
+      x:{grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d'}}
+    }
+  }
+});
+
+// Premium chart
+new Chart(document.getElementById('premiumChart'), {
+  type:'line',
+  data:{
+    labels:dates,
+    datasets:[
+      {label:'AH溢价率(%)',data:premium,borderColor:'#3b82f6',borderWidth:2.5,tension:0.3,pointRadius:5,pointBackgroundColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',fill:true},
+      {label:'同行业平均水平 (~30%)',data:Array(10).fill(30),borderColor:'#1a7a4c',borderWidth:1.5,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'平价线 (0%)',data:Array(10).fill(0),borderColor:'#6b7b8d',borderWidth:1,borderDash:[2,2],pointRadius:0,fill:false}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{color:'#e0e6ed',font:{size:12}}},
+      tooltip:{backgroundColor:'#1e3a5f',titleColor:'#c9a84c',bodyColor:'#e0e6ed',padding:10,cornerRadius:6,
+        callbacks:{label:function(ctx){return ctx.dataset.label+': +'+ctx.parsed.y+'%';}}}
+    },
+    scales:{
+      y:{title:{display:true,text:'A股相对H股溢价 %',color:'#6b7b8d'},grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d',callback:function(v){return '+'+v+'%';}}},
+      x:{grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d'}}
+    }
+  }
+});
+
+// Table
+var tbody = document.getElementById('dataTable');
+dates.forEach(function(d,i){
+  var gap = (parseFloat(A_idx[i]) - parseFloat(H_idx[i])).toFixed(1);
+  tbody.innerHTML += '<tr><td>'+d+'</td><td>'+A_price[i].toFixed(2)+'</td><td>'+H_price[i].toFixed(2)+
+    '</td><td>'+A_idx[i]+'</td><td class="gold">'+H_idx[i]+'</td><td>'+gap+
+    '</td><td class="up">+'+premium[i]+'%</td></tr>';
+});
+</script>
+</body>
+</html>
