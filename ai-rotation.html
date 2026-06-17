@@ -83,7 +83,7 @@ body{font-family:-apple-system,"SF Pro Display","PingFang SC","Helvetica Neue",s
 
 <div class="header">
   <h1>AI换仓监控 · GOOG / BABA / TSMC</h1>
-  <div class="sub">谁低于历史均值PE持有谁 · AI上升期回到均值就是好价格 · 实时价格每30秒更新</div>
+  <div class="sub">PE/历史均值PE 比值最低者持有 · 每天看比值排名决定选谁 · 实时30秒刷新</div>
   <a class="back" href="index.html">返回逆向股票池</a>
 </div>
 
@@ -210,84 +210,81 @@ function fetchPrices() {
 function render(){
   var banner = document.getElementById('decisionBanner');
   var cards = document.getElementById('stockCards');
-  var bannerHtml = '';
-  var cardsHtml = '';
 
-  ROTATION_CONFIG.stocks.forEach(function(s){
+  // Calculate ratios
+  var ratios = ROTATION_CONFIG.stocks.map(function(s){
     var p = prices[s.code];
     var livePrice = p ? p.price : s.priceNow;
     var liveChg = p ? p.change : 0;
     var livePE = livePrice / s.ttmEPS;
+    var ratio = livePE / s.avgPE;
+    return { stock: s, livePrice: livePrice, liveChg: liveChg, livePE: livePE, ratio: ratio };
+  });
 
-    var fairMid = (s.fairPE_low + s.fairPE_high) / 2;
-    var gapPct = ((livePE - fairMid) / fairMid * 100).toFixed(1);
+  // Sort by ratio — lowest = cheapest
+  var sorted = ratios.slice().sort(function(a,b){ return a.ratio - b.ratio; });
+  var bestCode = sorted[0].stock.code;
+
+  var bannerHtml = '';
+  var cardsHtml = '';
+
+  // Render in sorted order
+  sorted.forEach(function(r, idx){
+    var s = r.stock;
+    var livePE = r.livePE;
+    var livePrice = r.livePrice;
+    var liveChg = r.liveChg;
+    var ratio = r.ratio;
+
     var verdict, verdictClass;
-    if(livePE <= s.targets.deep.pe){
-      verdict = '加仓'; verdictClass = 'v-buy';
-    } else if(livePE <= s.fairPE_low){
-      verdict = '持有'; verdictClass = 'v-buy';
-    } else if(livePE <= s.fairPE_high){
-      verdict = '观望'; verdictClass = 'v-hold';
+    if(idx === 0){
+      verdict = ratio < 1 ? '加仓' : '持有';
+      verdictClass = 'v-buy';
+    } else if(ratio < 1){
+      verdict = '持有';
+      verdictClass = 'v-buy';
     } else {
-      verdict = '等待'; verdictClass = 'v-wait';
+      verdict = '观望';
+      verdictClass = ratio < 1.15 ? 'v-hold' : 'v-wait';
     }
 
-    // Decision banner
-    bannerHtml += '<div class="dec-card ' + verdictClass + '">' +
-      '<div class="ticker">' + s.code + '</div>' +
-      '<div class="verdict">' + verdict + '</div>' +
-      '<div class="pe-info">PE ' + livePE.toFixed(1) + 'x / 合理 ' + s.fairPE_low + '-' + s.fairPE_high + 'x</div>' +
-      '<div class="gap" style="color:' + (parseFloat(gapPct)<=0?'#1a7a4c':'#c0392b') + '">' +
-      (parseFloat(gapPct)<=0? '低估 '+Math.abs(gapPct)+'%' : '高估 '+gapPct+'%') +
-      '</div></div>';
-
-    // PE bar visualization
-    var peMin = 8, peMax = 45;
-    var barPct = function(pe){ return Math.max(0,Math.min(100,(pe-peMin)/(peMax-peMin)*100)); };
-    var fillPct = barPct(livePE);
-    var fillColor = livePE <= s.fairPE_low ? '#1a7a4c' : livePE <= s.fairPE_high ? '#c9a84c' : '#c0392b';
-
+    var ratioColor = ratio < 1 ? '#1a7a4c' : ratio < 1.15 ? '#c9a84c' : '#c0392b';
     var chgClass = liveChg >= 0 ? 'chg-up' : 'chg-dn';
     var chgSign = liveChg >= 0 ? '+' : '';
 
-    // Target prices
-    var tgts = s.targets;
-    var tgtRows = '';
-    [tgts.aggressive, tgts.fair, tgts.deep].forEach(function(t){
-      var tPrice = (s.ttmEPS * t.pe).toFixed(1);
-      var tDrop = ((livePrice - tPrice) / livePrice * 100).toFixed(1);
-      var cls = parseFloat(tDrop) > 0 ? 't-red' : 't-green';
-      tgtRows += '<tr><td>' + t.label + '</td><td>PE ' + t.pe + 'x</td>' +
-        '<td>' + s.currency + ' ' + tPrice + '</td>' +
-        '<td class="' + cls + '">' + (parseFloat(tDrop)>0 ? '需跌'+tDrop+'%' : '已达') + '</td></tr>';
-    });
+    // Decision banner
+    bannerHtml += '<div class="dec-card ' + verdictClass + '">' +
+      '<div class="ticker">#' + (idx+1) + ' ' + s.code + '</div>' +
+      '<div class="verdict">' + verdict + '</div>' +
+      '<div class="pe-info" style="font-size:20px;font-weight:800;color:' + ratioColor + '">' + ratio.toFixed(2) + 'x</div>' +
+      '<div class="gap" style="font-size:12px;color:#6b7b8d">PE ' + livePE.toFixed(1) + ' ÷ 均值 ' + s.avgPE + '</div>' +
+      '</div>';
+
+    // PE bar — only show avg line and current
+    var peMin = 8, peMax = 45;
+    var barPct = function(pe){ return Math.max(0,Math.min(100,(pe-peMin)/(peMax-peMin)*100)); };
+    var fillPct = barPct(livePE);
 
     cardsHtml += '<div class="stock-row">' +
       '<div class="stock-header">' +
-        '<div><div class="stock-name" style="color:' + (verdictClass==='v-buy'?'#1a7a4c':verdictClass==='v-hold'?'#c9a84c':'#c0392b') + '">' + s.name + '</div>' +
+        '<div><div class="stock-name" style="color:' + ratioColor + '">' + s.name + '</div>' +
         '<div style="font-size:12px;color:#6b7b8d;margin-top:2px">' + s.code + ' · ' + s.market + ' · 增速 ' + s.growthRate + '%</div></div>' +
-        '<div class="stock-price"><div class="price" style="color:' + (verdictClass==='v-buy'?'#1a7a4c':verdictClass==='v-hold'?'#c9a84c':'#c0392b') + '">' +
+        '<div class="stock-price"><div class="price" style="color:' + ratioColor + '">' +
         s.currency + ' ' + livePrice.toFixed(2) + '</div>' +
         '<div class="change ' + chgClass + '">' + chgSign + liveChg.toFixed(2) + '%</div></div>' +
       '</div>' +
       '<div class="pe-bar-wrap">' +
-        '<div class="pe-bar-fill" style="width:' + fillPct + '%;background:' + fillColor + ';opacity:0.3"></div>' +
-        '<div class="pe-marker pe-marker-b" style="left:' + barPct(s.targets.deep.pe) + '%"><div class="label">B线 ' + s.targets.deep.pe + 'x</div></div>' +
-        '<div class="pe-marker pe-marker-a" style="left:' + barPct(s.targets.fair.pe) + '%"><div class="label">A线 ' + s.targets.fair.pe + 'x</div></div>' +
-        '<div class="pe-marker pe-marker-r" style="left:' + barPct(s.targets.aggressive.pe) + '%"><div class="label">' + (s.code==='09988'?'反弹':'激进') + ' ' + s.targets.aggressive.pe + 'x</div></div>' +
+        '<div class="pe-bar-fill" style="width:' + fillPct + '%;background:' + ratioColor + ';opacity:0.3"></div>' +
+        '<div class="pe-marker pe-marker-a" style="left:' + barPct(s.avgPE) + '%"><div class="label">均值 ' + s.avgPE + 'x</div></div>' +
         '<div class="pe-marker pe-marker-cur" style="left:' + barPct(livePE) + '%"><div class="label">当前 ' + livePE.toFixed(1) + 'x</div></div>' +
       '</div>' +
       '<div class="metrics">' +
-        '<div class="metric"><div class="label">当前PE</div><div class="value" style="color:' + fillColor + '">' + livePE.toFixed(1) + 'x</div></div>' +
-        '<div class="metric"><div class="label">合理PE</div><div class="value">' + s.fairPE_low + '-' + s.fairPE_high + 'x</div></div>' +
+        '<div class="metric"><div class="label">当前PE</div><div class="value" style="color:' + ratioColor + '">' + livePE.toFixed(1) + 'x</div></div>' +
+        '<div class="metric"><div class="label">历史均值PE</div><div class="value">' + s.avgPE + 'x</div></div>' +
+        '<div class="metric"><div class="label">PE/均值 比值</div><div class="value" style="color:' + ratioColor + ';font-size:22px">' + ratio.toFixed(2) + '</div></div>' +
         '<div class="metric"><div class="label">TTM EPS</div><div class="value">' + s.currency + ' ' + s.ttmEPS.toFixed(2) + '</div></div>' +
-        '<div class="metric"><div class="label">盈利增速</div><div class="value">' + s.growthRate + '%</div></div>' +
       '</div>' +
       '<div style="font-size:12px;color:#6b7b8d;margin-top:8px">' + s.growthNote + '</div>' +
-      '<div class="targets"><table>' +
-        '<tr><th>建仓档位</th><th>PE目标</th><th>对应价位</th><th>距今</th></tr>' +
-        tgtRows +
-      '</table></div>' +
     '</div>';
   });
 
@@ -295,37 +292,39 @@ function render(){
   cards.innerHTML = cardsHtml;
 
   // Swap signal
-  renderSwapSignal();
+  renderSwapSignal(sorted);
   document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
 }
 
-function renderSwapSignal(){
+function renderSwapSignal(sorted){
   var el = document.getElementById('swapSignal');
-  var baba = prices['09988'] ? prices['09988'].price / ROTATION_CONFIG.stocks[1].ttmEPS : ROTATION_CONFIG.stocks[1].peNow;
-  var goog = prices['GOOGL'] ? prices['GOOGL'].price / ROTATION_CONFIG.stocks[0].ttmEPS : ROTATION_CONFIG.stocks[0].peNow;
-  var tsm = prices['TSM'] ? prices['TSM'].price / ROTATION_CONFIG.stocks[2].ttmEPS : ROTATION_CONFIG.stocks[2].peNow;
-
-  var gapGoog = (goog - baba).toFixed(1);
-  var gapTsm = (tsm - baba).toFixed(1);
-
-  var googReady = goog <= 24;
-  var tsmReady = tsm <= 26;
-  var signal = '持有阿里 · 等待GOOG/TSMC回调';
-  var sigColor = '#c9a84c';
-  if(googReady && tsmReady){
-    signal = '换仓窗口打开! 卖阿里→买GOOG+TSMC';
-    sigColor = '#1a7a4c';
-  } else if(googReady || tsmReady){
-    signal = '部分窗口: ' + (googReady?'GOOG已到位':'TSMC已到位') + ' · 可开始分批换仓';
-    sigColor = '#3b82f6';
+  if(!sorted){
+    sorted = ROTATION_CONFIG.stocks.map(function(s){
+      var p = prices[s.code];
+      var livePrice = p ? p.price : s.priceNow;
+      var livePE = livePrice / s.ttmEPS;
+      return { stock: s, livePE: livePE, ratio: livePE / s.avgPE };
+    }).sort(function(a,b){ return a.ratio - b.ratio; });
   }
 
-  el.innerHTML = '<h3>换仓信号</h3>' +
-    '<div class="formula">' +
-      'BABA PE ' + baba.toFixed(1) + 'x &nbsp;←→&nbsp; GOOG PE ' + goog.toFixed(1) + 'x (差 ' + gapGoog + 'x) &nbsp;|&nbsp; TSMC PE ' + tsm.toFixed(1) + 'x (差 ' + gapTsm + 'x)' +
-    '</div>' +
+  var best = sorted[0];
+  var rows = sorted.map(function(r){
+    return r.stock.code + ' ' + r.ratio.toFixed(2);
+  }).join(' &nbsp;|&nbsp; ');
+
+  var signal, sigColor;
+  if(best.stock.code === '09988'){
+    signal = '持有阿里 · GOOG/TSMC比值更高 · 等待比值反转';
+    sigColor = '#c9a84c';
+  } else {
+    signal = '换仓! ' + best.stock.code + ' 比值最低 → 卖阿里买' + best.stock.code;
+    sigColor = '#1a7a4c';
+  }
+
+  el.innerHTML = '<h3>PE/均值 比值排名</h3>' +
+    '<div class="formula">' + rows + '</div>' +
     '<div style="font-size:13px;color:#6b7b8d;margin:8px 0">' +
-      '换仓条件: GOOG PE ≤ 24x均值 (需跌' + Math.max(0,(goog-24)/goog*100).toFixed(0) + '%) · TSMC PE ≤ 26x中位数 (需跌' + Math.max(0,(tsm-26)/tsm*100).toFixed(0) + '%)' +
+      '规则: 比值最低 = 相对最便宜 → 持有谁。比值<1 = 低于历史均值 = 绝对便宜' +
     '</div>' +
     '<div class="result" style="color:' + sigColor + '">' + signal + '</div>';
   el.style.borderColor = sigColor;
