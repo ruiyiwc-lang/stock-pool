@@ -144,8 +144,8 @@ var ROTATION_CONFIG = {
       ttmEPS: 6.30,
       growthRate: 18,
       growthNote: 'FY25营收+6%净利+77%(一次性)。常态化: 云+40-45%+电商+3-5%+国际+29%→加权15-20%盈利增速',
-      fairPE_low: 15,
-      fairPE_high: 20,
+      fairPE_low: 20,
+      fairPE_high: 25,
       peNow: 16.79,
       priceNow: 125,
       avgPE: 20.0,
@@ -222,7 +222,9 @@ function render(){
     var fairMid = (s.fairPE_low + s.fairPE_high) / 2;
     var gapPct = ((livePE - fairMid) / fairMid * 100).toFixed(1);
     var verdict, verdictClass;
-    if(livePE <= s.fairPE_low){
+    if(livePE <= s.targets.deep.pe){
+      verdict = '加仓'; verdictClass = 'v-buy';
+    } else if(livePE <= s.fairPE_low){
       verdict = '持有'; verdictClass = 'v-buy';
     } else if(livePE <= s.fairPE_high){
       verdict = '观望'; verdictClass = 'v-hold';
