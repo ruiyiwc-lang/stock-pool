@@ -83,7 +83,7 @@ body{font-family:-apple-system,"SF Pro Display","PingFang SC","Helvetica Neue",s
 
 <div class="header">
   <h1>AI换仓监控 · GOOG / BABA / TSMC</h1>
-  <div class="sub">谁低于合理PE持有谁 · PEG=1.0公允 · 实时价格每30秒更新</div>
+  <div class="sub">谁低于历史均值PE持有谁 · AI上升期回到均值就是好价格 · 实时价格每30秒更新</div>
   <a class="back" href="index.html">返回逆向股票池</a>
 </div>
 
@@ -128,10 +128,11 @@ var ROTATION_CONFIG = {
       fairPE_high: 25,
       peNow: 28.19,
       priceNow: 373.25,
+      avgPE: 23.6,
       targets: {
-        aggressive: { pe: 25, label: '激进建仓 PEG1.2' },
-        fair: { pe: 22, label: 'A档 PEG1.0' },
-        deep: { pe: 18, label: 'B档 深度回调' }
+        aggressive: { pe: 26, label: '均值+1σ 可建仓' },
+        fair: { pe: 24, label: '历史均值 24x' },
+        deep: { pe: 20, label: '均值−1σ 重仓' }
       }
     },
     {
@@ -147,10 +148,11 @@ var ROTATION_CONFIG = {
       fairPE_high: 20,
       peNow: 16.79,
       priceNow: 125,
+      avgPE: 20.0,
       targets: {
-        aggressive: { pe: 22, label: '反弹目标 PE22x' },
-        fair: { pe: 18, label: '合理中枢 PE18x' },
-        deep: { pe: 12, label: '极端恐慌 PE12x' }
+        aggressive: { pe: 25, label: '历史均值 反弹目标' },
+        fair: { pe: 20, label: '中位数 20x' },
+        deep: { pe: 14, label: '恐慌底 重仓' }
       }
     },
     {
@@ -166,10 +168,11 @@ var ROTATION_CONFIG = {
       fairPE_high: 30,
       peNow: 37.04,
       priceNow: 425.83,
+      avgPE: 25.8,
       targets: {
-        aggressive: { pe: 33, label: '激进建仓 PEG1.2' },
-        fair: { pe: 28, label: 'A档 PEG1.0' },
-        deep: { pe: 22, label: 'B档 深度回调' }
+        aggressive: { pe: 30, label: '中位数+1σ 可建仓' },
+        fair: { pe: 26, label: '历史中位数 26x' },
+        deep: { pe: 24, label: '均值 重仓' }
       }
     }
   ]
@@ -303,8 +306,8 @@ function renderSwapSignal(){
   var gapGoog = (goog - baba).toFixed(1);
   var gapTsm = (tsm - baba).toFixed(1);
 
-  var googReady = goog <= 22;
-  var tsmReady = tsm <= 28;
+  var googReady = goog <= 24;
+  var tsmReady = tsm <= 26;
   var signal = '持有阿里 · 等待GOOG/TSMC回调';
   var sigColor = '#c9a84c';
   if(googReady && tsmReady){
@@ -320,7 +323,7 @@ function renderSwapSignal(){
       'BABA PE ' + baba.toFixed(1) + 'x &nbsp;←→&nbsp; GOOG PE ' + goog.toFixed(1) + 'x (差 ' + gapGoog + 'x) &nbsp;|&nbsp; TSMC PE ' + tsm.toFixed(1) + 'x (差 ' + gapTsm + 'x)' +
     '</div>' +
     '<div style="font-size:13px;color:#6b7b8d;margin:8px 0">' +
-      '换仓条件: GOOG PE ≤ 22x (需跌' + Math.max(0,(goog-22)/goog*100).toFixed(0) + '%) · TSMC PE ≤ 28x (需跌' + Math.max(0,(tsm-28)/tsm*100).toFixed(0) + '%)' +
+      '换仓条件: GOOG PE ≤ 24x均值 (需跌' + Math.max(0,(goog-24)/goog*100).toFixed(0) + '%) · TSMC PE ≤ 26x中位数 (需跌' + Math.max(0,(tsm-26)/tsm*100).toFixed(0) + '%)' +
     '</div>' +
     '<div class="result" style="color:' + sigColor + '">' + signal + '</div>';
   el.style.borderColor = sigColor;
