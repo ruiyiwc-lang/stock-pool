@@ -480,9 +480,114 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
         <td class="neg">同比腰斩</td>
         <td>Mounjaro / Wegovy 处方见顶 → TIDES 150 亿目标必落空</td>
       </tr>
+      <tr>
+        <td><b>AI 制药 VC 融资额</b></td>
+        <td>季度</td>
+        <td class="pos">≥ $15 亿/季 (2024~$6.7B全年)</td>
+        <td class="neg">连 2 季同比 -50%</td>
+        <td>AI biotech融资活跃 → 更多项目进临床 → CDMO订单源头增加 (正面)</td>
+      </tr>
+      <tr>
+        <td><b>AI 药物新增 IND 申报数</b></td>
+        <td>季度</td>
+        <td class="pos">季度 ≥ 15 个新 IND</td>
+        <td class="neg">&lt; 5 个/季度</td>
+        <td>173+在研→进临床速度=药明CDMO远期订单池。加速=利好；停滞=AI制药泡沫破</td>
+      </tr>
     </tbody>
   </table>
   <p style="font-size:11px;color:#8b949e;margin-top:8px">数据源：Evaluate Pharma / BioCentury 季度统计 / IQVIA 月报 / Eli Lilly &amp; Novo 财报。<b>这一类只在月/季级跟踪，不进入日级 cron</b>。</p>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   AI 制药对 CXO 护城河影响                  ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>🤖 AI 制药对 CXO 护城河影响 · 药明的"铲"在变形 <span class="freq-tag quarter">季 · 趋势跟踪</span></h2>
+  <p style="font-size:13px;color:#6b7b8d;margin-bottom:12px">AI for Science 不摧毁药明，但改变它的价值结构——化学发现CRO被侵蚀，CDMO反而加强。核心判断：<b>铲的形状在变，但还是需要铲</b>。</p>
+
+  <table class="order-table">
+    <thead><tr><th>业务层</th><th>AI 影响方向</th><th>逻辑</th><th>跟踪指标</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>① 化学发现 CRO</b><br><span style="color:#8b949e;font-size:12px">~30-35% 收入</span></td>
+        <td class="neg">被削弱</td>
+        <td>AI虚拟筛选命中30-46% vs传统1-2%，合成量减少10-20x（Recursion 330个化合物 vs 传统3000-5000个）→ 单项目收入可能-50~80%</td>
+        <td>化学发现CRO单项目平均合同额（季报没直接披露，需跟踪"分子数/收入"比）</td>
+      </tr>
+      <tr>
+        <td><b>② 工艺/临床前 CRO</b><br><span style="color:#8b949e;font-size:12px">~20-25% 收入</span></td>
+        <td style="color:#9a7d2e;font-weight:600">中期安全</td>
+        <td>FDA仍要求实际动物毒理+真实PK数据。AI计算毒理可辅助但不替代。2030+若FDA接受in silico证据才受冲击</td>
+        <td>FDA对AI辅助数据的审评政策变化（guidance文件发布）</td>
+      </tr>
+      <tr>
+        <td><b>③ CDMO（生产）</b><br><span style="color:#8b949e;font-size:12px">~35-40% 收入，增最快</span></td>
+        <td class="pos">反而加强</td>
+        <td>AI让更多药更快进临床→临床试验需要GMP药物供应→CDMO需求不减反增。AI替代不了反应釜和洁净车间</td>
+        <td>全球IND申报总数增速（AI加速→IND井喷→CDMO订单）；TIDES在手订单</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:14px;padding:12px;background:#f0f4fa;border-radius:8px;border:1px solid #b8c8df">
+    <h4 style="font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:8px">🔬 AI 制药关键标的跟踪（季度扫描）</h4>
+    <table class="order-table" style="font-size:13px">
+      <thead><tr><th>公司</th><th>定位</th><th>对药明含义</th><th>最新进展 (2026.06)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Recursion</b> (RXRX)</td><td>表型组学AI平台</td><td>减少药明化学发现CRO订单量</td><td>5个临床资产 · 330化合物出PCC · 与赛诺菲/罗氏合作</td></tr>
+        <tr><td><b>Isomorphic Labs</b></td><td>AlphaFold系药物设计</td><td>远期替代靶点发现环节</td><td>融$6亿 · 诺华+礼来$30亿合作 · 2026底首个人体试验</td></tr>
+        <tr><td><b>英矽智能</b> (01231.HK)</td><td>AI全流程药企</td><td>药明客户变竞争对手？</td><td>Phase 2a Nature Medicine发表 · 礼来$27.5亿合作 · 年收$5624万</td></tr>
+        <tr><td><b>Schrödinger</b> (SDGR)</td><td>物理模拟+ML</td><td>卖平台给药企（跟药明并行）</td><td>Zasocitinib Phase 3 → 可能首个AI药获批(2027)</td></tr>
+        <tr><td><b>晶泰科技</b> (02228.HK)</td><td>AI制药基础设施</td><td>与药明竞争晶型/分子设计</td><td>DoveTree $59.9亿订单 · 港股18C首家</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:14px;padding:12px;background:#fff8f0;border-radius:8px;border:1px solid #ffd9a8">
+    <h4 style="font-size:13px;font-weight:700;color:#9a4d00;margin-bottom:8px">⚡ AI 相关信号触发条件</h4>
+    <table class="order-table" style="font-size:13px">
+      <thead><tr><th>信号</th><th>触发条件</th><th>动作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:#1a7a4c;font-weight:600">🟢 利好</td>
+          <td>药明宣布AI合作/收购（如收购AI CRO公司）；或大客户声明"AI+药明=互补而非替代"</td>
+          <td>护城河升级确认，加大CDMO权重估值</td>
+        </tr>
+        <tr>
+          <td style="color:#1a7a4c;font-weight:600">🟢 利好</td>
+          <td>全球IND申报数同比+30%+（AI加速效应传导到CDMO需求）</td>
+          <td>TIDES/CDMO超预期概率上升</td>
+        </tr>
+        <tr>
+          <td style="color:#9a7d2e;font-weight:600">🟡 观察</td>
+          <td>化学发现CRO收入增速连续2季跑输CDMO增速10个百分点以上</td>
+          <td>确认"AI侵蚀发现端"已从数据端体现</td>
+        </tr>
+        <tr>
+          <td style="color:#9a7d2e;font-weight:600">🟡 观察</td>
+          <td>英矽/Recursion宣布"不再外包化学合成给CRO"</td>
+          <td>化学发现CRO订单源头被切断的早期信号</td>
+        </tr>
+        <tr>
+          <td style="color:#c0392b;font-weight:600">🔴 警告</td>
+          <td>FDA发布guidance接受AI生成的毒理/PK数据替代动物实验</td>
+          <td>工艺/临床前CRO第二层也开始受冲击，需重估整体估值中枢</td>
+        </tr>
+        <tr>
+          <td style="color:#c0392b;font-weight:600">🔴 警告</td>
+          <td>Top 10药企中≥3家公开声明"AI已替代50%+外包化学发现需求"</td>
+          <td>化学CRO行业性萎缩确认——但若药明已转型CDMO为主，影响可控</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:12px;padding:10px 12px;background:#f8f9fc;border-radius:8px;font-size:13px;line-height:1.7;color:#4a5d6e">
+    <strong style="color:#1a2332">核心论断</strong>：AI对药明的影响 ≈ 电商对沃尔玛——线下门店（化学发现CRO）被冲击，但物流仓储网络（CDMO）因订单爆发反而更值钱。<b>关键跟踪：药明能否从"帮人筛化合物"转型为"帮人造GMP药"的速度</b>。当前CDMO占比已超化学发现CRO（好信号），TIDES增速+147%远超化学发现+18%（转型加速中）。<br>
+    <strong style="color:#1a2332">时间线判断</strong>：2026-2028 AI只加速发现端，临床仍是瓶颈，药明CDMO安全；2028-2032 FDA可能接受AI辅助临床，第二层开始受压；2032+ 全周期AI化→只有纯制造CDMO存活。<br>
+    <strong style="color:#1a2332">最不怕AI的部分</strong>：TIDES多肽生产（GLP-1）——AI加速的是新药设计，不影响已上市药的生产放量。GLP-1处方量不靠AI来，靠肥胖人群数量。
+  </div>
 </div>
 
 <!-- ╔══════════════════════════════════════════╗ -->
@@ -557,6 +662,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <li>1260H 诉讼初裁有利公司</li>
       <li>BIOSECURE 法案在 NDAA 投票被剔除</li>
       <li>2026Q2/Q3 业绩超预期 + 上调指引</li>
+      <li>药明宣布AI战略合作/收购AI CRO（护城河升级）</li>
       <li>任 2 项叠加 → 立刻加大手笔</li>
     </ul>
   </div>
@@ -567,6 +673,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <li>美国大客户公开"切割"声明</li>
       <li>礼来 / 默沙东 GLP-1 订单延期</li>
       <li>NDAA BIOSECURE 条款进入辩论</li>
+      <li>化学发现CRO收入连2季增速&lt;CDMO增速10pp+（AI侵蚀加速）</li>
       <li>出现任一 → 观察一轮再说</li>
     </ul>
   </div>
