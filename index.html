@@ -331,7 +331,7 @@ body {
 <script>
 // ==== STOCK_POOL_DATA_START ====
 var STOCK_POOL_CONFIG = {
-  lastScan: '2026-06-16-future-stars-removed-v3.5',
+  lastScan: '2026-06-16-nightly-scan',
   stocks: [
     { code: '600519', name: '贵州茅台', market: 'SH', sector: '消费', zone: 'pool',
       lineA: 1100, lineB: 890, red: 1715, metric: 'PE', basis: 68.6,
@@ -381,7 +381,7 @@ var STOCK_POOL_CONFIG = {
     { code: '600030', name: '中信证券', market: 'SH', sector: '金融', zone: 'pool',
       lineA: 20.3, lineB: 15.8, red: 27, metric: 'PB', basis: 22.5,
       valA: 0.90, valB: 0.70, valRed: 1.20,
-      addedDate: '2026-06-14',
+      addedDate: '2026-06-14', redSince: '2026-06-16',
       note: 'ROE仅11%支撑不了PB1.4x｜BPS 22.5｜A=PB0.9x｜B=PB0.7x｜红=PB1.2x｜⚠️非免疫｜佣金直接受市场冲击' },
     { code: '00700', name: '腾讯控股', market: 'HK', sector: '科技', zone: 'pool',
       lineA: 496, lineB: 372, red: 806, metric: 'PE', basis: 31.0,
@@ -521,7 +521,7 @@ var STOCK_POOL_CONFIG = {
     { code: '300750', name: '宁德时代', market: 'SH', sector: '新能源', zone: 'watch', poolType: 'star',
       lineA: 200, lineB: 160, red: 400, metric: 'PE', basis: 16.0,
       valA: 12.5, valB: 10.0, valRed: 25.0,
-      addedDate: '2026-06-16',
+      addedDate: '2026-06-16', redSince: '2026-06-16',
       note: '⭐未来之星B档·watchlist v1.5·已建仓底仓｜2026E EPS估¥16(动力电池龙头+储能爆发+海外占比提升)｜A=PE12.5x(底仓加仓位)｜B=PE10x(极端恐慌)｜红=PE25x｜⚠️固态电池量产被丰田/QuantumScape抢先18个月→清仓｜目标仓位5%(底仓不动)｜赔率1.35x概率70%期望值0.95x' },
     { code: '002594', name: '比亚迪', market: 'SZ', sector: '新能源', zone: 'watch', poolType: 'star',
       lineA: 100, lineB: 80, red: 180, metric: 'PE', basis: 8.5,
@@ -546,7 +546,7 @@ var STOCK_POOL_CONFIG = {
     { code: '688017', name: '绿的谐波', market: 'SH', sector: '机械', zone: 'watch', poolType: 'star',
       lineA: 60, lineB: 45, red: 120, metric: 'PE', basis: 0,
       valA: 0, valB: 0, valRed: 0,
-      addedDate: '2026-06-16',
+      addedDate: '2026-06-16', redSince: '2026-06-16',
       note: '⭐未来之星C档·规则模糊·watchlist v1.5｜谐波减速器全球#2 vs 日本哈默纳科直接竞争｜A=¥60(观察价)｜B=¥45｜红=¥120｜⚠️零部件供应商永远不是规则制定者+毛利被压缩｜目标仓位0%(仅观察不持仓·等人形机器人量产爆发)｜升级条件:RV减速器突破+人形机器人爆发→升B档｜认错线:量产推迟+哈默纳科价格战→永久剔除' },
     // ===== 年轻人钱包 (Youth Wallet) =====
     { code: '300896', name: '爱美客', market: 'SZ', sector: '医药', zone: 'watch', poolType: 'youth',
