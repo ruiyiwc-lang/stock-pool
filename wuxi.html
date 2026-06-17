@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>药明康德 603259 / 02359 - 跟踪面板</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; max-width:900px; margin:0 auto; font-size:16px; }
+h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
+.subtitle a { color:#1e3a5f; text-decoration:none; }
+
+.section-divider { border:none; border-top:1px solid #e5e5ea; margin:28px 0 20px; }
+.section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
+
+/* 红色警报横幅 */
+.alert-banner {
+  background:linear-gradient(135deg,#ff3b30,#c0392b);
+  color:#fff;
+  border-radius:12px;
+  padding:14px 18px;
+  margin-bottom:16px;
+  font-size:14px;
+  line-height:1.6;
+}
+.alert-banner strong { font-weight:700; }
+.alert-banner .alert-tag {
+  display:inline-block;
+  font-size:12px;
+  background:rgba(255,255,255,0.2);
+  padding:2px 8px;
+  border-radius:4px;
+  margin-right:8px;
+  letter-spacing:0.5px;
+  font-weight:600;
+}
+
+/* 价格大卡片（双轨） */
+.price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.price-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:20px 22px; }
+.price-card .market-tag { font-size:12px; color:#1e3a5f; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.price-big { font-size:40px; font-weight:700; color:#1a2332; letter-spacing:-1px; }
+.price-change { font-size:16px; font-weight:600; }
+.price-change.up { color:#1a7a4c; }
+.price-change.down { color:#c0392b; }
+.price-change.flat { color:#6b7b8d; }
+.price-meta { display:flex; gap:14px; margin-top:8px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
+.price-meta span b { color:#1a2332; }
+
+/* 进度条 */
+.gauge { margin-top:20px; position:relative; padding-bottom:36px; }
+.gauge-bar { height:12px; border-radius:6px; background:#d0d7e0; position:relative; overflow:visible; }
+.gauge-fill { height:100%; border-radius:6px; transition:width .6s; }
+.gauge-labels { display:flex; justify-content:space-between; font-size:13px; color:#6b7b8d; margin-top:10px; }
+.gauge-labels .lbl-b { color:#1a7a4c; font-weight:500; }
+.gauge-labels .lbl-a { color:#1e3a5f; font-weight:500; }
+.gauge-labels .lbl-r { color:#c0392b; font-weight:500; }
+.gauge-marker { position:absolute; top:0; width:0; height:0; transition:left .6s; }
+.gauge-marker-label { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:#1a2332; white-space:nowrap; font-weight:700; background:#f8f9fc; padding:1px 4px; border-radius:3px; }
+
+/* 通用卡片 */
+.kpi-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.kpi-item { text-align:center; padding:8px; background:#f8f9fc; border-radius:8px; }
+.kpi-item .val { font-size:22px; font-weight:700; color:#1a2332; }
+.kpi-item .lbl { font-size:13px; color:#6b7b8d; margin-top:2px; }
+.kpi-item .delta { font-size:12px; margin-top:2px; font-weight:600; }
+.kpi-item .delta.up { color:#1a7a4c; }
+.kpi-item .delta.down { color:#c0392b; }
+
+/* BIOSECURE 温度计 */
+.bio-card { background:#fff8f0; border:1px solid #ffd9a8; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.bio-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#9a4d00; }
+.bio-thermo { background:linear-gradient(90deg,#34c759 0%,#ffcc00 35%,#ff9500 70%,#ff3b30 100%); height:14px; border-radius:7px; position:relative; }
+.bio-thermo-marker { position:absolute; top:-4px; width:4px; height:22px; background:#1c1c1e; border-radius:2px; }
+.bio-levels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
+.bio-status { margin-top:12px; padding:10px; background:#fff; border-radius:8px; font-size:14px; line-height:1.6; }
+.bio-status b { color:#c0392b; }
+
+/* 新闻卡片 */
+.news-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; }
+.news-item { padding:10px 0; border-bottom:1px solid #f0f3f6; }
+.news-item:last-child { border-bottom:none; }
+.news-tag { display:inline-block; font-size:12px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
+.news-tag.policy { background:rgba(192,57,43,0.08); color:#c0392b; }
+.news-tag.order { background:rgba(26,122,76,0.08); color:#1a7a4c; }
+.news-tag.client { background:rgba(30,58,95,0.08); color:#1e3a5f; }
+.news-tag.capital { background:rgba(74,58,138,0.08); color:#4a3a8a; }
+.news-tag.earn { background:rgba(201,168,76,0.08); color:#9a7d2e; }
+.news-item .news-title { font-size:15px; font-weight:500; color:#1a2332; line-height:1.4; }
+.news-item .news-title a { color:#1a2332; text-decoration:none; }
+.news-item .news-title a:hover { color:#1e3a5f; text-decoration:underline; }
+.news-item .news-summary { font-size:14px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
+.news-item .news-date { font-size:13px; color:#8fa0b3; margin-top:4px; }
+.news-empty { font-size:15px; color:#8fa0b3; text-align:center; padding:20px; }
+
+/* 订单表 */
+.order-table { width:100%; border-collapse:collapse; font-size:14px; }
+.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
+.order-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
+.order-table .pos { color:#1a7a4c; font-weight:600; }
+.order-table .neg { color:#c0392b; font-weight:600; }
+
+/* 信号 */
+.signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.sig-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:10px; padding:14px 16px; }
+.sig-card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.sig-card ul { list-style:none; font-size:14px; line-height:1.8; }
+.sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.sig-buy li::before { background:#1a7a4c; }
+.sig-wait li::before { background:#c9a84c; }
+.sig-stop li::before { background:#c0392b; }
+.sig-sell li::before { background:#4a3a8a; }
+
+/* 建仓策略 */
+.strat-table { width:100%; border-collapse:collapse; font-size:14px; }
+.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
+.strat-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
+
+/* 催化剂日历 */
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f3f6; font-size:14px; }
+.cal-item:last-child { border-bottom:none; }
+.cal-date { color:#1e3a5f; font-weight:600; min-width:120px; font-size:13px; }
+.cal-desc { color:#1a2332; flex:1; font-size:14px; }
+.cal-tag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
+.cal-tag.hot { background:rgba(255,59,48,0.12); color:#c0392b; }
+.cal-tag.med { background:rgba(255,149,0,0.12); color:#9a4d00; }
+.cal-tag.cool { background:rgba(26,122,76,0.12); color:#1a7a4c; }
+
+/* 论点 */
+.thesis-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
+.thesis-card p { font-size:14px; line-height:1.8; color:#4a5d6e; }
+.thesis-card strong { color:#1a2332; }
+
+.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#1e3a5f; text-decoration:none; }
+.back-link:hover { text-decoration:underline; }
+
+@media(max-width:600px) {
+  .price-grid { grid-template-columns:1fr; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .signals { grid-template-columns:1fr; }
+  .price-big { font-size:30px; }
+}
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">&larr; 返回股票池</a>
+<h1>药明康德 603259 / 02359</h1>
+<div class="subtitle">A 档规则制定者 &middot; 创新药基础设施 &middot; 全球 CXO 龙头 &middot; <a href="https://www.wuxiapptec.cn/" target="_blank">官网</a> &middot; <a href="https://q.stock.sohu.com/cn/603259/" target="_blank">A股</a> &middot; <a href="https://xueqiu.com/S/02359" target="_blank">H股</a></div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  最高级警报（1260H 事件，2026-06-08）    ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="alert-banner">
+  <span class="alert-tag">⚠ ACTIVE THREAT</span>
+  <strong>1260H 清单事件持续中</strong> · 美国国防部 2026-06-08 首次将公司纳入 "中国军工企业" 清单。公司 6/11 起诉国防部，目前等待法院初步裁决（预计 2026 Q3）。A+H 双双暴跌 5%+ 后已部分修复，公司持续回购 A 股+H 股稳定股价。<br>
+  <strong>核心风险：</strong>1260H 本身不直接禁运，但 BIOSECURE 法案可能借 2027 NDAA（11-12 月投票）卷土重来，需重点监测。
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║     A+H 双轨实时价格                      ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="price-grid">
+
+  <!-- A 股 -->
+  <div class="price-card">
+    <div class="market-tag">🇨🇳 A 股 · 603259.SH</div>
+    <div class="price-row">
+      <span class="price-big" id="a-price">98.16</span>
+      <span class="price-change flat" id="a-change">--</span>
+    </div>
+    <div class="price-meta">
+      <span>Fwd PE <b id="a-pe">12.3x</b></span>
+      <span>PEG <b id="a-peg">0.49</b></span>
+      <span>市值 <b id="a-mc">2475亿</b></span>
+    </div>
+    <div class="gauge">
+      <div class="gauge-bar" id="a-bar">
+        <div class="gauge-fill" id="a-fill" style="width:0"></div>
+        <div class="gauge-marker" id="a-marker"><div class="gauge-marker-label" id="a-marker-lbl"></div></div>
+      </div>
+      <div class="gauge-labels">
+        <span class="lbl-b">B ¥85</span>
+        <span class="lbl-a">A ¥110</span>
+        <span class="lbl-r">红 ¥190</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- H 股 -->
+  <div class="price-card">
+    <div class="market-tag">🇭🇰 H 股 · 02359.HK</div>
+    <div class="price-row">
+      <span class="price-big" id="h-price">124.30</span>
+      <span class="price-change flat" id="h-change">--</span>
+    </div>
+    <div class="price-meta">
+      <span>Fwd PE <b id="h-pe">14.5x</b></span>
+      <span>PEG <b id="h-peg">0.58</b></span>
+      <span>市值 <b id="h-mc">393亿HK</b></span>
+    </div>
+    <div class="gauge">
+      <div class="gauge-bar" id="h-bar">
+        <div class="gauge-fill" id="h-fill" style="width:0"></div>
+        <div class="gauge-marker" id="h-marker"><div class="gauge-marker-label" id="h-marker-lbl"></div></div>
+      </div>
+      <div class="gauge-labels">
+        <span class="lbl-b">B HK$110</span>
+        <span class="lbl-a">A HK$140</span>
+        <span class="lbl-r">红 HK$240</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   核心 KPI 矩阵                           ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>📊 核心 KPI 矩阵 · 2025 年报 / 2026Q1 实绩</h2>
+  <div class="kpi-grid">
+    <div class="kpi-item">
+      <div class="val">597.7亿</div>
+      <div class="lbl">在手订单 (2026Q1)</div>
+      <div class="delta up">+23.6% YoY</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">454.6亿</div>
+      <div class="lbl">2025 营收</div>
+      <div class="delta up">+15.8% YoY</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">191.5亿</div>
+      <div class="lbl">2025 归母净利</div>
+      <div class="delta up">+102.7% (含一次性)</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">124.4亿</div>
+      <div class="lbl">2026Q1 营收</div>
+      <div class="delta up">+28.8% YoY</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">~225亿</div>
+      <div class="lbl">2026E 归母 (扣非)</div>
+      <div class="delta up">+25-30% YoY</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">87.4%</div>
+      <div class="lbl">海外营收占比</div>
+      <div class="delta down">美国 72% (集中度高)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   BIOSECURE / 1260H 温度计               ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="bio-card">
+  <h2>🌡️ BIOSECURE / 1260H 中美摩擦温度计</h2>
+  <div class="bio-thermo">
+    <div class="bio-thermo-marker" id="bio-marker" style="left:72%"></div>
+  </div>
+  <div class="bio-levels">
+    <span>0 平静</span>
+    <span>30 关注</span>
+    <span>60 警戒</span>
+    <span>100 危机</span>
+  </div>
+  <div class="bio-status">
+    <b id="bio-level">当前温度：72 / 100（警戒区上沿）</b><br>
+    <span id="bio-status-text">1260H 名单已落实 + 公司起诉中 + NDAA 11月投票临近 = 三层叠加。诉讼判决前难显著降温，但每次回购都是"抗议性买入"。如果美方法院裁决撤出 1260H，温度可降至 30；若 NDAA 通过含 BIOSECURE 条款，温度升至 95。</span>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   今日新闻（cron 每日 08:30 刷新）         ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="news-card">
+  <h2>📰 今日动态</h2>
+  <!-- NEWS_DATA_START -->
+  <div class="news-item">
+    <span class="news-tag capital">资本</span>
+    <span class="news-title"><a href="https://www.stcn.com/article/detail/3962500.html" target="_blank">H 股回购加码 1.02 亿港元（81.8 万股，124.10-127.80 港元区间）</a></span>
+    <div class="news-summary">连续回购 4 个交易日，累计 H 股回购金额超 4 亿港元，A 股 10 亿元回购方案持续进行中。</div>
+    <div class="news-date">2026-06-15 · 证券时报</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag policy">政策</span>
+    <span class="news-title"><a href="https://www.21jingji.com/article/20260612/herald/f01913ec3c9b70e00823e61f3c4e0021.html" target="_blank">药明康德起诉美国国防部 - 哥伦比亚特区联邦地区法院立案</a></span>
+    <div class="news-summary">公司主张国防部 1260H 决定缺乏事实依据，要求纠正错误认定。预计法院 Q3 给出初步裁决。</div>
+    <div class="news-date">2026-06-12 · 21世纪经济报道</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag policy">政策</span>
+    <span class="news-title"><a href="https://bydrug.pharmcube.com/news/detail/9a1d5cf57c5a9bc0e04224ede37b6773" target="_blank">药明康德，如何接招1260H？ - 医药魔方深度分析</a></span>
+    <div class="news-summary">修订后的 BIOSECURE Act 搭上 2026 NDAA 可能卷土重来，1260H 与 BIOSECURE 双轨并行风险分析。</div>
+    <div class="news-date">2026-06-10 · 医药魔方</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag policy">政策</span>
+    <span class="news-title"><a href="https://finance.sina.com.cn/stock/s/2026-06-09/doc-iniavshm4899251.shtml" target="_blank">被美国国防部盯上，药明康德能做什么？</a></span>
+    <div class="news-summary">美国国防部更新"1260H清单"，80家中国企业集团及188个关联实体被纳入，药明康德首次上榜。A+H 双双暴跌5%+。</div>
+    <div class="news-date">2026-06-08 · 新浪财经</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag capital">资本</span>
+    <span class="news-title"><a href="https://m.10jqka.com.cn/20260529/c677081496.shtml" target="_blank">累计分红回购金额近250亿元，超过净利润40%</a></span>
+    <div class="news-summary">上市至今累计分红、回购并全部注销近250亿元。2026年回购方案持续进行中。</div>
+    <div class="news-date">2026-05-29 · 同花顺</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag earn">业绩</span>
+    <span class="news-title"><a href="https://stcn.com/article/detail/3823286.html" target="_blank">2026Q1 营收首破百亿，毛利率攀升至50.4%</a></span>
+    <div class="news-summary">营收124.4亿(+28.8%)，全年指引513-530亿元。化学业务强劲，TIDES多肽板块持续受GLP-1全球放量驱动。</div>
+    <div class="news-date">2026-04-27 · 证券时报</div>
+  </div>
+  <div class="news-item">
+    <span class="news-tag order">订单</span>
+    <span class="news-title"><a href="https://wap.eastmoney.com/a/202404303065477721.html" target="_blank">GLP-1大订单均为长期合同，正计划扩建新产能</a></span>
+    <div class="news-summary">一季度末TIDES在手订单同比增长超70%，常州/泰兴新产能Q3投产。礼来/默沙东/诺和诺德GLP-1合同全部续约。</div>
+    <div class="news-date">2026-04-30 · 东方财富</div>
+  </div>
+  <!-- NEWS_DATA_END -->
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   GLP-1 / ADC 订单管线                    ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>💊 GLP-1 / ADC 大订单管线</h2>
+  <table class="order-table">
+    <thead><tr><th>客户</th><th>类型</th><th>状态</th><th>影响窗口</th></tr></thead>
+    <tbody>
+      <tr><td>礼来</td><td>GLP-1（替尔泊肽 / Orforglipron）</td><td class="pos">长期合同 · 多次扩产</td><td>2026-2030</td></tr>
+      <tr><td>默沙东</td><td>GLP-1 管线</td><td class="pos">长期合同进行中</td><td>2026-2028</td></tr>
+      <tr><td>诺和诺德</td><td>多肽供应链</td><td class="pos">TIDES 主要客户</td><td>2026-2029</td></tr>
+      <tr><td>罗氏 / BMS</td><td>ADC / 双抗</td><td class="pos">化学业务非 GLP-1 部分 +21.4%</td><td>2026-2027</td></tr>
+      <tr><td>TIDES 板块整体</td><td>多肽 + 寡核苷酸</td><td class="pos">2025Q1 同比 +187.6%</td><td>持续</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">大订单具体金额公司未单独披露，但 TIDES 在手订单增速远超总体，是核心增长引擎。</p>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   三业务线分布                             ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>🧪 三业务线收入结构 · 2025 全年</h2>
+  <table class="order-table">
+    <thead><tr><th>业务线</th><th>2025 收入</th><th>占比</th><th>同比</th></tr></thead>
+    <tbody>
+      <tr><td><b>化学业务（CRDMO）</b></td><td>364.7 亿</td><td>80.2%</td><td class="pos">+25.5%</td></tr>
+      <tr><td>&nbsp;&nbsp;├ 小分子 D&amp;M</td><td>~280 亿</td><td>~62%</td><td class="pos">+~18%</td></tr>
+      <tr><td>&nbsp;&nbsp;└ TIDES（GLP-1）</td><td>~75 亿</td><td>~16%</td><td class="pos">+~80-100%</td></tr>
+      <tr><td>测试业务</td><td>~62 亿</td><td>~14%</td><td class="pos">+2-5%</td></tr>
+      <tr><td>生物学业务</td><td>~25 亿</td><td>~5.5%</td><td class="pos">+~8%</td></tr>
+      <tr><td style="color:#8b949e">细胞与基因（ATU）</td><td>已剥离</td><td>—</td><td>美欧资产 2025H2 出售</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   静态策略区                               ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<hr class="section-divider">
+<div class="section-title">投资策略 &amp; 参考信息</div>
+
+<!-- 决策信号 -->
+<div class="signals">
+  <div class="sig-card">
+    <h3 style="color:#1a7a4c">🟢 加速建仓信号</h3>
+    <ul class="sig-buy">
+      <li>A 股跌至 ¥85 以下（进入 B 档）</li>
+      <li>1260H 诉讼初裁有利公司</li>
+      <li>BIOSECURE 法案在 NDAA 投票被剔除</li>
+      <li>2026Q2/Q3 业绩超预期 + 上调指引</li>
+      <li>任 2 项叠加 → 立刻加大手笔</li>
+    </ul>
+  </div>
+  <div class="sig-card">
+    <h3 style="color:#9a7d2e">🟡 暂缓建仓信号</h3>
+    <ul class="sig-wait">
+      <li>1260H 诉讼初裁不利</li>
+      <li>美国大客户公开"切割"声明</li>
+      <li>礼来 / 默沙东 GLP-1 订单延期</li>
+      <li>NDAA BIOSECURE 条款进入辩论</li>
+      <li>出现任一 → 观察一轮再说</li>
+    </ul>
+  </div>
+  <div class="sig-card">
+    <h3 style="color:#c0392b">🔴 认错止损条件</h3>
+    <ul class="sig-stop">
+      <li>BIOSECURE 真正立法通过 + 强制脱钩条款</li>
+      <li>Top 5 客户中 ≥ 2 家终止合同</li>
+      <li>在手订单连续 2 季环比下滑</li>
+      <li>美国市场营收占比 12 月内跌破 50%</li>
+      <li>任一发生 → 重估全部仓位</li>
+    </ul>
+  </div>
+  <div class="sig-card">
+    <h3 style="color:#4a3a8a">🟣 止盈卖出条件</h3>
+    <ul class="sig-sell">
+      <li>A 股 ≥ ¥190 (PE &gt; 33x)</li>
+      <li>PEG &gt; 1.5（成长溢价透支）</li>
+      <li>美国大选 / 中美关系全面缓和后估值修复完毕</li>
+      <li>到达红线 → 分批 50% 减仓</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 建仓策略 -->
+<div class="kpi-card">
+  <h2>📋 分档建仓策略 · A 档基础设施支柱 (8-10% 总仓位)</h2>
+  <table class="strat-table">
+    <thead><tr><th>档位</th><th>A 股价格</th><th>H 股价格</th><th>仓位</th><th>PE</th><th>逻辑</th></tr></thead>
+    <tbody>
+      <tr><td>第一档（A档内）</td><td>≤ ¥110</td><td>≤ HK$140</td><td>30%</td><td>≤ 14x</td><td><b>当前 ¥98.16 已触发</b>，1260H 把 PE 打到历史 5-10 分位</td></tr>
+      <tr><td>第二档（B档内）</td><td>≤ ¥85</td><td>≤ HK$110</td><td>60%</td><td>≤ 11x</td><td>1260H 诉讼初裁不利 / NDAA 辩论时</td></tr>
+      <tr><td>第三档（深恐慌）</td><td>≤ ¥65</td><td>≤ HK$85</td><td>满仓</td><td>≤ 8.3x</td><td>BIOSECURE 真通过的极端恐慌</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">基准 EPS = ¥7.85 (2026E 一致预期中位数) · 同时监控两市场，便宜的先买 · 红线 ¥190 / HK$240 = PE 24x 减仓</p>
+</div>
+
+<!-- 催化剂日历 -->
+<div class="kpi-card">
+  <h2>📅 12 个月催化剂日历</h2>
+  <div class="cal-item"><div class="cal-date">2026-07-末</div><div class="cal-desc">2026 H1 中报披露 + 全年指引可能上调 <span class="cal-tag cool">业绩催化</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026-07/08</div><div class="cal-desc">1260H 诉讼初步裁决 / 听证 <span class="cal-tag hot">关键裁决</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026-09/10</div><div class="cal-desc">TIDES 常州/泰兴新产能投产爬坡 <span class="cal-tag cool">订单交付</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026-10-末</div><div class="cal-desc">2026Q3 报告 <span class="cal-tag cool">业绩催化</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026-11/12</div><div class="cal-desc">美国 2027 NDAA 投票（含 BIOSECURE 条款可能性） <span class="cal-tag hot">最大政策风险</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026-Q4</div><div class="cal-desc">A 股 10 亿元回购完成 (上限 ¥156.95) <span class="cal-tag cool">资金面</span></div></div>
+  <div class="cal-item"><div class="cal-date">2027-01</div><div class="cal-desc">JPM 大会 - GLP-1 长期合同披露 <span class="cal-tag cool">订单催化</span></div></div>
+  <div class="cal-item"><div class="cal-date">2027-02/03</div><div class="cal-desc">2026 年报 + 可能特别分红 <span class="cal-tag cool">现金回报</span></div></div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   投资论点摘要                             ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="thesis-card" style="border-left:3px solid #1a7a4c;">
+  <h2 style="color:#1a7a4c">独一档 · 创新药基础设施支柱</h2>
+  <p>
+    <strong>护城河</strong>：不是某个药能否成功，而是<strong>全球 Top 20 药企的强制合规级合作伙伴</strong>。规模（GMP 产能 10x 第二名）+ 监管（FDA / EMA 全套）+ 客户黏性（药品生命周期内不可替换）。<br><br>
+    <strong>独特性</strong>：组合里唯一与三创新药主体（百济 / 翰森 / 传奇）相关性低的标的——它收的是行业过路费，无论谁赢都赚。USER.md 定档 A 档"规则制定者"，与泡泡玛特同档。<br><br>
+    <strong>当前赔率</strong>：1260H 利空把 PE 打到 12x（5 年 5-10 分位），扣非 PEG ≈ 0.49。即使诉讼输（30% 概率）跌到 ¥65，赢（50% 概率）回到 ¥160-180。期望收益 +23%。<br><br>
+    <strong>核心赌注</strong>：①公司诉讼能否撤出 1260H ②BIOSECURE 能否在 2027 NDAA 被剔除 ③TIDES（GLP-1）订单能否持续 +80% 增长。<br><br>
+    <strong>认错线</strong>：BIOSECURE 真正立法通过 + 强制脱钩 + Top 5 客户终止合同 = 重估全部仓位。这之前任何回调都是机会。
+  </p>
+</div>
+
+<div class="update-time" id="update-time">数据更新中...</div>
+
+<script>
+// ===== 配置 =====
+var WUXI_CONFIG = {
+  a: {
+    code: 'sh603259',
+    basis: 7.85,        // 2026E EPS 一致预期 (RMB)
+    lineA: 110,
+    lineB: 85,
+    red: 190,
+    shares: 25.62e8,
+    growthE: 25
+  },
+  h: {
+    code: 'hk02359',
+    basis: 8.65,        // 2026E EPS HK 折算 (HKD)
+    lineA: 140,
+    lineB: 110,
+    red: 240,
+    shares: 3.12e8,
+    growthE: 25
+  }
+};
+
+// ===== JSONP 价格抓取 =====
+function fetchPrices() {
+  ['a', 'h'].forEach(function(market) {
+    var s = document.createElement('script');
+    s.src = 'https://qt.gtimg.cn/q=' + WUXI_CONFIG[market].code + '&_=' + Date.now();
+    s.onload = function() { s.remove(); };
+    s.onerror = function() { s.remove(); };
+    document.head.appendChild(s);
+  });
+}
+
+// 价格回调通用函数
+function priceCallback(market, val) {
+  if (!val) return;
+  var f = val.split('~');
+  var price = parseFloat(f[3]);
+  var prevClose = parseFloat(f[4]);
+  if (isNaN(price) || isNaN(prevClose)) return;
+
+  var cfg = WUXI_CONFIG[market];
+  var changeAmt = (price - prevClose).toFixed(2);
+  var changePct = ((price - prevClose) / prevClose * 100).toFixed(2);
+  var sign = changeAmt >= 0 ? '+' : '';
+
+  document.getElementById(market + '-price').textContent = price.toFixed(2);
+  var chEl = document.getElementById(market + '-change');
+  chEl.textContent = sign + changeAmt + ' (' + sign + changePct + '%)';
+  chEl.className = 'price-change ' + (changeAmt > 0 ? 'up' : changeAmt < 0 ? 'down' : 'flat');
+
+  var pe = (price / cfg.basis).toFixed(1);
+  var peg = (parseFloat(pe) / cfg.growthE).toFixed(2);
+  document.getElementById(market + '-pe').textContent = pe + 'x';
+  document.getElementById(market + '-peg').textContent = peg;
+
+  var mc = price * cfg.shares / 1e8;
+  document.getElementById(market + '-mc').textContent = mc.toFixed(0) + (market === 'a' ? '亿' : '亿HK');
+
+  // 进度条
+  updateGauge(market, price, cfg);
+
+  document.getElementById('update-time').textContent =
+    '实时价格 · 30s 刷新 · ' + new Date().toLocaleString('zh-CN') + ' · 新闻每日 08:30 cron 刷新';
+}
+
+Object.defineProperty(window, 'v_sh603259', {
+  set: function(val) { priceCallback('a', val); },
+  configurable: true
+});
+Object.defineProperty(window, 'v_hk02359', {
+  set: function(val) { priceCallback('h', val); },
+  configurable: true
+});
+
+function updateGauge(market, price, cfg) {
+  var B = cfg.lineB, R = cfg.red, A = cfg.lineA;
+  var range = R - B;
+  var pct = Math.max(0, Math.min(100, (price - B) / range * 100));
+
+  var fill = document.getElementById(market + '-fill');
+  var marker = document.getElementById(market + '-marker');
+  var label = document.getElementById(market + '-marker-lbl');
+
+  if (price <= B) { fill.style.background = '#1a7a4c'; }
+  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f)'; }
+  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c)'; }
+  else { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c,#c0392b)'; }
+
+  fill.style.width = pct + '%';
+  marker.style.left = 'calc(' + pct + '% - 1px)';
+  label.textContent = (market === 'a' ? '¥' : 'HK$') + price.toFixed(0);
+
+  // A-line marker
+  var aPct = (A - B) / range * 100;
+  var aLine = document.getElementById(market + '-aline');
+  if (!aLine) {
+    aLine = document.createElement('div');
+    aLine.id = market + '-aline';
+    aLine.style.cssText = 'position:absolute;top:-3px;width:2.5px;height:18px;background:#1e3a5f;border-radius:1.5px;box-shadow:0 1px 3px rgba(30,58,95,0.3);z-index:2;';
+    document.getElementById(market + '-bar').appendChild(aLine);
+  }
+  aLine.style.left = aPct + '%';
+}
+
+fetchPrices();
+setInterval(fetchPrices, 30000);
+</script>
+</body>
+</html>
