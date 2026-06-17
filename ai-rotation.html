@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI换仓监控 · GOOG / BABA / TSMC</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:#0a0f1a;color:#e0e6ed;min-height:100vh;padding:20px}
+.container{max-width:1200px;margin:0 auto}
+.header{text-align:center;padding:16px 0 20px;border-bottom:1px solid #1e3a5f}
+.header h1{font-size:22px;font-weight:700;color:#e0e6ed;letter-spacing:1px}
+.header .sub{color:#6b7b8d;font-size:13px;margin-top:4px}
+.back{display:inline-block;padding:6px 14px;border:1px solid #c9a84c;color:#c9a84c;text-decoration:none;border-radius:8px;font-size:13px;font-weight:500;margin-top:10px}
+.back:hover{background:#c9a84c;color:#0a0f1a}
+
+/* Decision Banner */
+.decision{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:24px 0}
+.dec-card{background:#111827;border-radius:12px;padding:20px;text-align:center;border:2px solid #1e3a5f}
+.dec-card .ticker{font-size:14px;color:#6b7b8d;font-weight:600;letter-spacing:2px}
+.dec-card .verdict{font-size:32px;font-weight:800;margin:8px 0 4px}
+.dec-card .pe-info{font-size:13px;color:#6b7b8d}
+.dec-card .gap{font-size:14px;font-weight:600;margin-top:6px}
+.v-buy{color:#1a7a4c;border-color:#1a7a4c}
+.v-wait{color:#c0392b;border-color:#c0392b}
+.v-hold{color:#c9a84c;border-color:#c9a84c}
+
+/* Stock Cards */
+.stock-row{background:#111827;border:1px solid #1e3a5f;border-radius:12px;margin:16px 0;padding:20px}
+.stock-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.stock-name{font-size:20px;font-weight:700}
+.stock-price{text-align:right}
+.stock-price .price{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.stock-price .change{font-size:14px;margin-top:2px}
+.chg-up{color:#c0392b}.chg-dn{color:#1a7a4c}
+
+/* PE Progress Bar */
+.pe-bar-wrap{position:relative;background:#1a1f2e;border-radius:8px;height:40px;margin:12px 0 8px;overflow:visible}
+.pe-bar-fill{height:100%;border-radius:8px;transition:width 0.5s}
+.pe-marker{position:absolute;top:-6px;width:2px;height:52px;z-index:2}
+.pe-marker .label{position:absolute;top:-18px;font-size:11px;white-space:nowrap;transform:translateX(-50%);left:50%}
+.pe-marker-b{border-left:2px dashed #1a7a4c}.pe-marker-b .label{color:#1a7a4c}
+.pe-marker-a{border-left:2px dashed #3b82f6}.pe-marker-a .label{color:#3b82f6}
+.pe-marker-r{border-left:2px dashed #c0392b}.pe-marker-r .label{color:#c0392b}
+.pe-marker-cur{border-left:3px solid #c9a84c}.pe-marker-cur .label{color:#c9a84c;font-weight:700;top:auto;bottom:-20px}
+
+/* Metrics Grid */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.metric{background:#1a1f2e;border-radius:8px;padding:12px;text-align:center}
+.metric .label{font-size:11px;color:#6b7b8d;margin-bottom:4px}
+.metric .value{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Target Table */
+.targets{margin-top:12px}
+.targets table{width:100%;border-collapse:collapse;font-size:13px}
+.targets th,.targets td{padding:8px 12px;text-align:right;border-bottom:1px solid #1a1f2e}
+.targets th{color:#6b7b8d;font-weight:600;text-align:left}
+.targets td:first-child{text-align:left;font-weight:600}
+.t-green{color:#1a7a4c}.t-blue{color:#3b82f6}.t-red{color:#c0392b}.t-gold{color:#c9a84c}
+
+/* Swap Signal */
+.swap-signal{background:#111827;border:2px solid #c9a84c;border-radius:12px;padding:20px;margin:24px 0;text-align:center}
+.swap-signal h3{color:#c9a84c;font-size:16px;margin-bottom:8px}
+.swap-signal .formula{font-family:"SF Mono",monospace;font-size:14px;background:#1a1f2e;padding:12px;border-radius:6px;margin:10px 0;color:#e0e6ed}
+.swap-signal .result{font-size:20px;font-weight:700;margin-top:8px}
+
+/* PE History Chart */
+.chart-wrap{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:16px 0}
+.chart-wrap h3{font-size:15px;color:#6b7b8d;margin-bottom:12px}
+.chart-canvas{height:360px;position:relative}
+
+/* Footer */
+.footer{text-align:center;color:#6b7b8d;font-size:11px;margin-top:24px;padding:16px 0;border-top:1px solid #1e3a5f}
+
+@media(max-width:768px){
+  .decision{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>AI换仓监控 · GOOG / BABA / TSMC</h1>
+  <div class="sub">谁低于合理PE持有谁 · PEG=1.0公允 · 实时价格每30秒更新</div>
+  <a class="back" href="index.html">返回逆向股票池</a>
+</div>
+
+<!-- Decision Banner -->
+<div class="decision" id="decisionBanner"></div>
+
+<!-- Stock Cards -->
+<div id="stockCards"></div>
+
+<!-- Swap Signal -->
+<div class="swap-signal" id="swapSignal"></div>
+
+<!-- PE History Chart -->
+<div class="chart-wrap">
+  <h3>PE历史走势 + 合理区间 (2018 — 2026.06)</h3>
+  <div class="chart-canvas"><canvas id="peChart"></canvas></div>
+</div>
+
+<div class="footer">
+  数据源: 腾讯财经(实时) + fullratio.com(历史PE) · 合理PE = 盈利增速 × PEG 1.0 · 每季财报后更新basis<br/>
+  最后更新: <span id="lastUpdate"></span>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ==== CONFIG START ====
+var ROTATION_CONFIG = {
+  lastUpdate: '2026-06-17',
+  stocks: [
+    {
+      code: 'GOOGL',
+      name: 'Alphabet (Google)',
+      market: 'US',
+      qtCode: 'usGOOGL',
+      currency: 'USD',
+      ttmEPS: 13.24,
+      growthRate: 22,
+      growthNote: 'Q1\'26 Rev+22%, Cloud+63%, OpInc+30%. 扣除$36.9B浮盈后真实盈利增速~20-25%',
+      fairPE_low: 20,
+      fairPE_high: 25,
+      peNow: 28.19,
+      priceNow: 373.25,
+      targets: {
+        aggressive: { pe: 25, label: '激进建仓 PEG1.2' },
+        fair: { pe: 22, label: 'A档 PEG1.0' },
+        deep: { pe: 18, label: 'B档 深度回调' }
+      }
+    },
+    {
+      code: '09988',
+      name: '阿里巴巴',
+      market: 'HK',
+      qtCode: 'hk09988',
+      currency: 'HKD',
+      ttmEPS: 6.30,
+      growthRate: 18,
+      growthNote: 'FY25营收+6%净利+77%(一次性)。常态化: 云+40-45%+电商+3-5%+国际+29%→加权15-20%盈利增速',
+      fairPE_low: 15,
+      fairPE_high: 20,
+      peNow: 16.79,
+      priceNow: 125,
+      targets: {
+        aggressive: { pe: 22, label: '反弹目标 PE22x' },
+        fair: { pe: 18, label: '合理中枢 PE18x' },
+        deep: { pe: 12, label: '极端恐慌 PE12x' }
+      }
+    },
+    {
+      code: 'TSM',
+      name: '台积电 (TSMC)',
+      market: 'US',
+      qtCode: 'usTSM',
+      currency: 'USD',
+      ttmEPS: 11.50,
+      growthRate: 28,
+      growthNote: 'Q1\'26 Rev+35%/NI+58%。官方2026指引:美元营收+30%。长期均衡25-30%',
+      fairPE_low: 25,
+      fairPE_high: 30,
+      peNow: 37.04,
+      priceNow: 425.83,
+      targets: {
+        aggressive: { pe: 33, label: '激进建仓 PEG1.2' },
+        fair: { pe: 28, label: 'A档 PEG1.0' },
+        deep: { pe: 22, label: 'B档 深度回调' }
+      }
+    }
+  ]
+};
+// ==== CONFIG END ====
+
+var prices = {};
+var peData = {};
+
+function fetchPrices() {
+  var ids = ROTATION_CONFIG.stocks.map(function(s){ return s.qtCode; }).join(',');
+  var url = 'https://qt.gtimg.cn/q=' + ids + '&_=' + Date.now();
+  var sc = document.createElement('script');
+  sc.src = url;
+  sc.onload = function(){
+    ROTATION_CONFIG.stocks.forEach(function(s){
+      var varName = 'v_' + s.qtCode;
+      var val = window[varName];
+      if(val && val.length > 0){
+        var parts = val.split('~');
+        var price = parseFloat(parts[3]);
+        var chg = parseFloat(parts[32]);
+        if(price > 0){
+          prices[s.code] = { price: price, change: chg };
+        }
+      }
+    });
+    render();
+    sc.remove();
+  };
+  sc.onerror = function(){ sc.remove(); render(); };
+  document.head.appendChild(sc);
+}
+
+function render(){
+  var banner = document.getElementById('decisionBanner');
+  var cards = document.getElementById('stockCards');
+  var bannerHtml = '';
+  var cardsHtml = '';
+
+  ROTATION_CONFIG.stocks.forEach(function(s){
+    var p = prices[s.code];
+    var livePrice = p ? p.price : s.priceNow;
+    var liveChg = p ? p.change : 0;
+    var livePE = livePrice / s.ttmEPS;
+
+    var fairMid = (s.fairPE_low + s.fairPE_high) / 2;
+    var gapPct = ((livePE - fairMid) / fairMid * 100).toFixed(1);
+    var verdict, verdictClass;
+    if(livePE <= s.fairPE_low){
+      verdict = '持有'; verdictClass = 'v-buy';
+    } else if(livePE <= s.fairPE_high){
+      verdict = '观望'; verdictClass = 'v-hold';
+    } else {
+      verdict = '等待'; verdictClass = 'v-wait';
+    }
+
+    // Decision banner
+    bannerHtml += '<div class="dec-card ' + verdictClass + '">' +
+      '<div class="ticker">' + s.code + '</div>' +
+      '<div class="verdict">' + verdict + '</div>' +
+      '<div class="pe-info">PE ' + livePE.toFixed(1) + 'x / 合理 ' + s.fairPE_low + '-' + s.fairPE_high + 'x</div>' +
+      '<div class="gap" style="color:' + (parseFloat(gapPct)<=0?'#1a7a4c':'#c0392b') + '">' +
+      (parseFloat(gapPct)<=0? '低估 '+Math.abs(gapPct)+'%' : '高估 '+gapPct+'%') +
+      '</div></div>';
+
+    // PE bar visualization
+    var peMin = 8, peMax = 45;
+    var barPct = function(pe){ return Math.max(0,Math.min(100,(pe-peMin)/(peMax-peMin)*100)); };
+    var fillPct = barPct(livePE);
+    var fillColor = livePE <= s.fairPE_low ? '#1a7a4c' : livePE <= s.fairPE_high ? '#c9a84c' : '#c0392b';
+
+    var chgClass = liveChg >= 0 ? 'chg-up' : 'chg-dn';
+    var chgSign = liveChg >= 0 ? '+' : '';
+
+    // Target prices
+    var tgts = s.targets;
+    var tgtRows = '';
+    [tgts.aggressive, tgts.fair, tgts.deep].forEach(function(t){
+      var tPrice = (s.ttmEPS * t.pe).toFixed(1);
+      var tDrop = ((livePrice - tPrice) / livePrice * 100).toFixed(1);
+      var cls = parseFloat(tDrop) > 0 ? 't-red' : 't-green';
+      tgtRows += '<tr><td>' + t.label + '</td><td>PE ' + t.pe + 'x</td>' +
+        '<td>' + s.currency + ' ' + tPrice + '</td>' +
+        '<td class="' + cls + '">' + (parseFloat(tDrop)>0 ? '需跌'+tDrop+'%' : '已达') + '</td></tr>';
+    });
+
+    cardsHtml += '<div class="stock-row">' +
+      '<div class="stock-header">' +
+        '<div><div class="stock-name" style="color:' + (verdictClass==='v-buy'?'#1a7a4c':verdictClass==='v-hold'?'#c9a84c':'#c0392b') + '">' + s.name + '</div>' +
+        '<div style="font-size:12px;color:#6b7b8d;margin-top:2px">' + s.code + ' · ' + s.market + ' · 增速 ' + s.growthRate + '%</div></div>' +
+        '<div class="stock-price"><div class="price" style="color:' + (verdictClass==='v-buy'?'#1a7a4c':verdictClass==='v-hold'?'#c9a84c':'#c0392b') + '">' +
+        s.currency + ' ' + livePrice.toFixed(2) + '</div>' +
+        '<div class="change ' + chgClass + '">' + chgSign + liveChg.toFixed(2) + '%</div></div>' +
+      '</div>' +
+      '<div class="pe-bar-wrap">' +
+        '<div class="pe-bar-fill" style="width:' + fillPct + '%;background:' + fillColor + ';opacity:0.3"></div>' +
+        '<div class="pe-marker pe-marker-b" style="left:' + barPct(s.targets.deep.pe) + '%"><div class="label">B线 ' + s.targets.deep.pe + 'x</div></div>' +
+        '<div class="pe-marker pe-marker-a" style="left:' + barPct(s.targets.fair.pe) + '%"><div class="label">A线 ' + s.targets.fair.pe + 'x</div></div>' +
+        '<div class="pe-marker pe-marker-r" style="left:' + barPct(s.targets.aggressive.pe) + '%"><div class="label">' + (s.code==='09988'?'反弹':'激进') + ' ' + s.targets.aggressive.pe + 'x</div></div>' +
+        '<div class="pe-marker pe-marker-cur" style="left:' + barPct(livePE) + '%"><div class="label">当前 ' + livePE.toFixed(1) + 'x</div></div>' +
+      '</div>' +
+      '<div class="metrics">' +
+        '<div class="metric"><div class="label">当前PE</div><div class="value" style="color:' + fillColor + '">' + livePE.toFixed(1) + 'x</div></div>' +
+        '<div class="metric"><div class="label">合理PE</div><div class="value">' + s.fairPE_low + '-' + s.fairPE_high + 'x</div></div>' +
+        '<div class="metric"><div class="label">TTM EPS</div><div class="value">' + s.currency + ' ' + s.ttmEPS.toFixed(2) + '</div></div>' +
+        '<div class="metric"><div class="label">盈利增速</div><div class="value">' + s.growthRate + '%</div></div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:#6b7b8d;margin-top:8px">' + s.growthNote + '</div>' +
+      '<div class="targets"><table>' +
+        '<tr><th>建仓档位</th><th>PE目标</th><th>对应价位</th><th>距今</th></tr>' +
+        tgtRows +
+      '</table></div>' +
+    '</div>';
+  });
+
+  banner.innerHTML = bannerHtml;
+  cards.innerHTML = cardsHtml;
+
+  // Swap signal
+  renderSwapSignal();
+  document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-CN');
+}
+
+function renderSwapSignal(){
+  var el = document.getElementById('swapSignal');
+  var baba = prices['09988'] ? prices['09988'].price / ROTATION_CONFIG.stocks[1].ttmEPS : ROTATION_CONFIG.stocks[1].peNow;
+  var goog = prices['GOOGL'] ? prices['GOOGL'].price / ROTATION_CONFIG.stocks[0].ttmEPS : ROTATION_CONFIG.stocks[0].peNow;
+  var tsm = prices['TSM'] ? prices['TSM'].price / ROTATION_CONFIG.stocks[2].ttmEPS : ROTATION_CONFIG.stocks[2].peNow;
+
+  var gapGoog = (goog - baba).toFixed(1);
+  var gapTsm = (tsm - baba).toFixed(1);
+
+  var googReady = goog <= 22;
+  var tsmReady = tsm <= 28;
+  var signal = '持有阿里 · 等待GOOG/TSMC回调';
+  var sigColor = '#c9a84c';
+  if(googReady && tsmReady){
+    signal = '换仓窗口打开! 卖阿里→买GOOG+TSMC';
+    sigColor = '#1a7a4c';
+  } else if(googReady || tsmReady){
+    signal = '部分窗口: ' + (googReady?'GOOG已到位':'TSMC已到位') + ' · 可开始分批换仓';
+    sigColor = '#3b82f6';
+  }
+
+  el.innerHTML = '<h3>换仓信号</h3>' +
+    '<div class="formula">' +
+      'BABA PE ' + baba.toFixed(1) + 'x &nbsp;←→&nbsp; GOOG PE ' + goog.toFixed(1) + 'x (差 ' + gapGoog + 'x) &nbsp;|&nbsp; TSMC PE ' + tsm.toFixed(1) + 'x (差 ' + gapTsm + 'x)' +
+    '</div>' +
+    '<div style="font-size:13px;color:#6b7b8d;margin:8px 0">' +
+      '换仓条件: GOOG PE ≤ 22x (需跌' + Math.max(0,(goog-22)/goog*100).toFixed(0) + '%) · TSMC PE ≤ 28x (需跌' + Math.max(0,(tsm-28)/tsm*100).toFixed(0) + '%)' +
+    '</div>' +
+    '<div class="result" style="color:' + sigColor + '">' + signal + '</div>';
+  el.style.borderColor = sigColor;
+}
+
+// PE History Chart
+function drawChart(){
+  var labels = [
+    '18Q4','19Q4','20Q4','21Q4',
+    '22Q3','22Q4','23Q1','23Q2','23Q3','23Q4',
+    '24Q1','24Q2','24Q3','24Q4',
+    '25Q1','25Q2','25Q3','25Q4',
+    '26Q1','26Q2'
+  ];
+  var goog = [23.64,27.00,29.61,25.46,18.83,19.22,22.90,25.15,24.93,23.92,22.97,25.91,21.79,23.28,17.07,18.59,23.76,28.69,21.72,28.19];
+  var baba = [46.33,36.04,23.97,26.79,60.00,47.97,25.36,18.40,12.26,14.02,16.49,18.51,20.94,12.05,17.42,12.77,23.50,25.70,18.98,16.79];
+  var tsm  = [16.13,25.62,31.11,29.18,12.81,11.94,14.76,17.29,16.68,19.46,25.93,31.32,27.07,28.72,21.95,23.75,28.08,29.03,29.40,37.04];
+
+  new Chart(document.getElementById('peChart'), {
+    type:'line',
+    data:{
+      labels:labels,
+      datasets:[
+        {label:'GOOG',data:goog,borderColor:'#3b82f6',borderWidth:2.5,tension:0.3,pointRadius:2.5,fill:false},
+        {label:'BABA',data:baba,borderColor:'#c0392b',borderWidth:2.5,tension:0.3,pointRadius:2.5,fill:false},
+        {label:'TSMC',data:tsm,borderColor:'#c9a84c',borderWidth:2.5,tension:0.3,pointRadius:2.5,fill:false},
+        {label:'GOOG合理区上(25x)',data:Array(20).fill(25),borderColor:'rgba(59,130,246,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:false},
+        {label:'GOOG合理区下(20x)',data:Array(20).fill(20),borderColor:'rgba(59,130,246,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:'-1',backgroundColor:'rgba(59,130,246,0.04)'},
+        {label:'BABA合理区上(20x)',data:Array(20).fill(20),borderColor:'rgba(192,57,43,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:false},
+        {label:'BABA合理区下(15x)',data:Array(20).fill(15),borderColor:'rgba(192,57,43,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:'-1',backgroundColor:'rgba(192,57,43,0.04)'},
+        {label:'TSMC合理区上(30x)',data:Array(20).fill(30),borderColor:'rgba(201,168,76,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:false},
+        {label:'TSMC合理区下(25x)',data:Array(20).fill(25),borderColor:'rgba(201,168,76,0.2)',borderWidth:1,borderDash:[5,4],pointRadius:0,fill:'-1',backgroundColor:'rgba(201,168,76,0.04)'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{color:'#6b7b8d',font:{size:11,family:'-apple-system'},usePointStyle:true,padding:14,
+          filter:function(item){return !item.text.includes('合理区');}
+        }},
+        tooltip:{backgroundColor:'#1e3a5f',titleColor:'#c9a84c',bodyColor:'#e0e6ed',padding:10,cornerRadius:6,
+          filter:function(item){return !item.dataset.label.includes('合理区');}
+        }
+      },
+      scales:{
+        y:{beginAtZero:false,min:5,max:65,
+          title:{display:true,text:'PE (TTM)',color:'#6b7b8d',font:{size:12}},
+          grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d',font:{size:11}}
+        },
+        x:{grid:{color:'#1a1f2e'},ticks:{color:'#6b7b8d',font:{size:10},maxRotation:45,minRotation:45}}
+      }
+    }
+  });
+}
+
+// Init
+fetchPrices();
+setInterval(fetchPrices, 30000);
+drawChart();
+</script>
+</body>
+</html>
