@@ -268,6 +268,12 @@ body {
         <div id="foundationRows">
           <div class="stock-row"><span class="stock-name">加载中...</span><span class="stock-ratio normal">--</span></div>
         </div>
+        <div style="border-top:1px solid rgba(30,58,95,0.4);margin-top:6px;padding-top:6px;">
+          <div class="stock-row" id="smicRow">
+            <span class="stock-name">中芯H</span>
+            <span class="stock-ratio normal" id="smicStatus">价格阈值 --</span>
+          </div>
+        </div>
       </a>
 
       <!-- Card 3: 泡泡玛特 -->
@@ -306,14 +312,14 @@ body {
     if (btn) btn.classList.add('active');
   }
 
-  // Stock configs — only avgPE needed, PE comes from API field[39]
+  // PE ratio stocks (mature 15-30% growers)
   var FOUNDATION = [
     { id: 'BABA', name: 'BABA', qtCode: 'hk09988', avgPE: 25.0 },
     { id: 'GOOG', name: 'GOOG', qtCode: 'usGOOGL', avgPE: 23.6 },
-    { id: 'TSMC', name: 'TSMC', qtCode: 'usTSM', avgPE: 25.8 },
-    { id: 'SMIC-A', name: '中芯A', qtCode: 'sh688981', avgPE: 48.0 },
-    { id: 'SMIC-H', name: '中芯H', qtCode: 'hk00981', avgPE: 35.0 }
+    { id: 'TSMC', name: 'TSMC', qtCode: 'usTSM', avgPE: 25.8 }
   ];
+  // SMIC uses price threshold (PE distorted by depreciation peak)
+  var SMIC_H = { qtCode: 'hk00981', aHigh: 72 };
   var EXTRA = [
     { id: 'popmart', qtCode: 'hk09992' },
     { id: 'wuxi', qtCode: 'sh603259' }
@@ -321,6 +327,7 @@ body {
 
   function fetchData() {
     var allCodes = FOUNDATION.map(function(s){return s.qtCode})
+      .concat([SMIC_H.qtCode])
       .concat(EXTRA.map(function(s){return s.qtCode}));
     var url = 'https://qt.gtimg.cn/q=' + allCodes.join(',');
     var xhr = new XMLHttpRequest();
@@ -333,13 +340,13 @@ body {
           var match = lines[i].match(/v_([^=]+)="([^"]*)"/);
           if (!match) continue;
           var fields = match[2].split('~');
-          // field[3]=price, field[39]=PE(TTM)
           data[match[1]] = {
             price: parseFloat(fields[3]) || 0,
             pe: parseFloat(fields[39]) || 0
           };
         }
         renderFoundation(data);
+        renderSMIC(data);
         renderExtra(data);
       }
     };
@@ -367,13 +374,26 @@ body {
     document.getElementById('foundationRows').innerHTML = html;
   }
 
+  function renderSMIC(data) {
+    var d = data[SMIC_H.qtCode] || { price: 0, pe: 0 };
+    var el = document.getElementById('smicStatus');
+    if (d.price > 0) {
+      var dist = ((d.price / SMIC_H.aHigh) - 1) * 100;
+      if (d.price <= SMIC_H.aHigh) {
+        el.textContent = 'HK$' + d.price.toFixed(1) + ' · A档内';
+        el.className = 'stock-ratio highlight';
+      } else {
+        el.textContent = 'HK$' + d.price.toFixed(1) + ' · 距A档+' + dist.toFixed(0) + '%';
+        el.className = 'stock-ratio normal';
+      }
+    }
+  }
+
   function renderExtra(data) {
-    // Popmart
     var pm = data['hk09992'] || { price: 0, pe: 0 };
     document.getElementById('popmartPrice').textContent = pm.price > 0 ? pm.price.toFixed(2) : '--';
     document.getElementById('popmartMeta').textContent = 'PE(TTM) ' + (pm.pe > 0 ? pm.pe.toFixed(1) + 'x' : '--') + ' · 品类定义者A档';
 
-    // Wuxi
     var wx = data['sh603259'] || { price: 0, pe: 0 };
     document.getElementById('wuxiPrice').textContent = wx.price > 0 ? wx.price.toFixed(2) : '--';
     document.getElementById('wuxiMeta').textContent = 'PE(TTM) ' + (wx.pe > 0 ? wx.pe.toFixed(1) + 'x' : '--') + ' · A档基础设施支柱';
