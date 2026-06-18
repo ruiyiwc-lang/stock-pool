@@ -298,6 +298,9 @@ body {
   </div>
 </div>
 
+<!-- ===== Shared Bubble Data (单一数据源) ===== -->
+<script src="bubble-data.js"></script>
+
 <!-- ===== Live Data Script ===== -->
 <script>
 (function() {
@@ -308,106 +311,8 @@ body {
     if (btn) btn.classList.add('active');
   }
 
-  // ===== Bubble Temperature (synced with bubble.html BUBBLE_DATA) =====
-  var BUBBLE_DATA = {
-    updateDate: '2026-06-14',
-    layer05: {
-      credit_spread: { value: 278 },
-      margin_debt: { value: 1.30 },
-      growth_value: { value: 0 },
-      market_breadth: { value: 61 }
-    },
-    layer0: {
-      openai_arr: { value: 40 },
-      enterprise_budget: { value: 0.3 },
-      token_price_war: { value: 0.2 },
-      csp_capex: { value: 0.05 },
-      ipo_progress: { value: 0.1 },
-      dram_spot: { value: 5 },
-      cowos_lead: { value: 14 },
-      h100_price: { value: 19 }
-    },
-    layer1: {
-      nvda_pe: { value: 20.7 },
-      sox: { value: 5.9 },
-      tsm: { value: 5.8 },
-      sk_hynix: { value: 10.2 },
-      avgo: { value: 22.8 },
-      mu: { value: 9.9 },
-      xuchuang: { value: 12.0 },
-      hudian: { value: 12.3 },
-      fulian: { value: 12.8 },
-      etf_512480: { value: 6.4 }
-    }
-  };
-  var LAYERS = {
-    '05': { wt:40, items:[
-      {k:'credit_spread',w:20,s:350,d:450,dir:'asc'},
-      {k:'margin_debt',w:8,s:1.15,d:1.45,dir:'asc'},
-      {k:'growth_value',w:6,s:2,d:6,dir:'asc'},
-      {k:'market_breadth',w:6,s:60,d:40,dir:'desc'}
-    ]},
-    '0': { wt:30, items:[
-      {k:'openai_arr',w:6,s:30,d:10,dir:'desc'},
-      {k:'enterprise_budget',w:1,s:.33,d:.67,dir:'asc'},
-      {k:'token_price_war',w:5,s:.33,d:.67,dir:'asc'},
-      {k:'csp_capex',w:8,s:.33,d:.67,dir:'asc'},
-      {k:'ipo_progress',w:1,s:.33,d:.67,dir:'asc'},
-      {k:'dram_spot',w:4,s:15,d:0,dir:'desc'},
-      {k:'cowos_lead',w:3,s:5,d:3,dir:'desc'},
-      {k:'h100_price',w:2,s:17,d:14,dir:'desc'}
-    ]},
-    '1': { wt:30, items:[
-      {k:'nvda_pe',w:10,s:22,d:18,dir:'desc'},
-      {k:'sox',w:6,s:10,d:25,dir:'asc'},
-      {k:'tsm',w:5,s:10,d:25,dir:'asc'},
-      {k:'sk_hynix',w:2,s:10,d:25,dir:'asc'},
-      {k:'avgo',w:3,s:10,d:25,dir:'asc'},
-      {k:'mu',w:2,s:10,d:25,dir:'asc'},
-      {k:'xuchuang',w:1,s:10,d:25,dir:'asc'},
-      {k:'hudian',w:1,s:10,d:25,dir:'asc'},
-      {k:'fulian',w:1,s:10,d:25,dir:'asc'},
-      {k:'etf_512480',w:1,s:10,d:25,dir:'asc'}
-    ]}
-  };
-  var layerMap = {'05':'layer05','0':'layer0','1':'layer1'};
-
-  function calcSc(v,s,d,dir) {
-    if(v==null||isNaN(v)) return 0;
-    if(dir==='asc') {
-      if(v<=s) return Math.max(0,v/Math.max(s,.01)*40);
-      if(v<=d) return 40+(v-s)/Math.max(d-s,.01)*30;
-      return Math.min(100,70+(v-d)/Math.max(d-s,.01)*30);
-    } else {
-      if(v>=s) return Math.max(0,40-((v-s)/Math.max(s,.01)*40));
-      if(v>=d) return 40+(s-v)/Math.max(s-d,.01)*30;
-      return Math.min(100,70+(d-v)/Math.max(s-d,.01)*30);
-    }
-  }
-
-  function calcBubbleTemp() {
-    var totalWt = 0, weightedSc = 0;
-    for (var lk in LAYERS) {
-      var layer = LAYERS[lk];
-      var dataKey = layerMap[lk];
-      var lData = BUBBLE_DATA[dataKey] || {};
-      var lWt = 0, lSc = 0;
-      for (var i = 0; i < layer.items.length; i++) {
-        var item = layer.items[i];
-        var entry = lData[item.k];
-        var v = entry ? entry.value : null;
-        var sc = calcSc(v, item.s, item.d, item.dir);
-        lSc += sc * item.w;
-        lWt += item.w;
-      }
-      var layerScore = lWt > 0 ? lSc / lWt : 0;
-      weightedSc += layerScore * layer.wt;
-      totalWt += layer.wt;
-    }
-    return totalWt > 0 ? Math.round(weightedSc / totalWt) : 0;
-  }
-
-  var temp = calcBubbleTemp();
+  // ===== Bubble Temperature (使用 bubble-data.js 共享数据 + 计算引擎) =====
+  var temp = bubbleCalcTemp();
   var el = document.getElementById('bubbleScore');
   var stEl = document.getElementById('bubbleStatus');
   var cls = temp < 25 ? 'green' : temp < 40 ? 'green' : temp < 55 ? 'yellow' : temp < 70 ? 'yellow' : 'red';
