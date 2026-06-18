@@ -175,6 +175,67 @@ dates.forEach(function(d,i){
     '</td><td>'+A_idx[i]+'</td><td class="gold">'+H_idx[i]+'</td><td>'+gap+
     '</td><td class="up">+'+premium[i]+'%</td></tr>';
 });
+
+// ===== LIVE PRICE OVERLAY =====
+(function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://qt.gtimg.cn/q=sh688981,hk00981', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4 || xhr.status !== 200) return;
+    var parsed = {};
+    var lines = xhr.responseText.split(';');
+    for (var i = 0; i < lines.length; i++) {
+      var m = lines[i].match(/v_([^=]+)="([^"]*)"/);
+      if (!m) continue;
+      var f = m[2].split('~');
+      parsed[m[1]] = parseFloat(f[3]) || 0;
+    }
+    var liveA = parsed['sh688981'];
+    var liveH = parsed['hk00981'];
+    if (!liveA || !liveH) return;
+
+    // Update last data point with live prices
+    A_price[A_price.length - 1] = liveA;
+    H_price[H_price.length - 1] = liveH;
+
+    // Recalculate indices
+    var newA_idx = (liveA / A_price[0] * 100).toFixed(1);
+    var newH_idx = (liveH / H_price[0] * 100).toFixed(1);
+    A_idx[A_idx.length - 1] = newA_idx;
+    H_idx[H_idx.length - 1] = newH_idx;
+
+    // Recalculate premium
+    var h_rmb = liveH * 0.92;
+    var newPremium = ((liveA - h_rmb) / h_rmb * 100).toFixed(0);
+    premium[premium.length - 1] = newPremium;
+
+    // Update KPI cards
+    var kpiCards = document.querySelectorAll('.kpi-card .value');
+    if (kpiCards.length >= 4) {
+      kpiCards[1].textContent = '+' + newPremium + '%';  // 当前AH溢价
+      var aReturn = ((liveA / A_price[0] - 1) * 100).toFixed(0);
+      var hReturn = ((liveH / H_price[0] - 1) * 100).toFixed(0);
+      kpiCards[2].textContent = '+' + aReturn + '%';     // A股累计涨幅
+      kpiCards[3].textContent = '+' + hReturn + '%';     // H股累计涨幅
+    }
+
+    // Update last row of table
+    var rows = tbody.querySelectorAll('tr');
+    if (rows.length > 0) {
+      var lastRow = rows[rows.length - 1];
+      var gap = (parseFloat(newA_idx) - parseFloat(newH_idx)).toFixed(1);
+      lastRow.innerHTML = '<td>' + new Date().toISOString().slice(0,7) + ' (实时)</td><td>' +
+        liveA.toFixed(2) + '</td><td>' + liveH.toFixed(2) + '</td><td>' + newA_idx +
+        '</td><td class="gold">' + newH_idx + '</td><td>' + gap +
+        '</td><td class="up">+' + newPremium + '%</td>';
+    }
+
+    // Update subtitle
+    var sub = document.querySelector('.sub');
+    if (sub) sub.textContent = '2020/7/16 (A股IPO日) = 100 基准 · 实时更新 · 用各自货币归一化（无汇率换算）';
+  };
+  xhr.send();
+})();
 </script>
 </body>
 </html>
