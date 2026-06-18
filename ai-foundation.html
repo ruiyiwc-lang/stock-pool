@@ -456,33 +456,27 @@ body {
 
   // ===== Stock Configuration =====
   var STOCKS = [
-    { id: 'BABA',   name: '阿里巴巴', ticker: '09988.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk09988', eps: 56.2,  avgPE: 25.0, currency: 'HKD' },
-    { id: 'GOOG',   name: '谷歌',     ticker: 'GOOGL',    market: 'US', marketLabel: 'us', qtCode: 'usGOOGL', eps: 8.04,  avgPE: 23.6, currency: 'USD' },
-    { id: 'TSMC',   name: '台积电',   ticker: 'TSM',      market: 'US', marketLabel: 'us', qtCode: 'usTSM',   eps: 7.17,  avgPE: 25.8, currency: 'USD' },
-    { id: 'SMIC-A', name: '中芯国际', ticker: '688981.SH',market: 'A',  marketLabel: 'a',  qtCode: 'sh688981', eps: 0.58,  avgPE: 48.0, currency: 'CNY' },
-    { id: 'SMIC-H', name: '中芯国际', ticker: '00981.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk00981', eps: 0.62,  avgPE: 35.0, currency: 'HKD' }
+    { id: 'BABA',   name: '阿里巴巴', ticker: '09988.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk09988', avgPE: 25.0, currency: 'HKD' },
+    { id: 'GOOG',   name: '谷歌',     ticker: 'GOOGL',    market: 'US', marketLabel: 'us', qtCode: 'usGOOGL', avgPE: 23.6, currency: 'USD' },
+    { id: 'TSMC',   name: '台积电',   ticker: 'TSM',      market: 'US', marketLabel: 'us', qtCode: 'usTSM',   avgPE: 25.8, currency: 'USD' },
+    { id: 'SMIC-A', name: '中芯国际', ticker: '688981.SH',market: 'A',  marketLabel: 'a',  qtCode: 'sh688981', avgPE: 48.0, currency: 'CNY' },
+    { id: 'SMIC-H', name: '中芯国际', ticker: '00981.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk00981', avgPE: 35.0, currency: 'HKD' }
   ];
 
   var REFRESH_INTERVAL = 60000; // 60 seconds
   var refreshTimer = null;
 
-  // ===== Fetch Price via Tencent JSONP =====
+  // ===== Fetch data via Tencent API =====
   function fetchAllPrices(callback) {
     var codes = STOCKS.map(function(s) { return s.qtCode; }).join(',');
     var url = 'https://qt.gtimg.cn/q=' + codes;
-    var script = document.createElement('script');
-    var callbackName = '_qt_cb_' + Date.now();
-
-    // Tencent API returns raw assignment: v_hkXXXXX="..."
-    // We use a fetch approach with text parsing
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          var text = xhr.responseText;
-          var prices = parseTencentResponse(text);
-          callback(null, prices);
+          var data = parseTencentResponse(xhr.responseText);
+          callback(null, data);
         } else {
           callback(new Error('HTTP ' + xhr.status), null);
         }
@@ -495,40 +489,33 @@ body {
   }
 
   function parseTencentResponse(text) {
-    var prices = {};
+    var data = {};
     var lines = text.split(';');
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i].trim();
       if (!line) continue;
-
-      // HK format: v_hk09988="...~现价~..."
-      // US format: v_usGOOGL="...~现价~..."
-      // A format: v_sh688981="...~现价~..."
       var match = line.match(/v_([^=]+)="([^"]*)"/);
       if (!match) continue;
 
       var code = match[1];
-      var data = match[2];
-      var fields = data.split('~');
-
-      var price = 0;
-      // All markets: field[3] = current price
-      // Format: id~name~code~price~prevClose~open~volume~...
-      price = parseFloat(fields[3]) || 0;
-
-      prices[code] = price;
+      var fields = match[2].split('~');
+      // field[3] = current price, field[39] = PE(TTM)
+      data[code] = {
+        price: parseFloat(fields[3]) || 0,
+        pe: parseFloat(fields[39]) || 0
+      };
     }
-    return prices;
+    return data;
   }
 
   // ===== Compute and Render =====
-  function computeAndRender(prices) {
+  function computeAndRender(data) {
     var results = [];
 
     for (var i = 0; i < STOCKS.length; i++) {
       var s = STOCKS[i];
-      var price = prices[s.qtCode] || 0;
-      var pe = price > 0 && s.eps > 0 ? price / s.eps : 0;
+      var d = data[s.qtCode] || { price: 0, pe: 0 };
+      var pe = d.pe;
       var ratio = pe > 0 ? pe / s.avgPE : 0;
 
       results.push({
@@ -538,7 +525,7 @@ body {
         market: s.market,
         marketLabel: s.marketLabel,
         currency: s.currency,
-        price: price,
+        price: d.price,
         pe: pe,
         avgPE: s.avgPE,
         ratio: ratio
@@ -638,14 +625,14 @@ body {
 
   // ===== Main Refresh Logic =====
   function refresh() {
-    fetchAllPrices(function(err, prices) {
+    fetchAllPrices(function(err, data) {
       if (err) {
         console.error('Fetch error:', err);
         document.getElementById('rankingBody').innerHTML =
           '<tr><td colspan="8" class="error-msg" style="text-align:center;padding:40px;">数据获取失败，60秒后重试</td></tr>';
         return;
       }
-      computeAndRender(prices);
+      computeAndRender(data);
     });
   }
 
