@@ -471,7 +471,150 @@ var BUBBLE_DATA = {
 };
 // ==== BUBBLE_DATA_END ====
 
-renderAll();
+// ===== LIVE DATA OVERLAY =====
+// Fetch real-time prices from Tencent API, override hardcoded values, then render
+(function() {
+  // Mapping: qtCode -> { target layer, key, field to update, how to compute }
+  var LIVE_CODES = {
+    // Layer1: %距高点 = (high - price) / high * 100
+    'usNVDA':   { layer: 'layer1', key: 'nvda_pe', field: 'pe_from_api' },  // NVDA use PE from field[39]
+    'usTSM':    { layer: 'layer1', key: 'tsm', high: null },   // high from existing data
+    'usAVGO':   { layer: 'layer1', key: 'avgo', high: null },
+    'usMU':     { layer: 'layer1', key: 'mu', high: null },
+    'sh300308': { layer: 'layer1', key: 'xuchuang', high: null },
+    'sh002463': { layer: 'layer1', key: 'hudian', high: null },
+    'sh601138': { layer: 'layer1', key: 'fulian', high: null },
+    'sh512480': { layer: 'layer1', key: 'etf_512480', high: null },
+    // Layer2: PE from field[39]
+    'hk00700':  { layer: 'layer2', key: 'tencent_pe', usePE: true },
+    'hk09988':  { layer: 'layer2', key: 'baba_pe', usePE: true },
+    'usTSM_l2': { layer: 'layer2', key: 'tsm_pe', usePE: true, qtCode: 'usTSM' },
+    // A-shares: price + change
+    'sh688981': { layer: 'a_shares', key: 'smic' },
+    'sh688498': { layer: 'a_shares', key: 'sourcejet' }
+  };
+
+  // Build codes list (deduplicate usTSM)
+  var codeList = ['usNVDA','usTSM','usAVGO','usMU','sh300308','sh002463','sh601138','sh512480','hk00700','hk09988','sh688981','sh688498'];
+  var url = 'https://qt.gtimg.cn/q=' + codeList.join(',');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status === 200) {
+      var lines = xhr.responseText.split(';');
+      var parsed = {};
+      for (var i = 0; i < lines.length; i++) {
+        var m = lines[i].match(/v_([^=]+)="([^"]*)"/);
+        if (!m) continue;
+        var fields = m[2].split('~');
+        parsed[m[1]] = {
+          price: parseFloat(fields[3]) || 0,
+          prevClose: parseFloat(fields[4]) || 0,
+          pe: parseFloat(fields[39]) || 0
+        };
+      }
+
+      var D = window.BUBBLE_DATA;
+
+      // Update Layer1: %距高点
+      var l1Map = {
+        'usTSM': 'tsm', 'usAVGO': 'avgo', 'usMU': 'mu',
+        'sh300308': 'xuchuang', 'sh002463': 'hudian', 'sh601138': 'fulian', 'sh512480': 'etf_512480'
+      };
+      for (var code in l1Map) {
+        var key = l1Map[code];
+        var p = parsed[code];
+        if (p && p.price > 0 && D.layer1[key]) {
+          var high = D.layer1[key].high || 0;
+          if (high > 0) {
+            var distPct = ((high - p.price) / high * 100);
+            D.layer1[key].value = parseFloat(distPct.toFixed(1));
+            D.layer1[key].price = p.price;
+            D.layer1[key].date = new Date().toISOString().slice(0, 10);
+            D.layer1[key].source = '腾讯API实时';
+          }
+        }
+      }
+
+      // Update NVDA PE from field[39]
+      if (parsed['usNVDA'] && parsed['usNVDA'].pe > 0 && D.layer1['nvda_pe']) {
+        D.layer1['nvda_pe'].value = parsed['usNVDA'].pe;
+        D.layer1['nvda_pe'].date = new Date().toISOString().slice(0, 10);
+        D.layer1['nvda_pe'].source = '腾讯API实时';
+      }
+
+      // Update Layer2: PE values
+      var l2Map = { 'hk00700': 'tencent_pe', 'hk09988': 'baba_pe', 'usTSM': 'tsm_pe' };
+      for (var code2 in l2Map) {
+        var key2 = l2Map[code2];
+        var p2 = parsed[code2];
+        if (p2 && p2.pe > 0 && D.layer2[key2]) {
+          D.layer2[key2].value = parseFloat(p2.pe.toFixed(1));
+          D.layer2[key2].date = new Date().toISOString().slice(0, 10);
+          D.layer2[key2].source = '腾讯API实时';
+        }
+      }
+      // Update manual.baba_pe for balance calculation
+      if (parsed['hk09988'] && parsed['hk09988'].pe > 0) {
+        D.manual.baba_pe = parseFloat(parsed['hk09988'].pe.toFixed(1));
+      }
+
+      // Update A-shares
+      var ashMap = { 'sh688981': 'smic', 'sh688498': 'sourcejet' };
+      for (var code3 in ashMap) {
+        var key3 = ashMap[code3];
+        var p3 = parsed[code3];
+        if (p3 && p3.price > 0 && D.a_shares[key3]) {
+          var chg3 = p3.prevClose > 0 ? ((p3.price - p3.prevClose) / p3.prevClose * 100) : 0;
+          D.a_shares[key3].price = p3.price;
+          D.a_shares[key3].change = parseFloat(chg3.toFixed(2));
+          D.a_shares[key3].date = new Date().toISOString().slice(0, 10);
+          D.a_shares[key3].source = '腾讯API实时';
+        }
+      }
+
+      // Update the date display
+      D.updateDate = new Date().toISOString().slice(0, 10) + ' (实时)';
+    }
+    // Render regardless (fallback to hardcoded if API fails)
+    renderAll();
+  };
+  xhr.onerror = function() { renderAll(); };
+  xhr.send();
+
+  // Auto-refresh every 60s
+  setInterval(function() {
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open('GET', url, true);
+    xhr2.onreadystatechange = function() {
+      if (xhr2.readyState === 4 && xhr2.status === 200) {
+        // Re-parse and update (same logic)
+        var lines = xhr2.responseText.split(';');
+        var parsed = {};
+        for (var i = 0; i < lines.length; i++) {
+          var m = lines[i].match(/v_([^=]+)="([^"]*)"/);
+          if (!m) continue;
+          var fields = m[2].split('~');
+          parsed[m[1]] = { price: parseFloat(fields[3]) || 0, prevClose: parseFloat(fields[4]) || 0, pe: parseFloat(fields[39]) || 0 };
+        }
+        var D = window.BUBBLE_DATA;
+        var l1Map = {'usTSM':'tsm','usAVGO':'avgo','usMU':'mu','sh300308':'xuchuang','sh002463':'hudian','sh601138':'fulian','sh512480':'etf_512480'};
+        for (var c in l1Map) { var k=l1Map[c],p=parsed[c]; if(p&&p.price>0&&D.layer1[k]){var h=D.layer1[k].high||0;if(h>0){D.layer1[k].value=parseFloat(((h-p.price)/h*100).toFixed(1));D.layer1[k].price=p.price;D.layer1[k].date=new Date().toISOString().slice(0,10);}} }
+        if(parsed['usNVDA']&&parsed['usNVDA'].pe>0&&D.layer1['nvda_pe']){D.layer1['nvda_pe'].value=parsed['usNVDA'].pe;D.layer1['nvda_pe'].date=new Date().toISOString().slice(0,10);}
+        var l2M={'hk00700':'tencent_pe','hk09988':'baba_pe','usTSM':'tsm_pe'};
+        for(var c2 in l2M){var k2=l2M[c2],p2=parsed[c2];if(p2&&p2.pe>0&&D.layer2[k2]){D.layer2[k2].value=parseFloat(p2.pe.toFixed(1));}}
+        if(parsed['hk09988']&&parsed['hk09988'].pe>0){D.manual.baba_pe=parseFloat(parsed['hk09988'].pe.toFixed(1));}
+        var ashM={'sh688981':'smic','sh688498':'sourcejet'};
+        for(var c3 in ashM){var k3=ashM[c3],p3=parsed[c3];if(p3&&p3.price>0&&D.a_shares[k3]){var chg=p3.prevClose>0?((p3.price-p3.prevClose)/p3.prevClose*100):0;D.a_shares[k3].price=p3.price;D.a_shares[k3].change=parseFloat(chg.toFixed(2));}}
+        D.updateDate=new Date().toISOString().slice(0,10)+' (实时)';
+        renderAll();
+      }
+    };
+    xhr2.send();
+  }, 60000);
+})();
 </script>
 </body>
 </html>
