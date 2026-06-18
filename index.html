@@ -265,25 +265,8 @@ body {
           <span class="card-title">AI基石股票</span>
           <span class="card-arrow">→</span>
         </div>
-        <div class="stock-row">
-          <span class="stock-name">BABA</span>
-          <span class="stock-ratio normal">PE÷均值 0.82</span>
-        </div>
-        <div class="stock-row">
-          <span class="stock-name">GOOG</span>
-          <span class="stock-ratio normal">PE÷均值 1.05</span>
-        </div>
-        <div class="stock-row">
-          <span class="stock-name">TSMC</span>
-          <span class="stock-ratio normal">PE÷均值 1.12</span>
-        </div>
-        <div class="stock-row">
-          <span class="stock-name">中芯A</span>
-          <span class="stock-ratio highlight">PE÷均值 0.68</span>
-        </div>
-        <div class="stock-row">
-          <span class="stock-name">中芯H</span>
-          <span class="stock-ratio normal">PE÷均值 0.91</span>
+        <div id="foundationRows">
+          <div class="stock-row"><span class="stock-name">加载中...</span><span class="stock-ratio normal">--</span></div>
         </div>
       </a>
 
@@ -293,8 +276,8 @@ body {
           <span class="card-title">泡泡玛特</span>
           <span class="card-arrow">→</span>
         </div>
-        <div class="price-big">HKD <span>230.00</span></div>
-        <div class="stock-meta">PE(TTM) 58x · 品类定义者A档</div>
+        <div class="price-big">HKD <span id="popmartPrice">--</span></div>
+        <div class="stock-meta" id="popmartMeta">PE(TTM) -- · 品类定义者A档</div>
         <span class="risk-badge safe">正常追踪</span>
       </a>
 
@@ -304,8 +287,8 @@ body {
           <span class="card-title">药明康德</span>
           <span class="card-arrow">→</span>
         </div>
-        <div class="price-big">¥ <span>85.00</span></div>
-        <div class="stock-meta">PE(TTM) 32x · A档基础设施支柱</div>
+        <div class="price-big">¥ <span id="wuxiPrice">--</span></div>
+        <div class="stock-meta" id="wuxiMeta">PE(TTM) -- · A档基础设施支柱</div>
         <span class="risk-badge warning">1260H 倒计时监控中</span>
       </a>
 
@@ -313,14 +296,92 @@ body {
   </div>
 </div>
 
-<!-- ===== Sidebar Active State Script ===== -->
+<!-- ===== Live Data Script ===== -->
 <script>
 (function() {
+  // Sidebar active state
   var activePage = document.body.getAttribute('data-active-page');
   if (activePage) {
     var btn = document.querySelector('.sidebar a.nav-btn[data-page="' + activePage + '"]');
     if (btn) btn.classList.add('active');
   }
+
+  // Stock configs
+  var FOUNDATION = [
+    { id: 'BABA', name: 'BABA', qtCode: 'hk09988', eps: 56.2, avgPE: 25.0 },
+    { id: 'GOOG', name: 'GOOG', qtCode: 'usGOOGL', eps: 8.04, avgPE: 23.6 },
+    { id: 'TSMC', name: 'TSMC', qtCode: 'usTSM', eps: 7.17, avgPE: 25.8 },
+    { id: 'SMIC-A', name: '中芯A', qtCode: 'sh688981', eps: 0.58, avgPE: 48.0 },
+    { id: 'SMIC-H', name: '中芯H', qtCode: 'hk00981', eps: 0.62, avgPE: 35.0 }
+  ];
+  // Popmart: 9992.HK, EPS TTM ~3.97 HKD
+  // Wuxi: 603259.SH, EPS TTM ~7.85 CNY
+  var EXTRA = [
+    { id: 'popmart', qtCode: 'hk09992', eps: 3.97 },
+    { id: 'wuxi', qtCode: 'sh603259', eps: 7.85 }
+  ];
+
+  function fetchData() {
+    var allCodes = FOUNDATION.map(function(s){return s.qtCode})
+      .concat(EXTRA.map(function(s){return s.qtCode}));
+    var url = 'https://qt.gtimg.cn/q=' + allCodes.join(',');
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var prices = {};
+        var lines = xhr.responseText.split(';');
+        for (var i = 0; i < lines.length; i++) {
+          var match = lines[i].match(/v_([^=]+)="([^"]*)"/);
+          if (!match) continue;
+          var fields = match[2].split('~');
+          prices[match[1]] = parseFloat(fields[3]) || 0;
+        }
+        renderFoundation(prices);
+        renderExtra(prices);
+      }
+    };
+    xhr.send();
+  }
+
+  function renderFoundation(prices) {
+    var results = [];
+    for (var i = 0; i < FOUNDATION.length; i++) {
+      var s = FOUNDATION[i];
+      var price = prices[s.qtCode] || 0;
+      var pe = price > 0 ? price / s.eps : 0;
+      var ratio = pe > 0 ? pe / s.avgPE : 0;
+      results.push({ name: s.name, ratio: ratio });
+    }
+    results.sort(function(a, b) { return a.ratio - b.ratio; });
+
+    var html = '';
+    for (var j = 0; j < results.length; j++) {
+      var r = results[j];
+      var cls = (j === 0 && r.ratio < 1) ? 'highlight' : (r.ratio < 1 ? 'highlight' : 'normal');
+      var ratioStr = r.ratio > 0 ? r.ratio.toFixed(3) : '--';
+      html += '<div class="stock-row"><span class="stock-name">' + r.name + '</span>';
+      html += '<span class="stock-ratio ' + cls + '">PE÷均值 ' + ratioStr + '</span></div>';
+    }
+    document.getElementById('foundationRows').innerHTML = html;
+  }
+
+  function renderExtra(prices) {
+    // Popmart
+    var pmPrice = prices['hk09992'] || 0;
+    var pmPE = pmPrice > 0 ? (pmPrice / 3.97).toFixed(1) : '--';
+    document.getElementById('popmartPrice').textContent = pmPrice > 0 ? pmPrice.toFixed(2) : '--';
+    document.getElementById('popmartMeta').textContent = 'PE(TTM) ' + pmPE + 'x · 品类定义者A档';
+
+    // Wuxi
+    var wxPrice = prices['sh603259'] || 0;
+    var wxPE = wxPrice > 0 ? (wxPrice / 7.85).toFixed(1) : '--';
+    document.getElementById('wuxiPrice').textContent = wxPrice > 0 ? wxPrice.toFixed(2) : '--';
+    document.getElementById('wuxiMeta').textContent = 'PE(TTM) ' + wxPE + 'x · A档基础设施支柱';
+  }
+
+  fetchData();
+  setInterval(fetchData, 60000);
 })();
 </script>
 </body>
