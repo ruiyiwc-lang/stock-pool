@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI基石股票 · PE÷均值 轮动监控</title>
+<title>AI基石股票 · 轮动监控</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -223,13 +223,140 @@ body {
 .verdict.guanwang { background: rgba(107,123,141,0.2); color: #6b7b8d; }
 .verdict.piangui { background: rgba(239,68,68,0.15); color: #ef4444; }
 
-/* ===== AH Premium Row ===== */
+/* ===== SMIC Section ===== */
+.smic-section {
+  margin-top: 48px;
+}
+.smic-card {
+  background: #111827;
+  border: 1px solid #1e3a5f;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.smic-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.smic-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e0e6ed;
+}
+.depreciation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(234,179,8,0.12);
+  color: #eab308;
+}
+.depreciation-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eab308;
+  animation: pulse 2s infinite;
+}
+
+.smic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .smic-grid { grid-template-columns: 1fr; }
+}
+
+.smic-stock-card {
+  background: #0d1321;
+  border: 1px solid #1e3a5f;
+  border-radius: 8px;
+  padding: 20px;
+}
+.smic-stock-label {
+  font-size: 12px;
+  color: #6b7b8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.smic-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #e0e6ed;
+  margin-bottom: 4px;
+}
+.smic-price .currency {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7b8d;
+}
+.smic-pe {
+  font-size: 13px;
+  color: #6b7b8d;
+  margin-bottom: 16px;
+}
+
+/* Threshold progress bar */
+.threshold-bar {
+  position: relative;
+  height: 8px;
+  background: #1e3a5f;
+  border-radius: 4px;
+  margin: 12px 0 8px;
+  overflow: visible;
+}
+.threshold-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.threshold-fill.above { background: #6b7b8d; }
+.threshold-fill.zone-a { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.threshold-fill.zone-b { background: linear-gradient(90deg, #eab308, #fbbf24); }
+.threshold-fill.zone-red { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+.threshold-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7b8d;
+  margin-top: 4px;
+}
+.threshold-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  background: #c9a84c;
+  border-radius: 1px;
+}
+.threshold-verdict {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.threshold-verdict.in-zone { background: rgba(34,197,94,0.15); color: #22c55e; }
+.threshold-verdict.near-zone { background: rgba(234,179,8,0.15); color: #eab308; }
+.threshold-verdict.far { background: rgba(107,123,141,0.2); color: #6b7b8d; }
+
+/* AH Premium */
 .ah-premium-row {
   background: #0d1321;
   border: 1px solid #1e3a5f;
   border-radius: 8px;
   padding: 12px 16px;
-  margin-bottom: 32px;
+  margin-top: 16px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -244,6 +371,30 @@ body {
 }
 .ah-premium-value.positive { color: #f87171; }
 .ah-premium-value.negative { color: #22c55e; }
+
+/* Forward projection */
+.forward-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.forward-table th {
+  font-size: 11px;
+  color: #6b7b8d;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #1e3a5f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.forward-table td {
+  font-size: 13px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(30,58,95,0.3);
+  color: #e0e6ed;
+}
+.forward-table tr:last-child td { border-bottom: none; }
+.forward-table .highlight-cell { color: #c9a84c; font-weight: 600; }
 
 /* ===== Rules Section ===== */
 .rules-section {
@@ -286,34 +437,6 @@ body {
   font-weight: 500;
 }
 
-/* ===== Loading Overlay ===== */
-.loading-overlay {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(17,24,39,0.95);
-  border: 1px solid #1e3a5f;
-  border-radius: 12px;
-  padding: 24px 32px;
-  z-index: 2000;
-  text-align: center;
-  color: #6b7b8d;
-  font-size: 14px;
-}
-.loading-overlay.show { display: block; }
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #1e3a5f;
-  border-top-color: #c9a84c;
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
 /* ===== Error State ===== */
 .error-msg {
   font-size: 12px;
@@ -326,11 +449,11 @@ body {
   .page-inner { padding: 24px 12px; }
   .ranking-table { font-size: 12px; }
   .ranking-table thead th, .ranking-table tbody td { padding: 10px 8px; }
-  .ah-premium-row { flex-direction: column; gap: 8px; }
+  .smic-card { padding: 20px; }
 }
 </style>
 </head>
-<body data-active-page="foundation">
+<body data-active-page="ai-foundation">
 
 <!-- ===== Sidebar ===== -->
 <nav class="sidebar">
@@ -342,7 +465,7 @@ body {
     <svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg>
     <span class="nav-label">温度计</span>
   </a>
-  <a class="nav-btn active" href="ai-foundation.html" data-page="foundation">
+  <a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation">
     <svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" rx="0.5"/><rect x="10" y="6" width="4" height="15" rx="0.5"/><rect x="17" y="3" width="4" height="18" rx="0.5"/><line x1="1" y1="21" x2="23" y2="21"/></svg>
     <span class="nav-label">基石</span>
   </a>
@@ -364,25 +487,19 @@ body {
   </a>
 </nav>
 
-<!-- ===== Loading Overlay ===== -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  正在获取实时行情...
-</div>
-
 <!-- ===== Main Content ===== -->
 <div class="main-content">
   <div class="page-inner">
-    <h1 class="page-title">AI基石股票 · PE÷均值 轮动监控</h1>
+    <h1 class="page-title">AI基石股票 · 轮动监控</h1>
     <p class="page-subtitle">
-      基于PE÷历史均值PE比值法，选出最便宜标的进行轮动配置
+      PE比值法(BABA/GOOG/TSMC) + 价格阈值法(中芯)
       <span class="refresh-info"><span class="refresh-dot"></span><span id="lastRefresh">加载中...</span></span>
     </p>
 
-    <!-- ===== 中美基石 Ranking Table ===== -->
+    <!-- ===== PE Ratio Ranking (3 stocks) ===== -->
     <div class="section-header">
-      中美基石 · 轮动排名
-      <span class="badge">5只标的</span>
+      PE÷均值 · 轮动排名
+      <span class="badge">3只标的</span>
     </div>
 
     <table class="ranking-table" id="rankingTable">
@@ -403,46 +520,128 @@ body {
       </tbody>
     </table>
 
-    <!-- ===== AH Premium ===== -->
-    <div class="ah-premium-row" id="ahPremiumRow">
-      <span class="ah-premium-label">中芯国际 A/H 溢价：</span>
-      <span class="ah-premium-value" id="ahPremiumValue">--</span>
-      <span class="ah-premium-label" id="ahPremiumNote">A股相对H股溢价</span>
+    <!-- ===== SMIC Price Threshold Section ===== -->
+    <div class="smic-section">
+      <div class="section-header">
+        中芯国际 · 价格阈值监控
+        <span class="badge">折旧到期前瞻定价</span>
+      </div>
+
+      <div class="smic-card">
+        <div class="smic-card-header">
+          <span class="smic-card-title">中芯国际 (00981.HK / 688981.SH)</span>
+          <span class="depreciation-badge">折旧过峰中 · 2027Q1-Q2利润跳升</span>
+        </div>
+
+        <div class="smic-grid" id="smicGrid">
+          <!-- H股 card -->
+          <div class="smic-stock-card" id="smicHCard">
+            <div class="smic-stock-label">H股 · 00981.HK</div>
+            <div class="smic-price" id="smicHPrice"><span class="currency">HKD </span>--</div>
+            <div class="smic-pe" id="smicHPE">PE(TTM): --</div>
+            <div class="threshold-bar" id="smicHBar">
+              <div class="threshold-fill" id="smicHFill"></div>
+            </div>
+            <div class="threshold-labels">
+              <span>红 HK$50</span>
+              <span>B HK$55-60</span>
+              <span>A HK$68-72</span>
+              <span>现价</span>
+            </div>
+            <div id="smicHVerdict"></div>
+          </div>
+
+          <!-- A股 card -->
+          <div class="smic-stock-card" id="smicACard">
+            <div class="smic-stock-label">A股 · 688981.SH</div>
+            <div class="smic-price" id="smicAPrice"><span class="currency">CNY </span>--</div>
+            <div class="smic-pe" id="smicAPE">PE(TTM): --</div>
+            <div class="threshold-bar" id="smicABar">
+              <div class="threshold-fill" id="smicAFill"></div>
+            </div>
+            <div class="threshold-labels">
+              <span>红 ¥80</span>
+              <span>B ¥88-96</span>
+              <span>A ¥109-115</span>
+              <span>现价</span>
+            </div>
+            <div id="smicAVerdict"></div>
+          </div>
+        </div>
+
+        <!-- AH Premium -->
+        <div class="ah-premium-row" id="ahPremiumRow">
+          <span class="ah-premium-label">A/H 溢价：</span>
+          <span class="ah-premium-value" id="ahPremiumValue">--</span>
+          <span class="ah-premium-label" id="ahPremiumNote">合理区间 30-50%</span>
+        </div>
+
+        <!-- Forward Projection Table -->
+        <table class="forward-table">
+          <thead>
+            <tr>
+              <th>时间节点</th>
+              <th>催化剂</th>
+              <th>H股目标价</th>
+              <th>逻辑</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026.06 (当前)</td>
+              <td>折旧压制 + 产能扩张</td>
+              <td class="highlight-cell">HK$68-72 (A档)</td>
+              <td>7nm产能拍卖定价 + PE 117x假象</td>
+            </tr>
+            <tr>
+              <td>2027 Q1-Q2</td>
+              <td>2022 capex折旧到期, 毛利25%+</td>
+              <td class="highlight-cell">HK$129 → $186</td>
+              <td>净利机械性跳升, 类似DeepSeek行情</td>
+            </tr>
+            <tr>
+              <td>2027 Q4</td>
+              <td>含5nm期权 + 全产能满载</td>
+              <td class="highlight-cell">HK$197-199</td>
+              <td>2030E净利607亿 × 22x PE折现</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- ===== 规则说明 ===== -->
+    <!-- ===== Rules Section ===== -->
     <div class="rules-section">
-      <h3>规则说明 · PE÷均值比值法</h3>
+      <h3>规则说明</h3>
 
-      <h4>核心公式</h4>
-      <p>比值 = 当前PE(TTM) &divide; 历史均值PE锚定值</p>
-      <p>比值 &lt; 1.0 表示低于历史中枢估值，比值 &gt; 1.0 表示高于中枢。</p>
-
-      <h4>四档操作信号</h4>
+      <h4>一、PE÷均值比值法 (BABA / GOOG / TSMC)</h4>
+      <p>比值 = 当前PE(TTM) &divide; 历史均值PE锚定值。适用于15-30%稳定增速的成熟公司。</p>
       <ul>
-        <li><strong style="color:#22c55e">加仓</strong>：排名第1 且 比值 &lt; 1.0（最便宜 + 低于均值 = 深度价值）</li>
-        <li><strong style="color:#60a5fa">持有</strong>：排名第1 但 比值 &ge; 1.0（最便宜但未破均值）；或非第1 但比值 &lt; 1.0（低于均值但非最优）</li>
-        <li><strong style="color:#6b7b8d">观望</strong>：非排名第1 且 比值 &ge; 1.0（高于均值，等待）</li>
-        <li><strong style="color:#ef4444">偏贵</strong>：任何标的比值 &gt; 1.30（明显偏贵，考虑减仓）</li>
+        <li><strong style="color:#22c55e">加仓</strong>：排名第1 且 比值 &lt; 1.0</li>
+        <li><strong style="color:#60a5fa">持有</strong>：排名第1 但 比值 &ge; 1.0；或非第1但比值 &lt; 1.0</li>
+        <li><strong style="color:#6b7b8d">观望</strong>：非第1 且 比值 &ge; 1.0</li>
+        <li><strong style="color:#ef4444">偏贵</strong>：比值 &gt; 1.30</li>
       </ul>
 
-      <h4>均值PE锚定值及依据</h4>
+      <h4>锚定值</h4>
       <ul>
-        <li><strong>BABA (09988.HK)</strong>：25.0x — 打压前40x &times; 0.6中国折扣</li>
-        <li><strong>GOOG (GOOGL)</strong>：23.6x — 近5年中位数PE</li>
-        <li><strong>TSMC (TSM)</strong>：25.8x — 含AI溢价的周期中枢</li>
-        <li><strong>中芯A (688981.SH)</strong>：48.0x — A股半导体高估值中位数</li>
-        <li><strong>中芯H (00981.HK)</strong>：35.0x — H股折价对标</li>
+        <li><strong>BABA</strong>：25.0x — 打压前40x &times; 0.6中国折扣</li>
+        <li><strong>GOOG</strong>：23.6x — 近5年中位数PE</li>
+        <li><strong>TSMC</strong>：25.8x — 含AI溢价周期中枢</li>
       </ul>
 
-      <h4>EPS数据（TTM，需季度更新）</h4>
+      <h4>二、价格阈值法 (中芯国际)</h4>
+      <p>PE比值法对折旧过峰中的中芯失效——当前PE 117x(H)/225x(A)是折旧压低利润的假象，非真实估值水平。</p>
+      <p>改用前瞻定价模型：2022年capex 7年折旧到期 → 2027Q1-Q2净利机械性跳升 → 中芯=中国台积电&times;30%净利率。</p>
       <ul>
-        <li>BABA: HKD 56.2 | GOOG: USD 8.04 | TSMC: USD 7.17</li>
-        <li>中芯A: CNY 0.58 | 中芯H: HKD 0.62</li>
+        <li><strong style="color:#ef4444">红档 HK$50</strong>：极端恐慌(2026.3已验证触达)</li>
+        <li><strong style="color:#eab308">B档 HK$55-60</strong>：60%仓位建仓区</li>
+        <li><strong style="color:#22c55e">A档 HK$68-72</strong>：30%仓位起建区</li>
       </ul>
+      <p>A股阈值按AH溢价折算(合理溢价30-50%): 红¥80 / B¥88-96 / A¥109-115</p>
 
       <div class="reminder">
-        持仓周期3-5年，非永续持有。当基本面逻辑被证伪、或比值长期 &gt; 1.5 时考虑清仓。
+        中芯只买H股(AH面值1:1, A股常年溢价100%+)。A股阈值仅用于对照参考，非买入指导。催化剂窗口：2027Q1-Q2首季毛利25%+确认。
       </div>
     </div>
 
@@ -454,22 +653,26 @@ body {
 (function() {
   'use strict';
 
-  // ===== Stock Configuration =====
-  var STOCKS = [
-    { id: 'BABA',   name: '阿里巴巴', ticker: '09988.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk09988', avgPE: 25.0, currency: 'HKD' },
-    { id: 'GOOG',   name: '谷歌',     ticker: 'GOOGL',    market: 'US', marketLabel: 'us', qtCode: 'usGOOGL', avgPE: 23.6, currency: 'USD' },
-    { id: 'TSMC',   name: '台积电',   ticker: 'TSM',      market: 'US', marketLabel: 'us', qtCode: 'usTSM',   avgPE: 25.8, currency: 'USD' },
-    { id: 'SMIC-A', name: '中芯国际', ticker: '688981.SH',market: 'A',  marketLabel: 'a',  qtCode: 'sh688981', avgPE: 48.0, currency: 'CNY' },
-    { id: 'SMIC-H', name: '中芯国际', ticker: '00981.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk00981', avgPE: 35.0, currency: 'HKD' }
+  // ===== PE Ratio Stocks (mature 15-30% growers) =====
+  var PE_STOCKS = [
+    { id: 'BABA', name: '阿里巴巴', ticker: '09988.HK', market: 'HK', marketLabel: 'hk', qtCode: 'hk09988', avgPE: 25.0, currency: 'HKD' },
+    { id: 'GOOG', name: '谷歌',     ticker: 'GOOGL',    market: 'US', marketLabel: 'us', qtCode: 'usGOOGL', avgPE: 23.6, currency: 'USD' },
+    { id: 'TSMC', name: '台积电',   ticker: 'TSM',      market: 'US', marketLabel: 'us', qtCode: 'usTSM',   avgPE: 25.8, currency: 'USD' }
   ];
 
-  var REFRESH_INTERVAL = 60000; // 60 seconds
-  var refreshTimer = null;
+  // ===== SMIC Price Threshold Config =====
+  var SMIC = {
+    H: { qtCode: 'hk00981', currency: 'HKD', red: 50, bLow: 55, bHigh: 60, aLow: 68, aHigh: 72 },
+    A: { qtCode: 'sh688981', currency: 'CNY', red: 80, bLow: 88, bHigh: 96, aLow: 109, aHigh: 115 }
+  };
+
+  var REFRESH_INTERVAL = 60000;
 
   // ===== Fetch data via Tencent API =====
   function fetchAllPrices(callback) {
-    var codes = STOCKS.map(function(s) { return s.qtCode; }).join(',');
-    var url = 'https://qt.gtimg.cn/q=' + codes;
+    var codes = PE_STOCKS.map(function(s) { return s.qtCode; });
+    codes.push(SMIC.H.qtCode, SMIC.A.qtCode);
+    var url = 'https://qt.gtimg.cn/q=' + codes.join(',');
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
@@ -482,9 +685,7 @@ body {
         }
       }
     };
-    xhr.onerror = function() {
-      callback(new Error('Network error'), null);
-    };
+    xhr.onerror = function() { callback(new Error('Network error'), null); };
     xhr.send();
   }
 
@@ -496,10 +697,8 @@ body {
       if (!line) continue;
       var match = line.match(/v_([^=]+)="([^"]*)"/);
       if (!match) continue;
-
       var code = match[1];
       var fields = match[2].split('~');
-      // field[3] = current price, field[39] = PE(TTM)
       data[code] = {
         price: parseFloat(fields[3]) || 0,
         pe: parseFloat(fields[39]) || 0
@@ -508,113 +707,122 @@ body {
     return data;
   }
 
-  // ===== Compute and Render =====
-  function computeAndRender(data) {
+  // ===== PE Ratio Ranking =====
+  function computePERanking(data) {
     var results = [];
-
-    for (var i = 0; i < STOCKS.length; i++) {
-      var s = STOCKS[i];
+    for (var i = 0; i < PE_STOCKS.length; i++) {
+      var s = PE_STOCKS[i];
       var d = data[s.qtCode] || { price: 0, pe: 0 };
-      var pe = d.pe;
-      var ratio = pe > 0 ? pe / s.avgPE : 0;
-
+      var ratio = d.pe > 0 ? d.pe / s.avgPE : 0;
       results.push({
-        id: s.id,
-        name: s.name,
-        ticker: s.ticker,
-        market: s.market,
-        marketLabel: s.marketLabel,
-        currency: s.currency,
-        price: d.price,
-        pe: pe,
-        avgPE: s.avgPE,
-        ratio: ratio
+        id: s.id, name: s.name, ticker: s.ticker,
+        market: s.market, marketLabel: s.marketLabel, currency: s.currency,
+        price: d.price, pe: d.pe, avgPE: s.avgPE, ratio: ratio
       });
     }
-
-    // Sort by ratio ascending (lowest = cheapest = rank 1)
     results.sort(function(a, b) { return a.ratio - b.ratio; });
 
-    // Assign verdicts
     for (var j = 0; j < results.length; j++) {
       var r = results[j];
-      var rank = j + 1;
-      r.rank = rank;
-
-      if (r.ratio > 1.30) {
-        r.verdict = 'piangui';
-        r.verdictText = '偏贵';
-      } else if (rank === 1 && r.ratio < 1.0) {
-        r.verdict = 'jiancang';
-        r.verdictText = '加仓';
-      } else if (rank === 1 && r.ratio >= 1.0) {
-        r.verdict = 'chiyu';
-        r.verdictText = '持有';
-      } else if (r.ratio < 1.0) {
-        r.verdict = 'chiyu';
-        r.verdictText = '持有';
-      } else {
-        r.verdict = 'guanwang';
-        r.verdictText = '观望';
-      }
+      r.rank = j + 1;
+      if (r.ratio > 1.30) { r.verdict = 'piangui'; r.verdictText = '偏贵'; }
+      else if (r.rank === 1 && r.ratio < 1.0) { r.verdict = 'jiancang'; r.verdictText = '加仓'; }
+      else if (r.rank === 1) { r.verdict = 'chiyu'; r.verdictText = '持有'; }
+      else if (r.ratio < 1.0) { r.verdict = 'chiyu'; r.verdictText = '持有'; }
+      else { r.verdict = 'guanwang'; r.verdictText = '观望'; }
     }
-
-    renderTable(results);
-    renderAHPremium(results);
-    updateRefreshTime();
+    return results;
   }
 
-  function renderTable(results) {
+  function renderPETable(results) {
     var tbody = document.getElementById('rankingBody');
     var html = '';
-
     for (var i = 0; i < results.length; i++) {
       var r = results[i];
       var rowClass = r.rank === 1 ? ' class="rank-1"' : '';
       var rankClass = r.rank === 1 ? 'rank-num' : 'rank-num dim';
       var ratioClass = r.ratio < 1.0 ? 'cheap' : (r.ratio > 1.3 ? 'expensive' : 'neutral');
-      var priceStr = r.price > 0 ? r.price.toFixed(2) : '--';
-      var peStr = r.pe > 0 ? r.pe.toFixed(1) + 'x' : '--';
-      var ratioStr = r.ratio > 0 ? r.ratio.toFixed(3) : '--';
-
       html += '<tr' + rowClass + '>';
       html += '<td class="' + rankClass + '">#' + r.rank + '</td>';
       html += '<td class="stock-name-cell">' + r.name + '<span class="ticker">' + r.ticker + '</span></td>';
       html += '<td><span class="market-badge ' + r.marketLabel + '">' + r.market + '</span></td>';
-      html += '<td style="text-align:right;font-family:monospace">' + r.currency + ' ' + priceStr + '</td>';
-      html += '<td style="text-align:right;font-family:monospace">' + peStr + '</td>';
+      html += '<td style="text-align:right;font-family:monospace">' + r.currency + ' ' + (r.price > 0 ? r.price.toFixed(2) : '--') + '</td>';
+      html += '<td style="text-align:right;font-family:monospace">' + (r.pe > 0 ? r.pe.toFixed(1) + 'x' : '--') + '</td>';
       html += '<td style="text-align:right;font-family:monospace;color:#6b7b8d">' + r.avgPE.toFixed(1) + 'x</td>';
-      html += '<td style="text-align:right" class="ratio-cell ' + ratioClass + '">' + ratioStr + '</td>';
+      html += '<td style="text-align:right" class="ratio-cell ' + ratioClass + '">' + (r.ratio > 0 ? r.ratio.toFixed(3) : '--') + '</td>';
       html += '<td style="text-align:center"><span class="verdict ' + r.verdict + '">' + r.verdictText + '</span></td>';
       html += '</tr>';
     }
-
     tbody.innerHTML = html;
   }
 
-  function renderAHPremium(results) {
-    var smicA = null, smicH = null;
-    for (var i = 0; i < results.length; i++) {
-      if (results[i].id === 'SMIC-A') smicA = results[i];
-      if (results[i].id === 'SMIC-H') smicH = results[i];
+  // ===== SMIC Price Threshold =====
+  function renderSMIC(data) {
+    var hData = data[SMIC.H.qtCode] || { price: 0, pe: 0 };
+    var aData = data[SMIC.A.qtCode] || { price: 0, pe: 0 };
+
+    renderSMICCard('H', hData, SMIC.H);
+    renderSMICCard('A', aData, SMIC.A);
+    renderAHPremium(hData.price, aData.price);
+  }
+
+  function renderSMICCard(type, d, config) {
+    var prefix = 'smic' + type;
+    document.getElementById(prefix + 'Price').innerHTML = '<span class="currency">' + config.currency + ' </span>' + (d.price > 0 ? d.price.toFixed(2) : '--');
+    document.getElementById(prefix + 'PE').textContent = 'PE(TTM): ' + (d.pe > 0 ? d.pe.toFixed(1) + 'x' : '--') + ' (折旧失真, 非真实估值)';
+
+    // Threshold bar: scale from red to aHigh * 1.5
+    var barMax = config.aHigh * 1.5;
+    var pct = d.price > 0 ? Math.min((d.price / barMax) * 100, 100) : 0;
+    var fill = document.getElementById(prefix + 'Fill');
+    fill.style.width = pct + '%';
+
+    // Color zone
+    if (d.price <= config.red) {
+      fill.className = 'threshold-fill zone-red';
+    } else if (d.price <= config.bHigh) {
+      fill.className = 'threshold-fill zone-b';
+    } else if (d.price <= config.aHigh) {
+      fill.className = 'threshold-fill zone-a';
+    } else {
+      fill.className = 'threshold-fill above';
     }
 
+    // Verdict
+    var verdictEl = document.getElementById(prefix + 'Verdict');
+    var verdictHTML = '';
+    if (d.price > 0) {
+      if (d.price <= config.red) {
+        verdictHTML = '<span class="threshold-verdict in-zone">红档触发 · 极端恐慌买入</span>';
+      } else if (d.price <= config.bHigh) {
+        verdictHTML = '<span class="threshold-verdict in-zone">B档区间 · 60%仓位建仓</span>';
+      } else if (d.price <= config.aHigh) {
+        verdictHTML = '<span class="threshold-verdict near-zone">A档区间 · 30%仓位起建</span>';
+      } else {
+        var distA = ((d.price / config.aHigh) - 1) * 100;
+        verdictHTML = '<span class="threshold-verdict far">高于A档 ' + distA.toFixed(0) + '% · 等待回调</span>';
+      }
+    }
+    verdictEl.innerHTML = verdictHTML;
+  }
+
+  function renderAHPremium(hPrice, aPrice) {
     var el = document.getElementById('ahPremiumValue');
     var noteEl = document.getElementById('ahPremiumNote');
-
-    if (smicA && smicH && smicA.pe > 0 && smicH.pe > 0) {
-      // AH premium based on PE ratio comparison
-      var premium = ((smicA.ratio / smicH.ratio) - 1) * 100;
-      el.textContent = (premium >= 0 ? '+' : '') + premium.toFixed(1) + '%';
-      el.className = 'ah-premium-value ' + (premium >= 0 ? 'positive' : 'negative');
-      noteEl.textContent = premium >= 0 ? 'A股比值相对H股偏贵' : 'A股比值相对H股便宜';
+    if (hPrice > 0 && aPrice > 0) {
+      // A股 CNY vs H股 HKD, 汇率约 0.92 (1 HKD ≈ 0.92 CNY)
+      var aInHKD = aPrice / 0.92;
+      var premium = ((aInHKD / hPrice) - 1) * 100;
+      el.textContent = '+' + premium.toFixed(0) + '%';
+      el.className = 'ah-premium-value ' + (premium > 50 ? 'positive' : (premium < 30 ? 'negative' : ''));
+      noteEl.textContent = premium > 50 ? '溢价偏高, 买H股更优' : (premium < 30 ? '溢价收窄, 关注套利' : '合理区间 30-50%');
     } else {
       el.textContent = '--';
-      el.className = 'ah-premium-value';
       noteEl.textContent = '数据加载中';
     }
   }
 
+  // ===== Refresh Time =====
   function updateRefreshTime() {
     var now = new Date();
     var h = String(now.getHours()).padStart(2, '0');
@@ -623,22 +831,22 @@ body {
     document.getElementById('lastRefresh').textContent = '最后刷新 ' + h + ':' + m + ':' + s;
   }
 
-  // ===== Main Refresh Logic =====
+  // ===== Main =====
   function refresh() {
     fetchAllPrices(function(err, data) {
       if (err) {
-        console.error('Fetch error:', err);
         document.getElementById('rankingBody').innerHTML =
           '<tr><td colspan="8" class="error-msg" style="text-align:center;padding:40px;">数据获取失败，60秒后重试</td></tr>';
         return;
       }
-      computeAndRender(data);
+      var peResults = computePERanking(data);
+      renderPETable(peResults);
+      renderSMIC(data);
+      updateRefreshTime();
     });
   }
 
-  // ===== Init =====
   function init() {
-    // Set sidebar active state
     var activePage = document.body.getAttribute('data-active-page');
     if (activePage) {
       var btns = document.querySelectorAll('.sidebar a.nav-btn');
@@ -648,15 +856,10 @@ body {
         }
       }
     }
-
-    // Initial fetch
     refresh();
-
-    // Auto-refresh every 60 seconds
-    refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
+    setInterval(refresh, REFRESH_INTERVAL);
   }
 
-  // Start
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
