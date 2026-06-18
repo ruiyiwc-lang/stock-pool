@@ -6,12 +6,12 @@
 <title>药明康德 603259 / 02359 - 跟踪面板</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#f8f9fc; color:#1a2332; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:900px; margin:0 auto; font-size:16px; }
+body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:900px; margin:0 auto; font-size:16px; }
 h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
-.subtitle a { color:#1e3a5f; text-decoration:none; }
+.subtitle a { color:#c9a84c; text-decoration:none; }
 
-.section-divider { border:none; border-top:1px solid #e5e5ea; margin:28px 0 20px; }
+.section-divider { border:none; border-top:1px solid #1e3a5f; margin:28px 0 20px; }
 .section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
 
 /* 红色警报横幅 */
@@ -38,30 +38,30 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 /* 价格大卡片（双轨） */
 .price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.price-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:20px 22px; }
-.price-card .market-tag { font-size:12px; color:#1e3a5f; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.price-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:20px 22px; }
+.price-card .market-tag { font-size:12px; color:#c9a84c; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
 .price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-.price-big { font-size:40px; font-weight:700; color:#1a2332; letter-spacing:-1px; }
+.price-big { font-size:40px; font-weight:700; color:#e0e6ed; letter-spacing:-1px; }
 .price-change { font-size:16px; font-weight:600; }
 .price-change.up { color:#1a7a4c; }
 .price-change.down { color:#c0392b; }
 .price-change.flat { color:#6b7b8d; }
 .price-meta { display:flex; gap:14px; margin-top:8px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
-.price-meta span b { color:#1a2332; }
+.price-meta span b { color:#e0e6ed; }
 
 /* 进度条 */
 .gauge { margin-top:20px; position:relative; padding-bottom:36px; }
-.gauge-bar { height:12px; border-radius:6px; background:#d0d7e0; position:relative; overflow:visible; }
+.gauge-bar { height:12px; border-radius:6px; background:#2a3441; position:relative; overflow:visible; }
 .gauge-fill { height:100%; border-radius:6px; transition:width .6s; }
 .gauge-labels { display:flex; justify-content:space-between; font-size:13px; color:#6b7b8d; margin-top:10px; }
 .gauge-labels .lbl-b { color:#1a7a4c; font-weight:500; }
 .gauge-labels .lbl-a { color:#1e3a5f; font-weight:500; }
 .gauge-labels .lbl-r { color:#c0392b; font-weight:500; }
 .gauge-marker { position:absolute; top:0; width:0; height:0; transition:left .6s; }
-.gauge-marker-label { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:#1a2332; white-space:nowrap; font-weight:700; background:#f8f9fc; padding:1px 4px; border-radius:3px; }
+.gauge-marker-label { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:#e0e6ed; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 4px; border-radius:3px; }
 
 /* 通用卡片 */
-.kpi-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.kpi-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
 .kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .freq-tag { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; letter-spacing:0.3px; vertical-align:middle; margin-left:4px; }
 .freq-tag.live { background:rgba(192,57,43,0.10); color:#c0392b; }
@@ -70,26 +70,26 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .freq-tag.annual { background:rgba(74,58,138,0.10); color:#4a3a8a; }
 .freq-tag.static { background:rgba(107,123,141,0.14); color:#6b7b8d; }
 .kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-.kpi-item { text-align:center; padding:8px; background:#f8f9fc; border-radius:8px; }
-.kpi-item .val { font-size:22px; font-weight:700; color:#1a2332; }
+.kpi-item { text-align:center; padding:8px; background:#1a1f2e; border-radius:8px; }
+.kpi-item .val { font-size:22px; font-weight:700; color:#e0e6ed; }
 .kpi-item .lbl { font-size:13px; color:#6b7b8d; margin-top:2px; }
 .kpi-item .delta { font-size:12px; margin-top:2px; font-weight:600; }
 .kpi-item .delta.up { color:#1a7a4c; }
 .kpi-item .delta.down { color:#c0392b; }
 
 /* BIOSECURE 温度计 */
-.bio-card { background:#fff8f0; border:1px solid #ffd9a8; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.bio-card { background:#1a1510; border:1px solid #4a3520; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
 .bio-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#9a4d00; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .bio-thermo { background:linear-gradient(90deg,#34c759 0%,#ffcc00 35%,#ff9500 70%,#ff3b30 100%); height:14px; border-radius:7px; position:relative; }
 .bio-thermo-marker { position:absolute; top:-4px; width:4px; height:22px; background:#1c1c1e; border-radius:2px; }
 .bio-levels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
-.bio-status { margin-top:12px; padding:10px; background:#fff; border-radius:8px; font-size:14px; line-height:1.6; }
+.bio-status { margin-top:12px; padding:10px; background:#1a1f2e; border-radius:8px; font-size:14px; line-height:1.6; }
 .bio-status b { color:#c0392b; }
 
 /* 新闻卡片 */
-.news-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.news-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
 .news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.news-item { padding:10px 0; border-bottom:1px solid #f0f3f6; }
+.news-item { padding:10px 0; border-bottom:1px solid #1e3a5f; }
 .news-item:last-child { border-bottom:none; }
 .news-tag { display:inline-block; font-size:12px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
 .news-tag.policy { background:rgba(192,57,43,0.08); color:#c0392b; }
@@ -97,23 +97,23 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .news-tag.client { background:rgba(30,58,95,0.08); color:#1e3a5f; }
 .news-tag.capital { background:rgba(74,58,138,0.08); color:#4a3a8a; }
 .news-tag.earn { background:rgba(201,168,76,0.08); color:#9a7d2e; }
-.news-item .news-title { font-size:15px; font-weight:500; color:#1a2332; line-height:1.4; }
-.news-item .news-title a { color:#1a2332; text-decoration:none; }
-.news-item .news-title a:hover { color:#1e3a5f; text-decoration:underline; }
+.news-item .news-title { font-size:15px; font-weight:500; color:#e0e6ed; line-height:1.4; }
+.news-item .news-title a { color:#e0e6ed; text-decoration:none; }
+.news-item .news-title a:hover { color:#c9a84c; text-decoration:underline; }
 .news-item .news-summary { font-size:14px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
 .news-item .news-date { font-size:13px; color:#8fa0b3; margin-top:4px; }
 .news-empty { font-size:15px; color:#8fa0b3; text-align:center; padding:20px; }
 
 /* 订单表 */
 .order-table { width:100%; border-collapse:collapse; font-size:14px; }
-.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
-.order-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
+.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
+.order-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
 .order-table .pos { color:#1a7a4c; font-weight:600; }
 .order-table .neg { color:#c0392b; font-weight:600; }
 
 /* 信号 */
 .signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.sig-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:10px; padding:14px 16px; }
+.sig-card { background:#111827; border:1px solid #1e3a5f; border-radius:10px; padding:14px 16px; }
 .sig-card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
 .sig-card ul { list-style:none; font-size:14px; line-height:1.8; }
 .sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
@@ -124,27 +124,27 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 /* 建仓策略 */
 .strat-table { width:100%; border-collapse:collapse; font-size:14px; }
-.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #e8ecf0; font-size:13px; }
-.strat-table td { padding:6px 8px; border-bottom:1px solid #f0f3f6; }
+.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
+.strat-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
 
 /* 催化剂日历 */
-.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #f0f3f6; font-size:14px; }
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #1e3a5f; font-size:14px; }
 .cal-item:last-child { border-bottom:none; }
-.cal-date { color:#1e3a5f; font-weight:600; min-width:120px; font-size:13px; }
-.cal-desc { color:#1a2332; flex:1; font-size:14px; }
+.cal-date { color:#c9a84c; font-weight:600; min-width:120px; font-size:13px; }
+.cal-desc { color:#e0e6ed; flex:1; font-size:14px; }
 .cal-tag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
 .cal-tag.hot { background:rgba(255,59,48,0.12); color:#c0392b; }
 .cal-tag.med { background:rgba(255,149,0,0.12); color:#9a4d00; }
 .cal-tag.cool { background:rgba(26,122,76,0.12); color:#1a7a4c; }
 
 /* 论点 */
-.thesis-card { background:#ffffff; border:1px solid #e8ecf0; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.thesis-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
 .thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
 .thesis-card p { font-size:14px; line-height:1.8; color:#4a5d6e; }
-.thesis-card strong { color:#1a2332; }
+.thesis-card strong { color:#e0e6ed; }
 
 .update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
-.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#1e3a5f; text-decoration:none; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#c9a84c; text-decoration:none; }
 .back-link:hover { text-decoration:underline; }
 
 @media(max-width:600px) {
@@ -550,8 +550,8 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     </tbody>
   </table>
 
-  <div style="margin-top:14px;padding:12px;background:#f0f4fa;border-radius:8px;border:1px solid #b8c8df">
-    <h4 style="font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:8px">🔬 AI 制药关键标的跟踪（季度扫描）</h4>
+  <div style="margin-top:14px;padding:12px;background:#111827;border-radius:8px;border:1px solid #1e3a5f">
+    <h4 style="font-size:13px;font-weight:700;color:#c9a84c;margin-bottom:8px">🔬 AI 制药关键标的跟踪（季度扫描）</h4>
     <table class="order-table" style="font-size:13px">
       <thead><tr><th>公司</th><th>定位</th><th>对药明含义</th><th>最新进展 (2026.06)</th></tr></thead>
       <tbody>
@@ -564,7 +564,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     </table>
   </div>
 
-  <div style="margin-top:14px;padding:12px;background:#fff8f0;border-radius:8px;border:1px solid #ffd9a8">
+  <div style="margin-top:14px;padding:12px;background:#1a1510;border-radius:8px;border:1px solid #4a3520">
     <h4 style="font-size:13px;font-weight:700;color:#9a4d00;margin-bottom:8px">⚡ AI 相关信号触发条件</h4>
     <table class="order-table" style="font-size:13px">
       <thead><tr><th>信号</th><th>触发条件</th><th>动作</th></tr></thead>
@@ -603,10 +603,10 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     </table>
   </div>
 
-  <div style="margin-top:12px;padding:10px 12px;background:#f8f9fc;border-radius:8px;font-size:13px;line-height:1.7;color:#4a5d6e">
-    <strong style="color:#1a2332">核心论断</strong>：AI对药明的影响 ≈ 电商对沃尔玛——线下门店（化学发现CRO）被冲击，但物流仓储网络（CDMO）因订单爆发反而更值钱。<b>关键跟踪：药明能否从"帮人筛化合物"转型为"帮人造GMP药"的速度</b>。当前CDMO占比已超化学发现CRO（好信号），TIDES增速+147%远超化学发现+18%（转型加速中）。<br>
-    <strong style="color:#1a2332">时间线判断</strong>：2026-2028 AI只加速发现端，临床仍是瓶颈，药明CDMO安全；2028-2032 FDA可能接受AI辅助临床，第二层开始受压；2032+ 全周期AI化→只有纯制造CDMO存活。<br>
-    <strong style="color:#1a2332">最不怕AI的部分</strong>：TIDES多肽生产（GLP-1）——AI加速的是新药设计，不影响已上市药的生产放量。GLP-1处方量不靠AI来，靠肥胖人群数量。
+  <div style="margin-top:12px;padding:10px 12px;background:#1a1f2e;border-radius:8px;font-size:13px;line-height:1.7;color:#4a5d6e">
+    <strong style="color:#e0e6ed">核心论断</strong>：AI对药明的影响 ≈ 电商对沃尔玛——线下门店（化学发现CRO）被冲击，但物流仓储网络（CDMO）因订单爆发反而更值钱。<b>关键跟踪：药明能否从"帮人筛化合物"转型为"帮人造GMP药"的速度</b>。当前CDMO占比已超化学发现CRO（好信号），TIDES增速+147%远超化学发现+18%（转型加速中）。<br>
+    <strong style="color:#e0e6ed">时间线判断</strong>：2026-2028 AI只加速发现端，临床仍是瓶颈，药明CDMO安全；2028-2032 FDA可能接受AI辅助临床，第二层开始受压；2032+ 全周期AI化→只有纯制造CDMO存活。<br>
+    <strong style="color:#e0e6ed">最不怕AI的部分</strong>：TIDES多肽生产（GLP-1）——AI加速的是新药设计，不影响已上市药的生产放量。GLP-1处方量不靠AI来，靠肥胖人群数量。
   </div>
 </div>
 
