@@ -512,16 +512,9 @@ body {
       var fields = data.split('~');
 
       var price = 0;
-      if (code.indexOf('hk') === 0) {
-        // HK: field[6] is current price
-        price = parseFloat(fields[6]) || 0;
-      } else if (code.indexOf('us') === 0) {
-        // US: field[1] is current price
-        price = parseFloat(fields[1]) || 0;
-      } else if (code.indexOf('sh') === 0 || code.indexOf('sz') === 0) {
-        // A-share: field[3] is current price
-        price = parseFloat(fields[3]) || 0;
-      }
+      // All markets: field[3] = current price
+      // Format: id~name~code~price~prevClose~open~volume~...
+      price = parseFloat(fields[3]) || 0;
 
       prices[code] = price;
     }
