@@ -306,19 +306,17 @@ body {
     if (btn) btn.classList.add('active');
   }
 
-  // Stock configs
+  // Stock configs — only avgPE needed, PE comes from API field[39]
   var FOUNDATION = [
-    { id: 'BABA', name: 'BABA', qtCode: 'hk09988', eps: 56.2, avgPE: 25.0 },
-    { id: 'GOOG', name: 'GOOG', qtCode: 'usGOOGL', eps: 8.04, avgPE: 23.6 },
-    { id: 'TSMC', name: 'TSMC', qtCode: 'usTSM', eps: 7.17, avgPE: 25.8 },
-    { id: 'SMIC-A', name: '中芯A', qtCode: 'sh688981', eps: 0.58, avgPE: 48.0 },
-    { id: 'SMIC-H', name: '中芯H', qtCode: 'hk00981', eps: 0.62, avgPE: 35.0 }
+    { id: 'BABA', name: 'BABA', qtCode: 'hk09988', avgPE: 25.0 },
+    { id: 'GOOG', name: 'GOOG', qtCode: 'usGOOGL', avgPE: 23.6 },
+    { id: 'TSMC', name: 'TSMC', qtCode: 'usTSM', avgPE: 25.8 },
+    { id: 'SMIC-A', name: '中芯A', qtCode: 'sh688981', avgPE: 48.0 },
+    { id: 'SMIC-H', name: '中芯H', qtCode: 'hk00981', avgPE: 35.0 }
   ];
-  // Popmart: 9992.HK, EPS TTM ~3.97 HKD
-  // Wuxi: 603259.SH, EPS TTM ~7.85 CNY
   var EXTRA = [
-    { id: 'popmart', qtCode: 'hk09992', eps: 3.97 },
-    { id: 'wuxi', qtCode: 'sh603259', eps: 7.85 }
+    { id: 'popmart', qtCode: 'hk09992' },
+    { id: 'wuxi', qtCode: 'sh603259' }
   ];
 
   function fetchData() {
@@ -329,28 +327,31 @@ body {
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        var prices = {};
+        var data = {};
         var lines = xhr.responseText.split(';');
         for (var i = 0; i < lines.length; i++) {
           var match = lines[i].match(/v_([^=]+)="([^"]*)"/);
           if (!match) continue;
           var fields = match[2].split('~');
-          prices[match[1]] = parseFloat(fields[3]) || 0;
+          // field[3]=price, field[39]=PE(TTM)
+          data[match[1]] = {
+            price: parseFloat(fields[3]) || 0,
+            pe: parseFloat(fields[39]) || 0
+          };
         }
-        renderFoundation(prices);
-        renderExtra(prices);
+        renderFoundation(data);
+        renderExtra(data);
       }
     };
     xhr.send();
   }
 
-  function renderFoundation(prices) {
+  function renderFoundation(data) {
     var results = [];
     for (var i = 0; i < FOUNDATION.length; i++) {
       var s = FOUNDATION[i];
-      var price = prices[s.qtCode] || 0;
-      var pe = price > 0 ? price / s.eps : 0;
-      var ratio = pe > 0 ? pe / s.avgPE : 0;
+      var d = data[s.qtCode] || { price: 0, pe: 0 };
+      var ratio = d.pe > 0 ? d.pe / s.avgPE : 0;
       results.push({ name: s.name, ratio: ratio });
     }
     results.sort(function(a, b) { return a.ratio - b.ratio; });
@@ -358,7 +359,7 @@ body {
     var html = '';
     for (var j = 0; j < results.length; j++) {
       var r = results[j];
-      var cls = (j === 0 && r.ratio < 1) ? 'highlight' : (r.ratio < 1 ? 'highlight' : 'normal');
+      var cls = r.ratio < 1 ? 'highlight' : 'normal';
       var ratioStr = r.ratio > 0 ? r.ratio.toFixed(3) : '--';
       html += '<div class="stock-row"><span class="stock-name">' + r.name + '</span>';
       html += '<span class="stock-ratio ' + cls + '">PE÷均值 ' + ratioStr + '</span></div>';
@@ -366,18 +367,16 @@ body {
     document.getElementById('foundationRows').innerHTML = html;
   }
 
-  function renderExtra(prices) {
+  function renderExtra(data) {
     // Popmart
-    var pmPrice = prices['hk09992'] || 0;
-    var pmPE = pmPrice > 0 ? (pmPrice / 3.97).toFixed(1) : '--';
-    document.getElementById('popmartPrice').textContent = pmPrice > 0 ? pmPrice.toFixed(2) : '--';
-    document.getElementById('popmartMeta').textContent = 'PE(TTM) ' + pmPE + 'x · 品类定义者A档';
+    var pm = data['hk09992'] || { price: 0, pe: 0 };
+    document.getElementById('popmartPrice').textContent = pm.price > 0 ? pm.price.toFixed(2) : '--';
+    document.getElementById('popmartMeta').textContent = 'PE(TTM) ' + (pm.pe > 0 ? pm.pe.toFixed(1) + 'x' : '--') + ' · 品类定义者A档';
 
     // Wuxi
-    var wxPrice = prices['sh603259'] || 0;
-    var wxPE = wxPrice > 0 ? (wxPrice / 7.85).toFixed(1) : '--';
-    document.getElementById('wuxiPrice').textContent = wxPrice > 0 ? wxPrice.toFixed(2) : '--';
-    document.getElementById('wuxiMeta').textContent = 'PE(TTM) ' + wxPE + 'x · A档基础设施支柱';
+    var wx = data['sh603259'] || { price: 0, pe: 0 };
+    document.getElementById('wuxiPrice').textContent = wx.price > 0 ? wx.price.toFixed(2) : '--';
+    document.getElementById('wuxiMeta').textContent = 'PE(TTM) ' + (wx.pe > 0 ? wx.pe.toFixed(1) + 'x' : '--') + ' · A档基础设施支柱';
   }
 
   fetchData();
