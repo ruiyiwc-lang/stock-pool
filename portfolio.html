@@ -479,6 +479,78 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     <div class="metrics" id="metrics-maotai"></div>
     <div class="earnings-grid" id="earnings-maotai"></div>
   </div>
+
+  <!-- 万华化学 -->
+  <div class="stock-card" id="card-wanhua">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">万华化学</span><span class="stock-code">600309.SH</span>
+      </div>
+      <span class="status-tag wait" id="status-wanhua">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-wanhua">--</span>
+      <span class="price-chg flat" id="chg-wanhua">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-wanhua">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-wanhua-r"></div><div class="tick-label red" id="tl-wanhua-r"></div>
+        <div class="tick" id="tick-wanhua-b"></div><div class="tick-label b" id="tl-wanhua-b"></div>
+        <div class="tick" id="tick-wanhua-a"></div><div class="tick-label a" id="tl-wanhua-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-wanhua"><div class="gauge-mini-label" id="ml-wanhua">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-wanhua"></div>
+    <div class="earnings-grid" id="earnings-wanhua"></div>
+  </div>
+
+  <!-- 福耀玻璃 -->
+  <div class="stock-card" id="card-fuyao">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">福耀玻璃</span><span class="stock-code">600660.SH</span>
+      </div>
+      <span class="status-tag wait" id="status-fuyao">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-fuyao">--</span>
+      <span class="price-chg flat" id="chg-fuyao">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-fuyao">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-fuyao-r"></div><div class="tick-label red" id="tl-fuyao-r"></div>
+        <div class="tick" id="tick-fuyao-b"></div><div class="tick-label b" id="tl-fuyao-b"></div>
+        <div class="tick" id="tick-fuyao-a"></div><div class="tick-label a" id="tl-fuyao-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-fuyao"><div class="gauge-mini-label" id="ml-fuyao">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-fuyao"></div>
+    <div class="earnings-grid" id="earnings-fuyao"></div>
+  </div>
+
+  <!-- 迈瑞医疗 -->
+  <div class="stock-card" id="card-mindray">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">迈瑞医疗</span><span class="stock-code">300760.SZ</span>
+      </div>
+      <span class="status-tag wait" id="status-mindray">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-mindray">--</span>
+      <span class="price-chg flat" id="chg-mindray">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-mindray">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-mindray-r"></div><div class="tick-label red" id="tl-mindray-r"></div>
+        <div class="tick" id="tick-mindray-b"></div><div class="tick-label b" id="tl-mindray-b"></div>
+        <div class="tick" id="tick-mindray-a"></div><div class="tick-label a" id="tl-mindray-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-mindray"><div class="gauge-mini-label" id="ml-mindray">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-mindray"></div>
+    <div class="earnings-grid" id="earnings-mindray"></div>
+  </div>
 </div>
 
 <!-- 数据校验面板 -->
@@ -590,6 +662,33 @@ var STOCKS = {
     thesis:'心理关口¥1000 · 14.5x PE · 破千=信仰崩',
     note:'止盈=PE>25x且增速<5% · 破位后观察企稳再建',
     despair:'白酒消费税落地 · 批价跌破¥1800+经销商大面积砸货 · 散户信仰崩塌+基金被动减仓+量化止损连锁'
+  },
+  wanhua: {
+    code: 'sh600309', name:'万华化学', unit:'¥', tier:3,
+    lineA:46, lineB:null, lineR:null,
+    gaugeMin:30, gaugeMax:100,
+    earningsCode:"600309.SH", earningsType:"a",
+    thesis:'止盈PE22x÷2=11x · 周期底EPS ¥4.15 · A¥46=MDI全球寒冬价',
+    note:'止盈=PE>22x且MDI景气高位 · 全球MDI寡头40%份额 · 只买周期底',
+    despair:'MDI全球去库存+地产竣工断崖+下游聚氨酯需求证伪 · 产能过剩周期底+全行业亏损 · A股系统性恐慌'
+  },
+  fuyao: {
+    code: 'sh600660', name:'福耀玻璃', unit:'¥', tier:3,
+    lineA:36, lineB:null, lineR:null,
+    gaugeMin:20, gaugeMax:80,
+    earningsCode:"600660.SH", earningsType:"a",
+    thesis:'止盈PE20x÷2=10x · 周期底EPS ¥3.6 · A¥36=汽车寒冬价',
+    note:'止盈=PE>20x且全球汽车周期回暖 · 全球份额35%铁壁垄断 · 无竞争者',
+    despair:'全球汽车产量断崖(-20%+) · 贸易壁垒限制出口+海外工厂爬坡不及预期 · 汽车玻璃ASP下行'
+  },
+  mindray: {
+    code: 'sz300760', name:'迈瑞医疗', unit:'¥', tier:3,
+    lineA:109, lineB:null, lineR:null,
+    gaugeMin:70, gaugeMax:250,
+    earningsCode:"300760.SZ", earningsType:"a",
+    thesis:'止盈PE30x÷2=15x · NTM EPS ¥7.25 · A¥109=集采+增速断崖价',
+    note:'止盈=PE>30x且增速<15% · 海外占比>45%为健康 · 薪资-3%已预警',
+    despair:'IVD集采全面覆盖+化学发光份额连降 · 海外地缘风险(被制裁) · 增速<10%+PE杀至15x · 国产替代完成后无增量'
   }
 };
 
