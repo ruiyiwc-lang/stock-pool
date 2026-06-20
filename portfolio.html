@@ -84,6 +84,21 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   .summary-grid { grid-template-columns:repeat(2,1fr); }
   .metrics { flex-direction:column; gap:6px; }
 }
+
+/* AH 双面板 */
+.ah-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:8px; }
+.ah-panel { padding:12px 14px; background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; }
+.ah-panel.cheaper { border-color:#1a7a4c; box-shadow:inset 0 0 0 1px rgba(26,122,76,.2); }
+.ah-panel-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.ah-mkt { font-size:13px; font-weight:700; padding:2px 8px; border-radius:4px; }
+.ah-mkt.a { background:rgba(201,168,76,.15); color:#c9a84c; }
+.ah-mkt.h { background:rgba(93,173,226,.15); color:#5dade2; }
+.ah-panel .price-now { font-size:22px; }
+.ah-panel .gauge-mini { margin:10px 0 32px; }
+.cheaper-tag { font-size:11px; color:#1a7a4c; font-weight:600; padding:2px 6px; background:rgba(26,122,76,.1); border-radius:4px; }
+@media(max-width:700px) {
+  .ah-grid { grid-template-columns:1fr; gap:12px; }
+}
 </style>
 </head>
 <body data-active-page="portfolio">
@@ -131,26 +146,41 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     <span class="tier-desc">中芯国际(底仓) + 泡泡玛特(弹性仓)</span>
   </div>
 
-  <!-- 中芯国际 -->
+  <!-- 中芯国际 (AH) -->
   <div class="stock-card" id="card-smic">
     <div class="card-top">
       <div>
-        <span class="stock-title">中芯国际</span><span class="stock-code">0981.HK</span>
+        <span class="stock-title">中芯国际</span>
+        <span class="stock-code">0981.HK / 688981.SH</span>
         <a class="stock-link" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym=981&sc_lang=zh-hk" target="_blank">港交所</a>
       </div>
       <span class="status-tag wait" id="status-smic">加载中</span>
     </div>
-    <div class="price-display">
-      <span class="price-now" id="price-smic">--</span>
-      <span class="price-chg flat" id="chg-smic">--</span>
-    </div>
-    <div class="gauge-mini" id="gauge-smic">
-      <div class="gauge-ticks">
-        <div class="tick" id="tick-smic-r"></div><div class="tick-label red" id="tl-smic-r"></div>
-        <div class="tick" id="tick-smic-b"></div><div class="tick-label b" id="tl-smic-b"></div>
-        <div class="tick" id="tick-smic-a"></div><div class="tick-label a" id="tl-smic-a"></div>
+    <div class="ah-grid">
+      <div class="ah-panel" id="panel-smic-h">
+        <div class="ah-panel-head"><span class="ah-mkt h">H 0981</span><span class="cheaper-tag" id="cheap-smic-h" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-smic">--</span><span class="price-chg flat" id="chg-smic">--</span></div>
+        <div class="gauge-mini" id="gauge-smic">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-smic-r"></div><div class="tick-label red" id="tl-smic-r"></div>
+            <div class="tick" id="tick-smic-b"></div><div class="tick-label b" id="tl-smic-b"></div>
+            <div class="tick" id="tick-smic-a"></div><div class="tick-label a" id="tl-smic-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-smic"><div class="gauge-mini-label" id="ml-smic">--</div></div>
+        </div>
       </div>
-      <div class="gauge-mini-marker" id="marker-smic"><div class="gauge-mini-label" id="ml-smic">--</div></div>
+      <div class="ah-panel" id="panel-smic-alt">
+        <div class="ah-panel-head"><span class="ah-mkt a">A 688981</span><span class="cheaper-tag" id="cheap-smic-alt" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-smic-alt">--</span><span class="price-chg flat" id="chg-smic-alt">--</span></div>
+        <div class="gauge-mini" id="gauge-smic-alt">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-smic-alt-r"></div><div class="tick-label red" id="tl-smic-alt-r"></div>
+            <div class="tick" id="tick-smic-alt-b"></div><div class="tick-label b" id="tl-smic-alt-b"></div>
+            <div class="tick" id="tick-smic-alt-a"></div><div class="tick-label a" id="tl-smic-alt-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-smic-alt"><div class="gauge-mini-label" id="ml-smic-alt">--</div></div>
+        </div>
+      </div>
     </div>
     <div class="metrics" id="metrics-smic"></div>
   </div>
@@ -228,49 +258,79 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     <div class="metrics" id="metrics-baba"></div>
   </div>
 
-  <!-- 百济 -->
+  <!-- 百济 (AH) -->
   <div class="stock-card" id="card-beigene">
     <div class="card-top">
       <div>
-        <span class="stock-title">百济神州</span><span class="stock-code">6160.HK</span>
+        <span class="stock-title">百济神州</span>
+        <span class="stock-code">6160.HK / 688235.SH</span>
       </div>
       <span class="status-tag wait" id="status-beigene">加载中</span>
     </div>
-    <div class="price-display">
-      <span class="price-now" id="price-beigene">--</span>
-      <span class="price-chg flat" id="chg-beigene">--</span>
-    </div>
-    <div class="gauge-mini" id="gauge-beigene">
-      <div class="gauge-ticks">
-        <div class="tick" id="tick-beigene-r"></div><div class="tick-label red" id="tl-beigene-r"></div>
-        <div class="tick" id="tick-beigene-b"></div><div class="tick-label b" id="tl-beigene-b"></div>
-        <div class="tick" id="tick-beigene-a"></div><div class="tick-label a" id="tl-beigene-a"></div>
+    <div class="ah-grid">
+      <div class="ah-panel" id="panel-beigene-h">
+        <div class="ah-panel-head"><span class="ah-mkt h">H 6160</span><span class="cheaper-tag" id="cheap-beigene-h" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-beigene">--</span><span class="price-chg flat" id="chg-beigene">--</span></div>
+        <div class="gauge-mini" id="gauge-beigene">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-beigene-r"></div><div class="tick-label red" id="tl-beigene-r"></div>
+            <div class="tick" id="tick-beigene-b"></div><div class="tick-label b" id="tl-beigene-b"></div>
+            <div class="tick" id="tick-beigene-a"></div><div class="tick-label a" id="tl-beigene-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-beigene"><div class="gauge-mini-label" id="ml-beigene">--</div></div>
+        </div>
       </div>
-      <div class="gauge-mini-marker" id="marker-beigene"><div class="gauge-mini-label" id="ml-beigene">--</div></div>
+      <div class="ah-panel" id="panel-beigene-alt">
+        <div class="ah-panel-head"><span class="ah-mkt a">A 688235</span><span class="cheaper-tag" id="cheap-beigene-alt" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-beigene-alt">--</span><span class="price-chg flat" id="chg-beigene-alt">--</span></div>
+        <div class="gauge-mini" id="gauge-beigene-alt">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-beigene-alt-r"></div><div class="tick-label red" id="tl-beigene-alt-r"></div>
+            <div class="tick" id="tick-beigene-alt-b"></div><div class="tick-label b" id="tl-beigene-alt-b"></div>
+            <div class="tick" id="tick-beigene-alt-a"></div><div class="tick-label a" id="tl-beigene-alt-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-beigene-alt"><div class="gauge-mini-label" id="ml-beigene-alt">--</div></div>
+        </div>
+      </div>
     </div>
     <div class="metrics" id="metrics-beigene"></div>
   </div>
 
-  <!-- 药明康德 -->
+  <!-- 药明康德 (AH) -->
   <div class="stock-card" id="card-wuxi">
     <div class="card-top">
       <div>
-        <span class="stock-title">药明康德</span><span class="stock-code">603259.SH</span>
+        <span class="stock-title">药明康德</span>
+        <span class="stock-code">603259.SH / 2359.HK</span>
         <a class="stock-link" href="wuxi.html">详情页 →</a>
       </div>
       <span class="status-tag wait" id="status-wuxi">加载中</span>
     </div>
-    <div class="price-display">
-      <span class="price-now" id="price-wuxi">--</span>
-      <span class="price-chg flat" id="chg-wuxi">--</span>
-    </div>
-    <div class="gauge-mini" id="gauge-wuxi">
-      <div class="gauge-ticks">
-        <div class="tick" id="tick-wuxi-r"></div><div class="tick-label red" id="tl-wuxi-r"></div>
-        <div class="tick" id="tick-wuxi-b"></div><div class="tick-label b" id="tl-wuxi-b"></div>
-        <div class="tick" id="tick-wuxi-a"></div><div class="tick-label a" id="tl-wuxi-a"></div>
+    <div class="ah-grid">
+      <div class="ah-panel" id="panel-wuxi-h">
+        <div class="ah-panel-head"><span class="ah-mkt a">A 603259</span><span class="cheaper-tag" id="cheap-wuxi-h" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-wuxi">--</span><span class="price-chg flat" id="chg-wuxi">--</span></div>
+        <div class="gauge-mini" id="gauge-wuxi">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-wuxi-r"></div><div class="tick-label red" id="tl-wuxi-r"></div>
+            <div class="tick" id="tick-wuxi-b"></div><div class="tick-label b" id="tl-wuxi-b"></div>
+            <div class="tick" id="tick-wuxi-a"></div><div class="tick-label a" id="tl-wuxi-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-wuxi"><div class="gauge-mini-label" id="ml-wuxi">--</div></div>
+        </div>
       </div>
-      <div class="gauge-mini-marker" id="marker-wuxi"><div class="gauge-mini-label" id="ml-wuxi">--</div></div>
+      <div class="ah-panel" id="panel-wuxi-alt">
+        <div class="ah-panel-head"><span class="ah-mkt h">H 2359</span><span class="cheaper-tag" id="cheap-wuxi-alt" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-wuxi-alt">--</span><span class="price-chg flat" id="chg-wuxi-alt">--</span></div>
+        <div class="gauge-mini" id="gauge-wuxi-alt">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-wuxi-alt-r"></div><div class="tick-label red" id="tl-wuxi-alt-r"></div>
+            <div class="tick" id="tick-wuxi-alt-b"></div><div class="tick-label b" id="tl-wuxi-alt-b"></div>
+            <div class="tick" id="tick-wuxi-alt-a"></div><div class="tick-label a" id="tl-wuxi-alt-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-wuxi-alt"><div class="gauge-mini-label" id="ml-wuxi-alt">--</div></div>
+        </div>
+      </div>
     </div>
     <div class="metrics" id="metrics-wuxi"></div>
   </div>
@@ -284,48 +344,78 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     <span class="tier-desc">止盈PE÷2=唯一买入点 · 破位观察企稳再建</span>
   </div>
 
-  <!-- 宁德时代 -->
+  <!-- 宁德时代 (AH) -->
   <div class="stock-card" id="card-catl">
     <div class="card-top">
       <div>
-        <span class="stock-title">宁德时代</span><span class="stock-code">300750.SZ</span>
+        <span class="stock-title">宁德时代</span>
+        <span class="stock-code">300750.SZ / 3750.HK</span>
       </div>
       <span class="status-tag wait" id="status-catl">加载中</span>
     </div>
-    <div class="price-display">
-      <span class="price-now" id="price-catl">--</span>
-      <span class="price-chg flat" id="chg-catl">--</span>
-    </div>
-    <div class="gauge-mini" id="gauge-catl">
-      <div class="gauge-ticks">
-        <div class="tick" id="tick-catl-r"></div><div class="tick-label red" id="tl-catl-r"></div>
-        <div class="tick" id="tick-catl-b"></div><div class="tick-label b" id="tl-catl-b"></div>
-        <div class="tick" id="tick-catl-a"></div><div class="tick-label a" id="tl-catl-a"></div>
+    <div class="ah-grid">
+      <div class="ah-panel" id="panel-catl-h">
+        <div class="ah-panel-head"><span class="ah-mkt a">A 300750</span><span class="cheaper-tag" id="cheap-catl-h" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-catl">--</span><span class="price-chg flat" id="chg-catl">--</span></div>
+        <div class="gauge-mini" id="gauge-catl">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-catl-r"></div><div class="tick-label red" id="tl-catl-r"></div>
+            <div class="tick" id="tick-catl-b"></div><div class="tick-label b" id="tl-catl-b"></div>
+            <div class="tick" id="tick-catl-a"></div><div class="tick-label a" id="tl-catl-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-catl"><div class="gauge-mini-label" id="ml-catl">--</div></div>
+        </div>
       </div>
-      <div class="gauge-mini-marker" id="marker-catl"><div class="gauge-mini-label" id="ml-catl">--</div></div>
+      <div class="ah-panel" id="panel-catl-alt">
+        <div class="ah-panel-head"><span class="ah-mkt h">H 3750</span><span class="cheaper-tag" id="cheap-catl-alt" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-catl-alt">--</span><span class="price-chg flat" id="chg-catl-alt">--</span></div>
+        <div class="gauge-mini" id="gauge-catl-alt">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-catl-alt-r"></div><div class="tick-label red" id="tl-catl-alt-r"></div>
+            <div class="tick" id="tick-catl-alt-b"></div><div class="tick-label b" id="tl-catl-alt-b"></div>
+            <div class="tick" id="tick-catl-alt-a"></div><div class="tick-label a" id="tl-catl-alt-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-catl-alt"><div class="gauge-mini-label" id="ml-catl-alt">--</div></div>
+        </div>
+      </div>
     </div>
     <div class="metrics" id="metrics-catl"></div>
   </div>
 
-  <!-- 比亚迪 -->
+  <!-- 比亚迪 (AH) -->
   <div class="stock-card" id="card-byd">
     <div class="card-top">
       <div>
-        <span class="stock-title">比亚迪</span><span class="stock-code">1211.HK</span>
+        <span class="stock-title">比亚迪</span>
+        <span class="stock-code">1211.HK / 002594.SZ</span>
       </div>
       <span class="status-tag wait" id="status-byd">加载中</span>
     </div>
-    <div class="price-display">
-      <span class="price-now" id="price-byd">--</span>
-      <span class="price-chg flat" id="chg-byd">--</span>
-    </div>
-    <div class="gauge-mini" id="gauge-byd">
-      <div class="gauge-ticks">
-        <div class="tick" id="tick-byd-r"></div><div class="tick-label red" id="tl-byd-r"></div>
-        <div class="tick" id="tick-byd-b"></div><div class="tick-label b" id="tl-byd-b"></div>
-        <div class="tick" id="tick-byd-a"></div><div class="tick-label a" id="tl-byd-a"></div>
+    <div class="ah-grid">
+      <div class="ah-panel" id="panel-byd-h">
+        <div class="ah-panel-head"><span class="ah-mkt h">H 1211</span><span class="cheaper-tag" id="cheap-byd-h" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-byd">--</span><span class="price-chg flat" id="chg-byd">--</span></div>
+        <div class="gauge-mini" id="gauge-byd">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-byd-r"></div><div class="tick-label red" id="tl-byd-r"></div>
+            <div class="tick" id="tick-byd-b"></div><div class="tick-label b" id="tl-byd-b"></div>
+            <div class="tick" id="tick-byd-a"></div><div class="tick-label a" id="tl-byd-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-byd"><div class="gauge-mini-label" id="ml-byd">--</div></div>
+        </div>
       </div>
-      <div class="gauge-mini-marker" id="marker-byd"><div class="gauge-mini-label" id="ml-byd">--</div></div>
+      <div class="ah-panel" id="panel-byd-alt">
+        <div class="ah-panel-head"><span class="ah-mkt a">A 002594</span><span class="cheaper-tag" id="cheap-byd-alt" style="display:none">更便宜</span></div>
+        <div class="price-display"><span class="price-now" id="price-byd-alt">--</span><span class="price-chg flat" id="chg-byd-alt">--</span></div>
+        <div class="gauge-mini" id="gauge-byd-alt">
+          <div class="gauge-ticks">
+            <div class="tick" id="tick-byd-alt-r"></div><div class="tick-label red" id="tl-byd-alt-r"></div>
+            <div class="tick" id="tick-byd-alt-b"></div><div class="tick-label b" id="tl-byd-alt-b"></div>
+            <div class="tick" id="tick-byd-alt-a"></div><div class="tick-label a" id="tl-byd-alt-a"></div>
+          </div>
+          <div class="gauge-mini-marker" id="marker-byd-alt"><div class="gauge-mini-label" id="ml-byd-alt">--</div></div>
+        </div>
+      </div>
     </div>
     <div class="metrics" id="metrics-byd"></div>
   </div>
@@ -361,9 +451,11 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 var STOCKS = {
   smic: {
     code: 'hk00981', name:'中芯国际', unit:'HK$', tier:1,
-    altCode:'sh688981', altAction:'只买H', altLineA:50,
+    altCode:'sh688981', altUnit:'¥', altAction:'只买H',
     lineA:57.5, lineB:50, lineR:35,
+    altLineA:50, altLineB:43.4, altLineR:30.4,
     gaugeMin:25, gaugeMax:100,
+    altGaugeMin:22, altGaugeMax:87,
     thesis:'5x双轮 · 条件概率85-95%(IF泡沫破)',
     note:'止盈=FwdPE>30x且产能见顶 · 红=独占性崩塌认错',
     despair:'AI泡沫全面破裂 · NVDA季报暴雷+Hyperscaler集体削减capex · 港股系统性-40% · 半导体板块额外penalty'
@@ -394,36 +486,44 @@ var STOCKS = {
   },
   beigene: {
     code: 'hk06160', name:'百济神州', unit:'HK$', tier:2,
-    altCode:'sh688235', altAction:'买H股', altLineA:124,
+    altCode:'sh688235', altUnit:'¥', altAction:'买H股',
     lineA:144, lineB:null, lineR:null,
+    altLineA:124, altLineB:null, altLineR:null,
     gaugeMin:100, gaugeMax:220,
+    altGaugeMin:86, altGaugeMax:190,
     thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
     note:'止盈=PE>30x且增速<25% · 认错日2026.12.16',
     despair:'全球biotech系统性抛售 · FDA审批黑天鹅 · 美国政治风险(53%美国收入) · Brukinsa竞品突破'
   },
   wuxi: {
     code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
-    altCode:'hk02359', altAction:'买A股', altLineA:98,
+    altCode:'hk02359', altUnit:'HK$', altAction:'买A股',
     lineA:85, lineB:null, lineR:null,
+    altLineA:98, altLineB:null, altLineR:null,
     gaugeMin:50, gaugeMax:140,
+    altGaugeMin:58, altGaugeMax:162,
     thesis:'1年低点¥85.5(2025.12) · VC赌注定价',
     note:'止盈=PE>25x且增速<15% · 认错=海外<45%',
     despair:'BIOSECURE Act众议院排期投票 · 1260H实质推进 · 美国中期选举前反华情绪升温 · CXO产能全球过剩'
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
-    altCode:'hk03750', altAction:'买A股', altLineA:361,
+    altCode:'hk03750', altUnit:'HK$', altAction:'买A股',
     lineA:312, lineB:null, lineR:null,
+    altLineA:361, altLineB:null, altLineR:null,
     gaugeMin:200, gaugeMax:470,
+    altGaugeMin:231, altGaugeMax:544,
     thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77 · A¥312/H HK$361双线',
     note:'止盈=PE>30x且增速<20% · 等恐慌(跌了会修复)',
     despair:'全球EV/储能需求证伪 · 电池价格战毛利<15% · 产能严重过剩+客户破产坏账 · 类2025.07低点¥241'
   },
   byd: {
     code: 'hk01211', name:'比亚迪', unit:'HK$', tier:3,
-    altCode:'sz002594', altAction:'买H股', altLineA:57,
+    altCode:'sz002594', altUnit:'¥', altAction:'买H股',
     lineA:66, lineB:null, lineR:null,
+    altLineA:57, altLineB:null, altLineR:null,
     gaugeMin:30, gaugeMax:110,
+    altGaugeMin:26, altGaugeMax:95,
     thesis:'丰田12.5x PE · A¥57/H HK$66双线 · 谁先到买谁',
     note:'止盈=PE>25x且增速<20% · 等认知收敛(PE永久压缩)',
     despair:'出海全面封杀(美+欧+东南亚关税) · 行业出清第三阶段中国品牌互杀 · 市场接受BYD=丰田 · A股系统性2635级别'
@@ -472,41 +572,49 @@ function getStatus(key, price) {
   return {text:'等待 距'+closerSide+' '+closerDist.toFixed(1)+'%', cls:'wait'};
 }
 
-function renderGauge(key, price) {
+function renderGauge(key, price, side) {
+  side = side || 'main';
   var s = STOCKS[key];
-  if (!s.lineA || s.held) return;
-  var range = s.gaugeMax - s.gaugeMin;
+  var lineA = side==='alt' ? s.altLineA : s.lineA;
+  var lineB = side==='alt' ? s.altLineB : s.lineB;
+  var lineR = side==='alt' ? s.altLineR : s.lineR;
+  var gMin = side==='alt' ? s.altGaugeMin : s.gaugeMin;
+  var gMax = side==='alt' ? s.altGaugeMax : s.gaugeMax;
+  var unit = side==='alt' ? s.altUnit : s.unit;
+  if (!lineA || s.held) return;
+  var range = gMax - gMin;
+  var suffix = side==='alt' ? '-alt' : '';
 
   function setTick(id,pos,label) {
     var el = document.getElementById(id);
     if(el) el.style.left = Math.max(0,Math.min(100,pos))+'%';
     var lbl = document.getElementById(id.replace('tick-','tl-'));
-    if(lbl) { lbl.style.left = Math.max(0,Math.min(100,pos))+'%'; lbl.textContent = label ? s.unit+label : ''; }
+    if(lbl) { lbl.style.left = Math.max(0,Math.min(100,pos))+'%'; lbl.textContent = label ? unit+label : ''; }
   }
 
-  var posA = ((s.lineA - s.gaugeMin)/range*100);
-  setTick('tick-'+key+'-a', posA, s.lineA);
+  var posA = ((lineA - gMin)/range*100);
+  setTick('tick-'+key+suffix+'-a', posA, lineA);
 
-  if (s.lineB) {
-    var posB = ((s.lineB - s.gaugeMin)/range*100);
-    setTick('tick-'+key+'-b', posB, s.lineB);
+  if (lineB) {
+    var posB = ((lineB - gMin)/range*100);
+    setTick('tick-'+key+suffix+'-b', posB, lineB);
   } else {
-    setTick('tick-'+key+'-b', -10, '');
+    setTick('tick-'+key+suffix+'-b', -10, '');
   }
 
-  if (s.lineR) {
-    var posR = ((s.lineR - s.gaugeMin)/range*100);
-    setTick('tick-'+key+'-r', posR, s.lineR);
+  if (lineR) {
+    var posR = ((lineR - gMin)/range*100);
+    setTick('tick-'+key+suffix+'-r', posR, lineR);
   } else {
-    setTick('tick-'+key+'-r', -10, '');
+    setTick('tick-'+key+suffix+'-r', -10, '');
   }
 
   // Marker
-  var pct = Math.max(0, Math.min(100, (price - s.gaugeMin)/range*100));
-  var marker = document.getElementById('marker-'+key);
-  var label = document.getElementById('ml-'+key);
+  var pct = Math.max(0, Math.min(100, (price - gMin)/range*100));
+  var marker = document.getElementById('marker-'+key+suffix);
+  var label = document.getElementById('ml-'+key+suffix);
   if(marker) marker.style.left = pct+'%';
-  if(label) label.textContent = s.unit + price.toFixed(1);
+  if(label) label.textContent = unit + price.toFixed(1);
 }
 
 function renderMetrics(key, price, prevClose, ahInfo) {
@@ -536,9 +644,8 @@ function renderMetrics(key, price, prevClose, ahInfo) {
 
 function updateCard(key, price, prevClose, ahInfo) {
   var s = STOCKS[key];
-  // Price
+  // Main price
   document.getElementById('price-'+key).textContent = s.unit + ' ' + price.toFixed(2);
-  // Change
   var chg = price - prevClose;
   var pct = (chg/prevClose*100).toFixed(2);
   var chgEl = document.getElementById('chg-'+key);
@@ -552,8 +659,45 @@ function updateCard(key, price, prevClose, ahInfo) {
   // Card highlight
   var card = document.getElementById('card-'+key);
   card.className = 'stock-card' + (st.cls==='buy'?' triggered':'') + (st.cls==='near'?' near':'');
-  // Gauge
-  renderGauge(key, price);
+  // Main gauge
+  renderGauge(key, price, 'main');
+  // Alt panel
+  if (s.altCode) {
+    var altRaw = window['v_'+s.altCode];
+    if (altRaw) {
+      var af = altRaw.split('~');
+      var altPrice = parseFloat(af[3]);
+      var altPrev = parseFloat(af[4]);
+      if (altPrice) {
+        var altPriceEl = document.getElementById('price-'+key+'-alt');
+        if (altPriceEl) altPriceEl.textContent = s.altUnit + ' ' + altPrice.toFixed(2);
+        var altChg = altPrice - altPrev;
+        var altPct = (altChg/altPrev*100).toFixed(2);
+        var altChgEl = document.getElementById('chg-'+key+'-alt');
+        if (altChgEl) {
+          altChgEl.textContent = (altChg>=0?'+':'')+altChg.toFixed(2)+' ('+(altChg>=0?'+':'')+altPct+'%)';
+          altChgEl.className = 'price-chg '+(altChg>0?'up':(altChg<0?'down':'flat'));
+        }
+        renderGauge(key, altPrice, 'alt');
+        // Determine cheaper side
+        var mainIsHK = s.code.indexOf('hk')===0;
+        var altIsHK = s.altCode.indexOf('hk')===0;
+        var hkPrice = mainIsHK ? price : altPrice;
+        var aPrice = mainIsHK ? altPrice : price;
+        var aPriceHKD = aPrice / FX_HKD_CNY;
+        var hCheaper = hkPrice < aPriceHKD;
+        var mainPanel = document.getElementById('panel-'+key+'-h');
+        var altPanel = document.getElementById('panel-'+key+'-alt');
+        var mainTag = document.getElementById('cheap-'+key+'-h');
+        var altTag = document.getElementById('cheap-'+key+'-alt');
+        var mainIsCheaper = (mainIsHK && hCheaper) || (!mainIsHK && !hCheaper);
+        if (mainPanel) mainPanel.classList.toggle('cheaper', mainIsCheaper);
+        if (altPanel) altPanel.classList.toggle('cheaper', !mainIsCheaper);
+        if (mainTag) mainTag.style.display = mainIsCheaper ? 'inline-block' : 'none';
+        if (altTag) altTag.style.display = !mainIsCheaper ? 'inline-block' : 'none';
+      }
+    }
+  }
   // Metrics
   renderMetrics(key, price, prevClose, ahInfo);
 }
@@ -579,31 +723,12 @@ function computeAH(key, mainPrice) {
   if (!altRaw) return null;
   var altPrice = parseFloat(altRaw.split('~')[3]);
   if (!altPrice) return null;
-  // Determine which is HK and which is A
   var mainIsHK = s.code.indexOf('hk') === 0;
-  var altIsHK = s.altCode.indexOf('hk') === 0;
   var hkPrice = mainIsHK ? mainPrice : altPrice;
   var aPrice = mainIsHK ? altPrice : mainPrice;
-  // Normalize A-share (CNY) to HKD for comparison
   var aPriceHKD = aPrice / FX_HKD_CNY;
-  // Premium from A perspective: if A in HKD > H, A premium positive
   var premium = (aPriceHKD / hkPrice - 1) * 100;
-  var label;
-  if (premium > 0) {
-    label = 'A溢价' + premium.toFixed(1) + '%';
-  } else {
-    label = 'H溢价' + (-premium).toFixed(1) + '%';
-  }
-  // Alt market line monitoring
-  var altUnit = altIsHK ? 'HK$' : '¥';
-  if (s.altLineA) {
-    var altDist = ((altPrice/s.altLineA-1)*100).toFixed(1);
-    var altCls = altDist<=0 ? 'val-green' : (altDist<=5 ? 'val-gold' : '');
-    label += ' · ' + (mainIsHK?'A股':'H股') + altUnit + altPrice.toFixed(2) +
-             ' 距A档<b class="'+altCls+'">'+(altDist>0?'+':'')+altDist+'%</b>';
-  } else {
-    label += ' · ' + (mainIsHK?'A股':'H股') + altUnit + altPrice.toFixed(2);
-  }
+  var label = (premium > 0 ? 'A溢价' : 'H溢价') + Math.abs(premium).toFixed(1) + '%';
   if (s.altAction) label += ' · ' + s.altAction;
   return label;
 }
