@@ -412,19 +412,19 @@ var STOCKS = {
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
-    altCode:'hk03750', altAction:'买A股',
+    altCode:'hk03750', altAction:'买A股', altLineA:361,
     lineA:312, lineB:null, lineR:null,
     gaugeMin:200, gaugeMax:470,
-    thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77',
+    thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77 · A¥312/H HK$361双线',
     note:'止盈=PE>30x且增速<20% · 等恐慌(跌了会修复)',
     despair:'全球EV/储能需求证伪 · 电池价格战毛利<15% · 产能严重过剩+客户破产坏账 · 类2025.07低点¥241'
   },
   byd: {
     code: 'hk01211', name:'比亚迪', unit:'HK$', tier:3,
-    altCode:'sz002594', altAction:'买H股',
+    altCode:'sz002594', altAction:'买H股', altLineA:57,
     lineA:66, lineB:null, lineR:null,
     gaugeMin:30, gaugeMax:110,
-    thesis:'A股¥57÷汇率=HK$66 · AH折价为额外安全垫',
+    thesis:'丰田12.5x PE · A¥57/H HK$66双线 · 谁先到买谁',
     note:'止盈=PE>25x且增速<20% · 等认知收敛(PE永久压缩)',
     despair:'出海全面封杀(美+欧+东南亚关税) · 行业出清第三阶段中国品牌互杀 · 市场接受BYD=丰田 · A股系统性2635级别'
   },
@@ -445,10 +445,31 @@ function getStatus(key, price) {
   if (!s.lineA) return {text:'监控中', cls:'wait'};
   if (s.lineR && price <= s.lineR) return {text:'红线触发 · 认错', cls:'sell'};
   if (s.lineB && price <= s.lineB) return {text:'B档触发 · 重仓', cls:'buy'};
-  if (price <= s.lineA) return {text:'A档触发 · 首仓', cls:'buy'};
-  var distA = ((price/s.lineA -1)*100).toFixed(1);
-  if (distA <= 5) return {text:'接近A档 距'+distA+'%', cls:'near'};
-  return {text:'等待 距A '+distA+'%', cls:'wait'};
+  if (price <= s.lineA) return {text:s.code.indexOf('hk')===0?'H档触发 · 首仓':'A档触发 · 首仓', cls:'buy'};
+  // Check alt market line
+  var altDist = null;
+  if (s.altLineA && s.altCode) {
+    var altRaw = window['v_'+s.altCode];
+    if (altRaw) {
+      var altPrice = parseFloat(altRaw.split('~')[3]);
+      if (altPrice) {
+        if (altPrice <= s.altLineA) {
+          var altIsHK = s.altCode.indexOf('hk')===0;
+          return {text:(altIsHK?'H':'A')+'档触发 · 首仓', cls:'buy'};
+        }
+        altDist = (altPrice/s.altLineA - 1)*100;
+      }
+    }
+  }
+  var distA = ((price/s.lineA -1)*100);
+  var mainTag = s.code.indexOf('hk')===0?'H':'A';
+  var closerSide = mainTag, closerDist = distA;
+  if (altDist !== null && altDist < distA) {
+    closerSide = mainTag==='H'?'A':'H';
+    closerDist = altDist;
+  }
+  if (closerDist <= 5) return {text:'接近'+closerSide+'档 距'+closerDist.toFixed(1)+'%', cls:'near'};
+  return {text:'等待 距'+closerSide+' '+closerDist.toFixed(1)+'%', cls:'wait'};
 }
 
 function renderGauge(key, price) {
@@ -569,13 +590,21 @@ function computeAH(key, mainPrice) {
   var premium = (aPriceHKD / hkPrice - 1) * 100;
   var label;
   if (premium > 0) {
-    label = 'A溢价' + premium.toFixed(1) + '% · ' + (s.altAction || '');
+    label = 'A溢价' + premium.toFixed(1) + '%';
   } else {
-    label = 'H溢价' + (-premium).toFixed(1) + '% · ' + (s.altAction || '');
+    label = 'H溢价' + (-premium).toFixed(1) + '%';
   }
-  // Add raw cross-market price for clarity
+  // Alt market line monitoring
   var altUnit = altIsHK ? 'HK$' : '¥';
-  label += ' · ' + (mainIsHK ? 'A股' : 'H股') + altUnit + altPrice.toFixed(2);
+  if (s.altLineA) {
+    var altDist = ((altPrice/s.altLineA-1)*100).toFixed(1);
+    var altCls = altDist<=0 ? 'val-green' : (altDist<=5 ? 'val-gold' : '');
+    label += ' · ' + (mainIsHK?'A股':'H股') + altUnit + altPrice.toFixed(2) +
+             ' 距A档<b class="'+altCls+'">'+(altDist>0?'+':'')+altDist+'%</b>';
+  } else {
+    label += ' · ' + (mainIsHK?'A股':'H股') + altUnit + altPrice.toFixed(2);
+  }
+  if (s.altAction) label += ' · ' + s.altAction;
   return label;
 }
 
