@@ -368,17 +368,17 @@ var STOCKS = {
   },
   popmart: {
     code: 'hk09992', name:'泡泡玛特', unit:'HK$', tier:1,
-    lineA:189, lineB:140, lineR:315, isRedSell:true,
-    gaugeMin:120, gaugeMax:340,
-    thesis:'裸平台(Labubu=0)=HK$150 · 段永平锚',
-    note:'5大IP全部高增长证明平台能力独立于单一IP'
+    lineA:150, lineB:120, lineR:100,
+    gaugeMin:80, gaugeMax:250,
+    thesis:'段永平线=裸平台价值 · Labubu=0',
+    note:'止盈动态=PE>50x且增速<30% · 认错=连2Q Labubu负增+非Labubu<20%+毛利<55%+费用率>28%'
   },
   tencent: {
     code: 'hk00700', name:'腾讯', unit:'HK$', tier:2,
-    lineA:430, lineB:400, lineR:370, target:550,
-    gaugeMin:340, gaugeMax:580,
+    lineA:430, lineB:400, lineR:350,
+    gaugeMin:320, gaugeMax:560,
     thesis:'FwdPE 12x入场 · NTM EPS HK$36.3',
-    note:'半年战术交易 · 时间止损2026.12.31'
+    note:'止盈动态=FwdPE>20x且增速<10% · 红线=击穿2022绝对底 · 时间止损2026.12.31'
   },
   baba: {
     code: 'hk09988', name:'阿里巴巴', unit:'HK$', tier:2,
@@ -396,10 +396,10 @@ var STOCKS = {
   },
   wuxi: {
     code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
-    lineA:110, lineB:85, lineR:190, isRedSell:true,
-    gaugeMin:60, gaugeMax:200,
+    lineA:110, lineB:85, lineR:60,
+    gaugeMin:45, gaugeMax:150,
     thesis:'VC赌注定价 · PE14x含地缘折价',
-    note:'认错=海外<45%/TIDES连2季<15%/毛利<45%'
+    note:'止盈动态=PE>25x且增速<15% · 认错=1260H通过或海外<45%'
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
@@ -429,22 +429,12 @@ function getStatus(key, price) {
   var s = STOCKS[key];
   if (s.held) return {text:'已持仓', cls:'hold'};
   if (!s.lineA) return {text:'监控中', cls:'wait'};
-  if (s.isRedSell) {
-    // Red is sell line not buy
-    if (price <= s.lineB) return {text:'B档触发', cls:'buy'};
-    if (price <= s.lineA) return {text:'A档以下', cls:'buy'};
-    if (price >= s.lineR) return {text:'止盈区', cls:'sell'};
-    var distA = ((price/s.lineA -1)*100).toFixed(1);
-    if (distA <= 5) return {text:'接近A档 -'+distA+'%', cls:'near'};
-    return {text:'等待 距A+'+distA+'%', cls:'wait'};
-  } else {
-    if (price <= s.lineR) return {text:'红线触发!', cls:'buy'};
-    if (price <= s.lineB) return {text:'B档触发', cls:'buy'};
-    if (price <= s.lineA) return {text:'A档触发', cls:'buy'};
-    var distA = ((price/s.lineA -1)*100).toFixed(1);
-    if (distA <= 5) return {text:'接近A档 距-'+distA+'%', cls:'near'};
-    return {text:'等待 距A-'+distA+'%', cls:'wait'};
-  }
+  if (price <= s.lineR) return {text:'红线触发 · 认错', cls:'sell'};
+  if (price <= s.lineB) return {text:'B档触发 · 重仓', cls:'buy'};
+  if (price <= s.lineA) return {text:'A档触发 · 首仓', cls:'buy'};
+  var distA = ((price/s.lineA -1)*100).toFixed(1);
+  if (distA <= 5) return {text:'接近A档 距-'+distA+'%', cls:'near'};
+  return {text:'等待 距A-'+distA+'%', cls:'wait'};
 }
 
 function renderGauge(key, price) {
