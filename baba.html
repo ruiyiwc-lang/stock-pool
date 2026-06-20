@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阿里巴巴 09988.HK - 持仓监控</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:900px; margin:0 auto; font-size:16px; }
+h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
+.subtitle a { color:#c9a84c; text-decoration:none; }
+
+.section-divider { border:none; border-top:1px solid #1e3a5f; margin:28px 0 20px; }
+.section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
+
+/* 持仓横幅 */
+.hold-banner { background:linear-gradient(135deg,rgba(93,173,226,.12),rgba(93,173,226,.04)); border:1px solid rgba(93,173,226,.3); border-left:4px solid #5dade2; border-radius:8px; padding:14px 20px; margin-bottom:20px; font-size:14px; color:#5dade2; font-weight:600; letter-spacing:.3px; }
+
+/* PE 铁律 信息盒 */
+.standard-box { background:linear-gradient(180deg,#15110a,#1a1610); border:1px solid #4a3e1e; border-left:3px solid #c9a84c; border-radius:8px; padding:14px 18px; margin-bottom:16px; font-size:13px; }
+.standard-box h3 { color:#c9a84c; font-size:13px; margin-bottom:8px; font-weight:600; letter-spacing:0.4px; }
+.standard-box .grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; font-size:12px; color:#a8b3c0; }
+.standard-box code { background:rgba(201,168,76,.1); color:#c9a84c; padding:1px 5px; border-radius:3px; font-family:'SF Mono',Menlo,monospace; font-size:11.5px; }
+.standard-box strong { color:#e0e6ed; font-weight:600; }
+
+/* 价格大卡片 */
+.price-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:24px 28px; margin-bottom:16px; }
+.price-row { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.price-big { font-size:52px; font-weight:700; color:#e0e6ed; letter-spacing:-1px; }
+.price-change { font-size:20px; font-weight:600; }
+.price-change.up { color:#1a7a4c; }
+.price-change.down { color:#c0392b; }
+.price-change.flat { color:#6b7b8d; }
+.price-meta { display:flex; gap:20px; margin-top:12px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
+.price-meta span b { color:#e0e6ed; }
+
+/* PE参考条 */
+.pe-ref-bar { margin-top:20px; }
+.pe-ref-bar .bar-label { font-size:12px; color:#6b7b8d; margin-bottom:6px; }
+.pe-ref-bar .bar-container { position:relative; height:12px; border-radius:6px; background:linear-gradient(to right,#1a7a4c 0%,#5a6878 50%,#c0392b 100%); opacity:.5; }
+.pe-ref-bar .bar-marker { position:absolute; top:-3px; width:3px; height:18px; background:#fff; border-radius:1px; box-shadow:0 0 8px rgba(255,255,255,.6); transform:translateX(-50%); transition:left .6s; }
+.pe-ref-bar .bar-marker-label { position:absolute; top:18px; left:50%; transform:translateX(-50%); font-size:11px; color:#fff; font-weight:700; white-space:nowrap; background:#1a1f2e; padding:2px 6px; border-radius:3px; border:1px solid #c9a84c; }
+.pe-ref-bar .bar-ticks { display:flex; justify-content:space-between; margin-top:20px; font-size:11px; color:#6b7b8d; }
+
+/* 状态徽章 */
+.status-badge { display:inline-block; padding:4px 12px; border-radius:12px; font-size:13px; font-weight:600; letter-spacing:.05em; margin-left:12px; vertical-align:middle; }
+.status-badge.hold { background:rgba(93,173,226,.15); color:#5dade2; }
+
+/* KPI 卡片 */
+.kpi-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; }
+.kpi-card .desc { font-size:13px; color:#6b7b8d; margin-bottom:14px; }
+
+/* 表格通用 */
+.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+.data-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:8px; border-bottom:1px solid #1e3a5f; font-size:12px; }
+.data-table td { padding:8px; border-bottom:1px solid #1e2a3a; }
+.data-table .highlight { color:#c9a84c; font-weight:600; }
+.data-table .green { color:#22c55e; }
+.data-table .red { color:#ef4444; }
+.data-table .blue { color:#5dade2; }
+.data-table tfoot td { border-top:2px solid #1e3a5f; font-weight:700; color:#c9a84c; }
+
+/* 回购卡片 */
+.buyback-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+.buyback-item { text-align:center; }
+.buyback-item .bv { font-size:22px; font-weight:700; color:#e0e6ed; }
+.buyback-item .bl { font-size:12px; color:#6b7b8d; margin-top:4px; }
+
+/* 云增速卡片 */
+.cloud-card { background:linear-gradient(135deg,#111827,#0f1b2d); border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.cloud-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#5dade2; }
+.cloud-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+.cloud-item { text-align:center; background:rgba(93,173,226,.05); border:1px solid rgba(93,173,226,.15); border-radius:8px; padding:12px 8px; }
+.cloud-item .qv { font-size:18px; font-weight:700; }
+.cloud-item .ql { font-size:11px; color:#6b7b8d; margin-top:4px; }
+
+/* 双栏信号 */
+.signal-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.signal-col { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:16px 18px; }
+.signal-col h3 { font-size:15px; font-weight:600; margin-bottom:10px; }
+.signal-col.warn h3 { color:#ef4444; }
+.signal-col.pos h3 { color:#22c55e; }
+.signal-col ul { list-style:none; padding:0; }
+.signal-col li { font-size:13px; padding:6px 0; border-bottom:1px solid #1e2a3a; color:#8fa0b3; }
+.signal-col li:last-child { border-bottom:none; }
+.signal-col li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:8px; }
+.signal-col.warn li::before { background:#ef4444; }
+.signal-col.pos li::before { background:#22c55e; }
+
+/* 催化剂日历 */
+.cal-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.cal-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #1e2a3a; font-size:14px; }
+.cal-item:last-child { border-bottom:none; }
+.cal-date { color:#c9a84c; font-weight:600; min-width:100px; }
+.cal-desc { color:#e0e6ed; }
+
+/* 论点摘要 */
+.thesis-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
+.thesis-card p { font-size:14px; line-height:1.8; color:#8fa0b3; }
+.thesis-card strong { color:#e0e6ed; }
+
+/* 新闻卡片 */
+.news-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; }
+.news-item { padding:10px 0; border-bottom:1px solid #1e2a3a; }
+.news-item:last-child { border-bottom:none; }
+.news-tag { display:inline-block; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
+.news-tag.earn { background:rgba(34,197,94,.12); color:#22c55e; }
+.news-tag.capital { background:rgba(93,173,226,.12); color:#5dade2; }
+.news-tag.policy { background:rgba(239,68,68,.12); color:#ef4444; }
+.news-tag.market { background:rgba(201,168,76,.12); color:#c9a84c; }
+.news-tag.product { background:rgba(168,131,247,.12); color:#a883f7; }
+.news-tag.cloud { background:rgba(93,173,226,.12); color:#5dade2; }
+.news-title { font-size:14px; font-weight:500; }
+.news-title a { color:#e0e6ed; text-decoration:none; }
+.news-title a:hover { color:#c9a84c; }
+.news-summary { font-size:12px; color:#6b7b8d; margin-top:4px; line-height:1.6; }
+.news-date { font-size:11px; color:#6b7b8d; margin-top:4px; opacity:.7; }
+.news-empty { color:#6b7b8d; font-size:13px; font-style:italic; padding:20px 0; text-align:center; }
+
+/* 估值上下文 */
+.ctx-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.ctx-item { background:#111827; border:1px solid #1e3a5f; border-radius:10px; padding:14px; text-align:center; }
+.ctx-item .cv { font-size:22px; font-weight:700; color:#e0e6ed; }
+.ctx-item .cl { font-size:12px; color:#6b7b8d; margin-top:4px; }
+.ctx-item .cs { font-size:10px; color:#6b7b8d; margin-top:4px; opacity:.7; }
+
+.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#c9a84c; text-decoration:none; }
+.back-link:hover { text-decoration:underline; }
+
+/* 数据校验面板 */
+.verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:32px; }
+.verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.verify-title .vt-icon { width:8px; height:8px; border-radius:50%; }
+.verify-title .vt-icon.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.5); }
+.verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
+.verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
+.verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
+.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
+.verify-item.pass { border-left:3px solid #22c55e; }
+.verify-item.drift { border-left:3px solid #eab308; }
+.verify-item.fail { border-left:3px solid #ef4444; }
+.vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.vi-name { font-weight:700; color:#e0e6ed; }
+.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
+.vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
+.vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
+.vi-row { display:flex; justify-content:space-between; color:#8fa0b3; margin-bottom:2px; }
+.vi-row .src { color:#6b7b8d; }
+.vi-row .val { color:#e0e6ed; font-weight:600; }
+
+@media(max-width:600px) {
+  .ctx-grid, .buyback-grid, .cloud-grid { grid-template-columns:1fr 1fr; }
+  .signal-grid { grid-template-columns:1fr; }
+  .price-big { font-size:36px; }
+  .standard-box .grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body data-active-page="baba">
+<!-- Sidebar -->
+<style>
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0a0f1a;border-right:1px solid #1e3a5f;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:72px;text-decoration:none;color:#6b7b8d;border-left:3px solid transparent;transition:all .2s;padding:8px 0}
+.sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
+.sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
+.sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
+</style>
+<nav class="sidebar">
+<a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
+<a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg><span class="nav-label">温度计</span></a>
+<a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" rx="0.5"/><rect x="10" y="6" width="4" height="15" rx="0.5"/><rect x="17" y="3" width="4" height="18" rx="0.5"/><line x1="1" y1="21" x2="23" y2="21"/></svg><span class="nav-label">基石</span></a>
+<a class="nav-btn" href="portfolio.html" data-page="portfolio"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nav-label">三档</span></a>
+<a class="nav-btn" href="smic.html" data-page="smic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-label">中芯</span></a>
+<a class="nav-btn" href="popmart.html" data-page="popmart"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="nav-label">泡泡玛特</span></a>
+<a class="nav-btn" href="tencent.html" data-page="tencent"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="11" rx="7" ry="8"/><ellipse cx="9.5" cy="9" rx="1.5" ry="2"/><ellipse cx="14.5" cy="9" rx="1.5" ry="2"/><circle cx="9.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><path d="M9 14.5c0 1.5 1.3 2.5 3 2.5s3-1 3-2.5"/><path d="M7 18c-1 1.5-1.5 3-0.5 4 0.5 0.5 1.5 0 2-0.5"/><path d="M17 18c1 1.5 1.5 3 0.5 4-0.5 0.5-1.5 0-2-0.5"/></svg><span class="nav-label">腾讯</span></a>
+<a class="nav-btn" href="baba.html" data-page="baba"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg><span class="nav-label">阿里</span></a>
+<a class="nav-btn" href="wuxi.html" data-page="wuxi"><svg viewBox="0 0 24 24"><path d="M9 3v7.4a4 4 0 1 0 6 0V3"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="10" y1="7" x2="14" y2="7"/></svg><span class="nav-label">药明</span></a>
+<a class="nav-btn" href="beigene.html" data-page="beigene"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="nav-label">百济</span></a>
+<a class="nav-btn" href="news.html" data-page="news"><svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/><line x1="7" y1="16" x2="15" y2="16"/></svg><span class="nav-label">新闻</span></a>
+</nav>
+<script>(function(){var p=document.body.getAttribute('data-active-page');if(p){var b=document.querySelector('.sidebar a[data-page="'+p+'"]');if(b)b.classList.add('active')}})()</script>
+<!-- /Sidebar -->
+
+<a class="back-link" href="index.html">&larr; 返回总览</a>
+<h1>阿里巴巴 09988.HK</h1>
+<div class="subtitle">第二档 · 已持仓 · 纯监控 · 中国最好的互联网公司(非全球化)</div>
+
+<!-- ===== 持仓状态横幅 ===== -->
+<div class="hold-banner">已持仓 · 不设价格阈值 · 只监控业务基本面变化</div>
+
+<!-- ===== PE 铁律 信息盒 ===== -->
+<div class="standard-box">
+  <h3>PE 估值铁律 v1.0</h3>
+  <div class="grid">
+    <div><strong>默认口径</strong>：<code>Forward PE (NTM 共识)</code> = 价 / 未来12月一致预期EPS</div>
+    <div><strong>本页基础</strong>：<code>NTM EPS HK$8.50</code> = blend(FY2026E + FY2027E)</div>
+    <div><strong>持仓定位</strong>：第二档 · 已持仓较多 · 不设价格阈值</div>
+    <div><strong>数据源</strong>：彭博一致预期 + 同花顺 + 公司指引</div>
+  </div>
+</div>
+
+<!-- ===== 实时价格 ===== -->
+<div class="price-card">
+  <div class="price-row">
+    <span class="price-big" id="price">--</span>
+    <span class="price-change flat" id="change">-- (--)</span>
+    <span class="status-badge hold">已持仓 · 监控中</span>
+  </div>
+  <div class="price-meta">
+    <span>FwdPE <b id="fwd-pe">--</b></span>
+    <span>市值 <b id="mkt-cap">--</b></span>
+    <span>NTM EPS <b>HK$8.50</b></span>
+    <span>历史PE区间 <b>10x–25x</b></span>
+  </div>
+  <!-- PE参考条：当前PE在历史区间中的位置 -->
+  <div class="pe-ref-bar">
+    <div class="bar-label">当前 FwdPE 在历史区间中的位置 (10x - 25x)</div>
+    <div class="bar-container">
+      <div class="bar-marker" id="pe-marker" style="left:0%">
+        <div class="bar-marker-label" id="pe-marker-label">--</div>
+      </div>
+    </div>
+    <div class="bar-ticks">
+      <span>10x (底部)</span>
+      <span>15x</span>
+      <span>20x (中位)</span>
+      <span>25x (偏高)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 估值上下文 ===== -->
+<div class="ctx-grid">
+  <div class="ctx-item"><div class="cv" id="ctxCurPE">--</div><div class="cl">当前 FwdPE</div><div class="cs">NTM EPS HK$8.50</div></div>
+  <div class="ctx-item"><div class="cv">15x</div><div class="cl">5年中位</div><div class="cs">2020-2025 月度</div></div>
+  <div class="ctx-item"><div class="cv">8.0x</div><div class="cl">历史最低</div><div class="cs">2022.10 · 监管底</div></div>
+  <div class="ctx-item"><div class="cv">30x</div><div class="cl">历史最高</div><div class="cs">2020.10 · 蚂蚁IPO前</div></div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 分部估值 SOTP ===== -->
+<div class="kpi-card">
+  <h2>分部估值 SOTP (Sum of The Parts)</h2>
+  <div class="desc">基于 FY2026E 各业务板块收入/利润，分别适用不同估值方法</div>
+  <table class="data-table">
+    <thead>
+      <tr><th>业务板块</th><th>FY2026E收入</th><th>估值方法</th><th>估值(亿港元)</th><th>占比</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="highlight">淘天集团</td><td>~4,800亿</td><td>15x earnings</td><td>~12,000</td><td>55%</td></tr>
+      <tr><td class="blue">云智能</td><td>~1,200亿</td><td>6x PS</td><td>~7,200</td><td>33%</td></tr>
+      <tr><td>国际(Lazada+AliExpress)</td><td>~1,000亿</td><td>2x PS</td><td>~2,000</td><td>9%</td></tr>
+      <tr><td>菜鸟+本地</td><td>合计~600亿</td><td>0.5x PS</td><td>~300</td><td>1%</td></tr>
+      <tr><td style="color:#c9a84c">现金净值</td><td>--</td><td>--</td><td>~3,500</td><td>--</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><td>总计</td><td>--</td><td>--</td><td>~25,000</td><td>HK$~120/股</td></tr>
+    </tfoot>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 回购进度跟踪 ===== -->
+<div class="kpi-card">
+  <h2>回购进度跟踪</h2>
+  <div class="buyback-grid">
+    <div class="buyback-item"><div class="bv">$12.5B</div><div class="bl">FY2025 累计回购</div></div>
+    <div class="buyback-item"><div class="bv">$4.8B</div><div class="bl">FY2026至今</div></div>
+    <div class="buyback-item"><div class="bv">~6%</div><div class="bl">已注销比例</div></div>
+    <div class="buyback-item"><div class="bv">~3.5%</div><div class="bl">年化回购yield</div></div>
+  </div>
+  <div style="font-size:12px;color:#6b7b8d;line-height:1.6">
+    FY2025 创纪录回购力度，超过自由现金流的 60%。FY2026 公司承诺继续 $10B+ 回购+派息。注销进度：累计回购股份约 6% 已完成注销，流通股本持续缩减。
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 云智能增速跟踪 ===== -->
+<div class="cloud-card">
+  <h2>云智能增速跟踪</h2>
+  <div class="cloud-grid">
+    <div class="cloud-item"><div class="qv green" style="color:#22c55e">+13%</div><div class="ql">FY25Q3</div></div>
+    <div class="cloud-item"><div class="qv green" style="color:#22c55e">+18%</div><div class="ql">FY25Q4</div></div>
+    <div class="cloud-item"><div class="qv green" style="color:#22c55e">+20%</div><div class="ql">FY26Q1</div></div>
+    <div class="cloud-item"><div class="qv" style="color:#c9a84c">待发布</div><div class="ql">FY26Q2</div></div>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>指标</th><th>阿里云</th><th>AWS</th><th>Azure</th></tr></thead>
+    <tbody>
+      <tr><td>最新季度增速</td><td class="green">+20%</td><td>+17%</td><td>+33%</td></tr>
+      <tr><td>AI相关收入占比</td><td>~12%</td><td>~20%</td><td>~16%</td></tr>
+      <tr><td>增速趋势</td><td class="green">加速中</td><td>稳定</td><td>加速中</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:12px;color:#6b7b8d;margin-top:10px;">关注：云增速连续加速是AI故事核心验证。若云增速回落到<15%，AI narrative 大幅减弱。</div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 业务基本面 ===== -->
+<div class="kpi-card">
+  <h2>业务基本面监控</h2>
+  <table class="data-table">
+    <thead><tr><th>指标</th><th>当前值</th><th>关注线</th><th>备注</th></tr></thead>
+    <tbody>
+      <tr><td>淘天CMR增速</td><td class="green">+9%</td><td class="red">&lt;5%=增长引擎熄火</td><td>广告+佣金收入核心指标</td></tr>
+      <tr><td>云智能增速</td><td class="green">+20%</td><td class="red">&lt;20%=AI故事证伪</td><td>AI相关收入三位数增长驱动</td></tr>
+      <tr><td>整体Free Cash Flow</td><td>~1,800亿/年</td><td class="red">下降=回购不可持续</td><td>FCF支撑回购+派息承诺</td></tr>
+      <tr><td>88VIP会员数</td><td>4,500万+</td><td class="red">停滞=用户质量下降</td><td>高价值用户留存核心</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 买卖信号双栏 ===== -->
+<div class="signal-grid">
+  <div class="signal-col warn">
+    <h3>风险信号 (减仓考虑)</h3>
+    <ul>
+      <li>云增速连续2季 &lt;15%</li>
+      <li>淘天GMV市占率跌破50%</li>
+      <li>回购突然停止或大幅缩减</li>
+      <li>管理层/核心高管大幅减持</li>
+    </ul>
+  </div>
+  <div class="signal-col pos">
+    <h3>积极信号 (加仓考虑)</h3>
+    <ul>
+      <li>云增速 &gt;30% (AI爆发确认)</li>
+      <li>国际业务首次季度盈利</li>
+      <li>淘天take rate持续提升</li>
+      <li>蚂蚁集团IPO/分红安排落地</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 催化剂日历 ===== -->
+<div class="cal-card">
+  <h2>催化剂日历</h2>
+  <div class="cal-item"><div class="cal-date">2026.08</div><div class="cal-desc">FY2026 Q2 财报发布 · 云增速+淘天CMR验证</div></div>
+  <div class="cal-item"><div class="cal-date">2026 H2</div><div class="cal-desc">云智能独立IPO进展 · 若启动将释放估值重估空间</div></div>
+  <div class="cal-item"><div class="cal-date">2026-2027</div><div class="cal-desc">国际业务(Trendyol/Lazada)扭亏时间表 · 目标FY2027盈亏平衡</div></div>
+  <div class="cal-item"><div class="cal-date">待定</div><div class="cal-desc">蚂蚁集团后续安排 · IPO/回购/特别分红可能性</div></div>
+</div>
+
+<!-- ===== 投资论点 ===== -->
+<div class="thesis-card">
+  <h2>投资论点</h2>
+  <p>
+    <strong>Core：</strong>中国最好的互联网公司，但不等于全球化(控股投资非产品出海)。云智能是唯一增量故事。当前持仓逻辑 = 中国消费互联网底部资产 + 回购yield支撑。淘天现金牛提供 ~1800亿/年 FCF，支撑 3.5% 年化回购yield，构成下行保护。<br><br>
+    <strong>Risk：</strong>淘天被拼多多/抖音持续蚕食市占率，云增速不及预期(与Azure差距扩大)，Jack Ma 政治风险卷土重来，国际业务持续烧钱拖累集团利润。<br><br>
+    <strong>为什么不设阈值：</strong>已持仓较多，当前价位已反映合理估值(~12-14x FwdPE)。不追加也不减仓，纯跟踪业务面变化决定是否调整。
+  </p>
+</div>
+
+<hr class="section-divider">
+
+<!-- ===== 今日新闻 ===== -->
+<div class="news-card">
+  <h2>今日动态</h2>
+  <!-- NEWS_DATA_START -->
+  <div class="news-empty">暂无新闻 · 等待 cron 自动更新</div>
+  <!-- NEWS_DATA_END -->
+</div>
+
+<!-- ===== 数据校验面板 ===== -->
+<div class="verify-panel" id="verifyPanel">
+  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 数据双源校验</div>
+  <div class="verify-grid" id="verifyGrid">
+    <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
+  </div>
+  <div style="font-size:11px;color:#6b7b8d;margin-top:8px;" id="verifySummary"></div>
+</div>
+
+<div class="update-time" id="updateTime">加载中...</div>
+
+<script>
+// ===== CONFIG =====
+var NTM_EPS_HKD = 8.50; // NTM consensus EPS in HKD
+var PE_RANGE_MIN = 10;
+var PE_RANGE_MAX = 25;
+
+// ===== LIVE QUOTE =====
+function calcPE(price) { return price / NTM_EPS_HKD; }
+
+function updatePEBar(pe) {
+  var pct = Math.max(0, Math.min(100, (pe - PE_RANGE_MIN) / (PE_RANGE_MAX - PE_RANGE_MIN) * 100));
+  var marker = document.getElementById('pe-marker');
+  var label = document.getElementById('pe-marker-label');
+  if (marker) marker.style.left = pct + '%';
+  if (label) label.textContent = pe.toFixed(1) + 'x';
+}
+
+function fetchQuote() {
+  var s = document.createElement('script');
+  s.src = 'https://qt.gtimg.cn/q=hk09988&_t=' + Date.now();
+  s.onload = function() {
+    try {
+      var raw = v_hk09988;
+      if (!raw) return;
+      var f = raw.split('~');
+      var price = parseFloat(f[3]);
+      var prevClose = parseFloat(f[4]);
+      var time = f[30] || '';
+
+      // Price display
+      document.getElementById('price').textContent = 'HK$ ' + price.toFixed(2);
+      var chg = price - prevClose;
+      var chgPct = (chg / prevClose * 100).toFixed(2);
+      var chgEl = document.getElementById('change');
+      chgEl.textContent = (chg>=0?'+':'') + chg.toFixed(2) + ' (' + (chg>=0?'+':'') + chgPct + '%)';
+      chgEl.className = 'price-change ' + (chg>=0?'up':'down');
+
+      // FwdPE
+      var pe = calcPE(price);
+      document.getElementById('fwd-pe').textContent = pe.toFixed(2) + 'x';
+      document.getElementById('ctxCurPE').textContent = pe.toFixed(1) + 'x';
+
+      // Market cap (approx: price * ~20.4B shares)
+      var mktCap = (price * 20.4 / 10000).toFixed(1);
+      document.getElementById('mkt-cap').textContent = mktCap + '万亿HKD';
+
+      // PE reference bar
+      updatePEBar(pe);
+
+      // Update time
+      document.getElementById('updateTime').textContent = '最后更新：' + time + ' · FwdPE ' + pe.toFixed(2) + 'x · NTM EPS HK$' + NTM_EPS_HKD.toFixed(2) + ' (彭博一致预期)';
+    } catch(e) { console.error(e); }
+    s.remove();
+  };
+  s.onerror = function() { s.remove(); };
+  document.body.appendChild(s);
+}
+
+fetchQuote();
+setInterval(fetchQuote, 30000);
+</script>
+
+<script>
+// ===== 数据双源校验 =====
+var VERIFY_RESULTS = {};
+
+function codeToSecid(code) {
+  if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
+  if (code.indexOf('sh') === 0) return '1.' + code.replace('sh','');
+  if (code.indexOf('sz') === 0) return '0.' + code.replace('sz','');
+  return null;
+}
+
+function fetchVerifyPrices() {
+  var items = [
+    {code:'hk09988', name:'阿里巴巴'}
+  ];
+  items.forEach(function(item) {
+    var secid = codeToSecid(item.code);
+    if (!secid) return;
+    var qtRaw = window['v_' + item.code];
+    var qtPrice = null;
+    if (qtRaw) {
+      var parts = (typeof qtRaw === 'string') ? qtRaw.split('~') : [];
+      qtPrice = parseFloat(parts[3]) || null;
+    }
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
+    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=' + secid + '&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+    fetch(url, {signal: controller.signal}).then(function(r){
+      clearTimeout(timeoutId);
+      return r.json();
+    }).then(function(j){
+      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
+      var kline = j.data.klines[0].split(',');
+      var emClose = parseFloat(kline[2]);
+      recordVerify(item, qtPrice, emClose, 'eastmoney日K', kline[0]);
+    }).catch(function(){
+      clearTimeout(timeoutId);
+      fetchIfzqFallback(item, qtPrice);
+    });
+  });
+}
+
+function fetchIfzqFallback(item, qtPrice) {
+  var code = item.code;
+  var url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=' + code + ',day,,,1,qfq';
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || j.code !== 0 || !j.data) throw new Error('no data');
+    var stockData = j.data[code] || j.data[Object.keys(j.data)[0]];
+    if (!stockData) throw new Error('no stock data');
+    var dayArr = stockData.qfqday || stockData.day;
+    if (!dayArr || dayArr.length === 0) throw new Error('no kline');
+    var lastDay = dayArr[dayArr.length - 1];
+    var ifzqClose = parseFloat(lastDay[2]);
+    recordVerify(item, qtPrice, ifzqClose, 'ifzq日K', lastDay[0]);
+  }).catch(function(){
+    recordVerify(item, qtPrice, null, 'ifzq', null);
+  });
+}
+
+function recordVerify(item, qtPrice, src2Price, src2Source, src2Date) {
+  if (qtPrice && src2Price) {
+    var diff = Math.abs(qtPrice - src2Price) / qtPrice * 100;
+    var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:src2Price, diff:diff, status:status, src2Source:src2Source, klineDate:src2Date};
+  } else if (qtPrice) {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  } else {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:null, src2:src2Price||null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  }
+  renderVerifyPanel();
+}
+
+function renderVerifyPanel() {
+  var grid = document.getElementById('verifyGrid');
+  var icon = document.getElementById('verifyIcon');
+  var summary = document.getElementById('verifySummary');
+  if (!grid) return;
+  var html = '';
+  var passCount = 0, driftCount = 0, failCount = 0, totalCount = 0;
+  var codes = Object.keys(VERIFY_RESULTS).sort();
+  codes.forEach(function(code) {
+    var r = VERIFY_RESULTS[code];
+    totalCount++;
+    if (r.status === 'pass') passCount++;
+    else if (r.status === 'drift') driftCount++;
+    else failCount++;
+    html += '<div class="verify-item ' + r.status + '">';
+    html += '<div class="vi-head"><span class="vi-name">' + r.name + '</span><span class="vi-badge ' + r.status + '">' + (r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">qt.gtimg</span><span class="val">' + (r.src1 !== null ? r.src1.toFixed(2) : '失败') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">' + (r.src2Source||'eastmoney') + (r.klineDate?' ('+r.klineDate+')':'') + '</span><span class="val">' + (r.src2 !== null ? r.src2.toFixed(2) : '失败') + '</span></div>';
+    if (r.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + r.diff.toFixed(2) + '%</span></div>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
+  var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
+  icon.className = 'vt-icon ' + overallStatus;
+  summary.textContent = '共' + totalCount + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 阈值: <1%通过/<3%偏差';
+}
+
+// Trigger verification after main data loads
+setTimeout(fetchVerifyPrices, 3000);
+</script>
+</body>
+</html>
