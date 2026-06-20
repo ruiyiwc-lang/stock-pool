@@ -530,11 +530,12 @@ function parseQuote(raw) {
   
   STATE.price = parseFloat(parts[3]);
   STATE.prevClose = parseFloat(parts[4]);
-  STATE.turnover = parseFloat(parts[6]); // 成交额(万)
-  STATE.pe = parseFloat(parts[45]) || parseFloat(parts[39]);
-  STATE.turnoverRate = parseFloat(parts[44]);
-  STATE.high52 = parseFloat(parts[33]) || null;
-  STATE.low52 = parseFloat(parts[34]) || null;
+  STATE.turnover = parseFloat(parts[37]); // 成交额(元)
+  STATE.pe = parseFloat(parts[39]); // PE(TTM)
+  STATE.mktcap = parseFloat(parts[44]); // 总市值(亿HK$) 直接用API
+  STATE.turnoverRate = parseFloat(parts[47]); // 换手率%
+  STATE.high52 = parseFloat(parts[48]) || null; // 52周最高
+  STATE.low52 = parseFloat(parts[49]) || null; // 52周最低
   
   renderQuote();
 }
@@ -553,8 +554,8 @@ function renderQuote() {
   deltaEl.textContent = (chg >= 0 ? '+' : '') + fmt(chg) + ' (' + (chg >= 0 ? '+' : '') + fmt(chgPct) + '%)';
   deltaEl.className = 'kpi-delta ' + (chg >= 0 ? 'up' : 'down');
   
-  // Market Cap
-  var mktcap = price * CONFIG.sharesB;
+  // Market Cap - 直接用API field[44]（AH双轨不能简单price×shares）
+  var mktcap = STATE.mktcap || (price * CONFIG.sharesB);
   $('kpi-mktcap').textContent = fmt(mktcap, 0);
   
   // PE from API
@@ -564,7 +565,7 @@ function renderQuote() {
   
   // Turnover
   if (STATE.turnover) {
-    $('kpi-turnover').textContent = fmt(STATE.turnover / 10000, 2); // 万→亿
+    $('kpi-turnover').textContent = fmt(STATE.turnover / 1e8, 2); // 元→亿
   }
   
   // Turnover rate
