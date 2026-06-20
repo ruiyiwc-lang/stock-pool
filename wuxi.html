@@ -494,11 +494,11 @@ function parseQuoteA() {
 
     STATE.priceA = parseFloat(parts[3]);
     STATE.prevCloseA = parseFloat(parts[4]);
-    STATE.turnover = parseFloat(parts[6]); // 成交额(万)
-    STATE.pe = parseFloat(parts[39]) || parseFloat(parts[45]);
-    STATE.turnoverRate = parseFloat(parts[38]);
-    STATE.high52 = parseFloat(parts[33]) || null;
-    STATE.low52 = parseFloat(parts[34]) || null;
+    STATE.turnover = parseFloat(parts[37]); // 成交额(万元)
+    STATE.pe = parseFloat(parts[39]); // PE(TTM)
+    STATE.turnoverRate = parseFloat(parts[38]); // 换手率%
+    STATE.high52 = null; // A股qt.gtimg.cn无52周字段
+    STATE.low52 = null;
 
     renderQuoteA();
   } catch(e) { console.warn('A-share quote parse error:', e); }
