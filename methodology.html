@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>王超投资方法论 v1.0 · 底层操作系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;background:#0a0f1a;color:#e0e6ed;padding:24px;padding-left:80px;line-height:1.7}
+.container{max-width:980px;margin:0 auto}
+.head{padding:24px 0 16px;border-bottom:1px solid #1e3a5f;margin-bottom:24px}
+h1{font-size:26px;font-weight:800;letter-spacing:1px}
+.sub{color:#6b7b8d;font-size:13px;margin-top:6px}
+h2{font-size:18px;color:#c9a84c;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #1e3a5f;font-weight:700}
+h3{font-size:15px;color:#e0e6ed;margin:20px 0 8px;font-weight:700}
+h4{font-size:13px;color:#3b82f6;margin:14px 0 6px;font-weight:600}
+p{margin:8px 0;font-size:14px;color:#c5cdd6}
+.box{background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:16px;margin:12px 0}
+.principle{background:#1a1f2e;border-left:3px solid #c9a84c;padding:12px 16px;margin:10px 0;font-size:14px}
+.principle strong{color:#c9a84c}
+.danger{background:#1a1f2e;border-left:3px solid #c0392b;padding:12px 16px;margin:10px 0;font-size:14px}
+.danger strong{color:#c0392b}
+.good{background:#1a1f2e;border-left:3px solid #1a7a4c;padding:12px 16px;margin:10px 0;font-size:14px}
+.good strong{color:#1a7a4c}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid #1e3a5f;text-align:left;vertical-align:top}
+th{color:#6b7b8d;font-weight:600;background:#0a0f1a}
+ul{margin:8px 0 8px 22px}
+li{margin:4px 0;font-size:14px;color:#c5cdd6}
+code{background:#1a1f2e;padding:2px 6px;border-radius:4px;color:#c9a84c;font-size:12px;font-family:"SF Mono",monospace}
+.toc{background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:16px;margin-bottom:24px}
+.toc ol{margin-left:22px}
+.toc a{color:#3b82f6;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+.diagram{background:#1a1f2e;padding:16px;border-radius:8px;font-family:"SF Mono",monospace;font-size:12px;color:#e0e6ed;white-space:pre;overflow-x:auto;margin:12px 0;line-height:1.5}
+.footer{text-align:center;color:#6b7b8d;font-size:11px;margin-top:40px;padding:16px 0;border-top:1px solid #1e3a5f}
+</style>
+</head>
+<body data-active-page="methodology">
+<!-- Sidebar -->
+<style>
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0a0f1a;border-right:1px solid #1e3a5f;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:72px;text-decoration:none;color:#6b7b8d;border-left:3px solid transparent;transition:all .2s;padding:8px 0}
+.sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
+.sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
+.sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
+</style>
+<nav class="sidebar">
+<a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
+<a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg><span class="nav-label">温度计</span></a>
+<a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" rx="0.5"/><rect x="10" y="6" width="4" height="15" rx="0.5"/><rect x="17" y="3" width="4" height="18" rx="0.5"/><line x1="1" y1="21" x2="23" y2="21"/></svg><span class="nav-label">基石</span></a>
+<a class="nav-btn" href="portfolio.html" data-page="portfolio"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nav-label">三档</span></a>
+<a class="nav-btn" href="smic.html" data-page="smic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-label">中芯</span></a>
+<a class="nav-btn" href="popmart.html" data-page="popmart"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="nav-label">泡泡玛特</span></a>
+<a class="nav-btn" href="tencent.html" data-page="tencent"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="11" rx="7" ry="8"/><ellipse cx="9.5" cy="9" rx="1.5" ry="2"/><ellipse cx="14.5" cy="9" rx="1.5" ry="2"/><circle cx="9.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><path d="M9 14.5c0 1.5 1.3 2.5 3 2.5s3-1 3-2.5"/><path d="M7 18c-1 1.5-1.5 3-0.5 4 0.5 0.5 1.5 0 2-0.5"/><path d="M17 18c1 1.5 1.5 3 0.5 4-0.5 0.5-1.5 0-2-0.5"/></svg><span class="nav-label">腾讯</span></a>
+<a class="nav-btn" href="baba.html" data-page="baba"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg><span class="nav-label">阿里</span></a>
+<a class="nav-btn" href="wuxi.html" data-page="wuxi"><svg viewBox="0 0 24 24"><path d="M9 3v7.4a4 4 0 1 0 6 0V3"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="10" y1="7" x2="14" y2="7"/></svg><span class="nav-label">药明</span></a>
+<a class="nav-btn" href="beigene.html" data-page="beigene"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="nav-label">百济</span></a>
+<a class="nav-btn" href="news.html" data-page="news"><svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/><line x1="7" y1="16" x2="15" y2="16"/></svg><span class="nav-label">新闻</span></a>
+<a class="nav-btn" href="methodology.html" data-page="methodology"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg><span class="nav-label">方法论</span></a>
+</nav>
+<script>(function(){var p=document.body.getAttribute('data-active-page');if(p){var b=document.querySelector('.sidebar a[data-page="'+p+'"]');if(b)b.classList.add('active')}})()</script>
+<!-- /Sidebar -->
+<div class="container">
+
+<div class="head">
+  <h1>王超投资方法论 v1.0</h1>
+  <div class="sub">底层操作系统 · 不含具体标的与价格 · 方法对了都不晚</div>
+</div>
+
+<div class="toc">
+  <strong style="color:#c9a84c">目录</strong>
+  <ol>
+    <li><a href="#s1">投资哲学：我是谁，我赌什么</a></li>
+    <li><a href="#s2">能力圈定义：我懂什么，不懂什么</a></li>
+    <li><a href="#s3">仓位结构：分裂的伯克希尔</a></li>
+    <li><a href="#s4">标的筛选：节点资产 vs alpha 资产</a></li>
+    <li><a href="#s5">估值与决策框架</a></li>
+    <li><a href="#s6">心理纪律：两条护栏</a></li>
+    <li><a href="#s7">流程与监控：方法论的执行装置</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">1. 投资哲学：我是谁，我赌什么</h2>
+
+<div class="principle">
+<strong>核心信念 ——</strong> "我不知道未来是什么样，但我知道未来需要什么。买未来必须依赖的东西。"
+</div>
+
+<h3>1.1 我的身份认知</h3>
+<ul>
+<li>IT/互联网行业从业30年，AI/半导体/硬件/软件资深专家</li>
+<li>能力圈：技术路径判断、产业链结构、商业化时间窗口、中美产业差异</li>
+<li>不是巴菲特(消费品+品牌)，不是段永平(看人+生意模式)，更接近 John Malone(管道+通行权+垄断地段) 和 19世纪的卡内基/洛克菲勒</li>
+</ul>
+
+<h3>1.2 我赌的是什么</h3>
+<table>
+<tr><th>层级</th><th>我赌</th><th>我不赌</th></tr>
+<tr><td>产业方向</td><td>AI是10-30年的基础设施革命(类比电力/铁路)</td><td>不赌"AI 3年内见顶"或"灭世级颠覆即将发生"</td></tr>
+<tr><td>赢家</td><td>不管谁赢，必须用谁的"地盘"</td><td>不赌"哪家应用层公司会赢"</td></tr>
+<tr><td>定价</td><td>资本市场把10年长周期错误压缩成3年短周期，给了基础设施折价</td><td>不赌"市场永远理性"</td></tr>
+<tr><td>颠覆</td><td>真颠覆只有两种：量子计算(2035-2050) + 神经网络数学被改写(2030-2045)</td><td>不为这两个尾部风险持续付溢价</td></tr>
+</table>
+
+<h3>1.3 三条铁律(认知锚)</h3>
+<div class="principle"><strong>铁律A 中美算力隔离 ——</strong> 中国缺算力，美国缺开源模型。GLM-5.2级别的开源模型超过Claude 4.6 Opus只触发中国市场token商品化，不影响北美定价。任何"全球化AI叙事"都要先按这条铁律切两半。</div>
+<div class="principle"><strong>铁律B 稀缺性分级(分语境) ——</strong> 全球语境下：物理稀缺 &gt; 软件壁垒 &gt; 政策稀缺(关系缓和就打折)。<strong style="color:#c0392b">但中国语境下：物理稀缺 ≈ 政策稀缺 &gt; 软件壁垒</strong>——中美博弈把出口管制+国产替代闭环铸成了"类物理壁垒"，5年内不可逆。CUDA这种软件生态在两个语境里都最弱，10年内可能被开源绕过。决策时先判断标的所处语境，再按对应等级付溢价。</div>
+<div class="principle"><strong>铁律C 产业计量30年，持仓计量3-5年 ——</strong> 基础设施周期(铁路80年/电力80年/电信90年/移动30年/互联网骨干25年)用30年衡量产业方向是否还在；但<strong style="color:#c9a84c">我的持仓周期是3-5年一轮</strong>，跟着capex周期/估值钟摆/技术节点跃迁换股。"30年"防止我被一年期的市场噪音吓出场，"3-5年"防止我把节点资产变成压在床底的死钱——产业方向不变，但谁在收过路费会换人。</div>
+
+<h2 id="s2">2. 能力圈定义：我懂什么，不懂什么</h2>
+
+<h3>2.1 能力圈内（我应该比绝大多数人判断更准）</h3>
+<div class="good">
+<strong>强能力圈</strong>
+<ul>
+<li>AI技术路径：训练 vs 推理、ASIC vs GPU、开源 vs 闭源、模型架构演进</li>
+<li>半导体产业链：制程节点、代工vs IDM、HBM/CoWoS瓶颈、设备国产化进度</li>
+<li>互联网商业化：流量、SaaS、广告、云、电商</li>
+<li>中美产业差异：算力分布、模型生态、应用层节奏、政策影响</li>
+<li>商业化时间窗口判断：哪些技术12-18个月落地，哪些5-10年</li>
+</ul>
+</div>
+
+<h3>2.2 能力圈外（我不该用技术框架推理）</h3>
+<div class="danger">
+<strong>错配警告</strong>
+<ul>
+<li>消费品/品牌/IP：人造稀缺、心智占领、文化生命周期 → 巴菲特/段永平的领域</li>
+<li>医药/CXO/创新药：FDA合规、跨国客户关系网、毒理学家团队留存、专利+流程工程</li>
+<li>金融/保险/地产：监管套利、资本充足率、利率敏感度、杠杆周期</li>
+<li>大宗商品/资源股：供需周期、库存周期、地缘溢价</li>
+</ul>
+<p style="margin-top:8px">对这些领域：<strong>用技术方法论推理 = 错配，必须改用对应领域的专业框架，或承认不投，或降级为"小赌注 + 学习仓"。</strong></p>
+</div>
+
+<h3>2.3 学习仓机制</h3>
+<p>消费/医药这种"周期性但永续"赛道(人不会停止吃喝玩乐、不会停止生病)，应建立长期学习仓：</p>
+<ul>
+<li>仓位上限：单赛道总仓位 ≤ 5%，所有学习仓加起来 ≤ 10%</li>
+<li>目的：不是赚钱，是为2030年代AI热度退潮时储备能力圈</li>
+<li>方法：每月固定金额买，强迫自己看年报、跟踪行业、学习估值框架</li>
+<li>禁忌：不许用AI/科技逻辑给消费股估值，不许把"AI+医疗最大市场"当成重仓理由</li>
+</ul>
+
+<h2 id="s3">3. 仓位结构：分裂的伯克希尔</h2>
+
+<div class="diagram">总仓位 100%
+├── 节点压舱石  30%(牛市) → 50%(常态) → 70%(熊市)
+│   ├── 全球算力节点  (海外/物理稀缺主导)
+│   ├── 中国算力节点  (政策稀缺 ≈ 物理稀缺,中美博弈期)
+│   └── 长期赛道学习仓 ≤ 10%  (消费/医药)
+│
+└── AI alpha     70%(牛市) → 50%(常态) → 30%(熊市)
+    ├── AI铲子β仓     (短期，赚泡沫快钱)
+    ├── AI native应用 (你的真α)
+    ├── 强制丑陋仓 ≥ alpha仓的 15%  (心理对冲)
+    └── 短线消息面  ≤ 5%  (硬上限)</div>
+
+<h3>3.1 节点压舱石(替代债券+黄金)</h3>
+<div class="principle"><strong>定位 ——</strong> 这不是"风险资产"，是"高质量节点 = 可承受波动的债券"。它替代债券+黄金的功能，但收益率高3倍。</div>
+<ul>
+<li><strong>下行特征</strong>：99.99%不会归零(物理资产+全球客户+刚需服务)，最大回撤可能-50%但永远恢复</li>
+<li><strong>上行特征</strong>：年化8-15%(产业基础设施租金+复利)，不会10倍但稳健</li>
+<li><strong>持仓周期</strong>：<strong style="color:#c9a84c">3-5年一轮</strong>(对应capex周期/估值钟摆/技术节点跃迁)。每一轮内根据PE÷均值比值在标的之间换仓；轮次结束时全面重估"谁还是节点"——产业方向不变，但收过路费的人会换</li>
+<li><strong>单只上限</strong>：不超过总仓位的30%，防"我太确信"</li>
+<li><strong>禁忌</strong>：永远不加杠杆；轮次内不止盈(节点物理被替代除外)；但轮次切换点必须重新审视，不允许"放进去就忘记"</li>
+</ul>
+
+<h3>3.2 AI alpha仓(我的能力圈复利)</h3>
+<ul>
+<li><strong>定位</strong>：用30年从业经验在我熟悉的领域赚α，不是赌而是套利</li>
+<li><strong>核心套利</strong>：技术兑现快的公司 + AI native早期赢家 + 中美算力隔离的错位定价</li>
+<li><strong>泡沫β仓的必要性</strong>：AI铲子虽然low，但泡沫维持期能赚快钱。设硬时间窗(如"半年内退出")，到期不论盈亏强制砍掉</li>
+<li><strong>强制丑陋仓 ≥ 15%</strong>：必须永远持有"我看不上但市场在涨"的标的(NVDA类)，对冲审美偏见</li>
+<li><strong>短线消息面 ≤ 5%</strong>：禁止追消息面短线超过这个比例，防止情绪化操作侵蚀alpha本金</li>
+</ul>
+
+<h3>3.3 牛熊比例切换规则</h3>
+<table>
+<tr><th>市场状态</th><th>压舱石占比</th><th>alpha仓占比</th><th>触发条件</th></tr>
+<tr><td>极端熊市</td><td>70%</td><td>30%</td><td>AI ETF -30%、VIX&gt;40、CSP capex连续2季下调&gt;15%</td></tr>
+<tr><td>常态</td><td>50%</td><td>50%</td><td>无极端信号</td></tr>
+<tr><td>明显牛市</td><td>30%</td><td>70%</td><td>美股/A股估值分位&gt;70%、AI泡沫温度计&gt;75</td></tr>
+</table>
+<div class="principle"><strong>反直觉但正确：三七开 / 五五开 / 七三开 ——</strong> 大部分人牛市加杠杆、熊市减仓，是顺周期。我反过来：<strong style="color:#c9a84c">牛市才是赚alpha的窗口期</strong>(铲子股泡沫维持、估值钟摆向上、技术兑现被放大定价)，所以alpha升到70%；<strong style="color:#c9a84c">熊市压舱石才是真本钱</strong>(节点资产被打折、便宜买入物理稀缺的入场点)，所以压舱石升到70%。压舱石的本质是<em>防御+逢低加</em>，不是"牛市的主力"。</div>
+<p>切换不是一次性，而是每月评估一次，每次最多调5%，避免择时风险。状态判定优先看温度计+估值分位，不看大盘指数本身。</p>
+
+<h2 id="s4">4. 标的筛选：节点 vs alpha</h2>
+
+<h3>4.1 节点资产准入清单(过门必须全YES)</h3>
+<table>
+<tr><th>检验项</th><th>标准</th></tr>
+<tr><td>① 物理稀缺度</td><td>资产替代需要 ≥ $100亿资本+5年时间，或全球前3寡头</td></tr>
+<tr><td>② 客户多元化</td><td>前5大客户占比 &lt; 60%，且分布跨行业/跨国</td></tr>
+<tr><td>③ 商业模式</td><td>收"过路费"/"租金"，而非赌"谁会赢"</td></tr>
+<tr><td>④ 颠覆触发条件</td><td>被替代需要量子计算成熟 OR 神经网络数学被改写 OR 政策极端反转</td></tr>
+<tr><td>⑤ 历史回撤</td><td>过去20年最大回撤 ≤ -60%且恢复时间 ≤ 5年</td></tr>
+<tr><td>⑥ 现金流质量</td><td>FCF/净利润 ≥ 60%，资本支出可预测</td></tr>
+<tr><td>⑦ 节点等级</td><td>纯垄断(独家) &gt; 准垄断(份额70%+) &gt; 政策稀缺。<strong style="color:#c9a84c">注：中美博弈期内政策稀缺 ≈ 准垄断；博弈缓和后立即降级</strong></td></tr>
+</table>
+
+<h3>4.2 alpha资产筛选(我的能力圈套利)</h3>
+<ul>
+<li><strong>技术兑现型</strong>：12-18个月内有产品里程碑/客户突破/财务拐点的公司</li>
+<li><strong>错位定价型</strong>：中美隔离造成的同质资产价差(如A/H溢价、美股vs港股的同业对比)</li>
+<li><strong>早期赢家型</strong>：AI native应用公司，用我对产品形态的理解提前2-3季度下注</li>
+<li><strong>禁区</strong>：完全凭"故事"无产品/无财务路径的concept股；纯模型公司(没有分发/没有数据壁垒)</li>
+</ul>
+
+<h3>4.3 拒绝清单(永远不碰)</h3>
+<div class="danger">
+<strong>禁投三类</strong>
+<ul>
+<li>纯故事公司(财务无路径，靠PR+概念维系市值)</li>
+<li>能力圈外的高估值公司(用错框架推理 = 大概率亏钱)</li>
+<li>"看起来便宜"但增速&lt;0的Value Trap(便宜不是理由，便宜+加速才是理由)</li>
+</ul>
+</div>
+
+<h2 id="s5">5. 估值与决策框架</h2>
+
+<h3>5.1 节点资产：PE÷均值PE 比值法</h3>
+<p>对成熟节点公司(增速15-30%)，唯一指标是"当前PE ÷ 历史均值PE"。比值最低 = 相对最便宜 = 持有谁。</p>
+
+<table>
+<tr><th>比值</th><th>状态</th><th>动作</th></tr>
+<tr><td>&lt; 0.85</td><td>绝对低估</td><td>加仓 / 满仓</td></tr>
+<tr><td>0.85 - 1.00</td><td>低于均值</td><td>持有 / 加仓</td></tr>
+<tr><td>1.00 - 1.15</td><td>均值附近</td><td>持有 / 观望</td></tr>
+<tr><td>1.15 - 1.30</td><td>偏贵</td><td>观望 / 不加</td></tr>
+<tr><td>&gt; 1.30</td><td>明显高估</td><td>等待 / 部分获利</td></tr>
+</table>
+
+<div class="principle"><strong>均值锚的特殊处理 ——</strong> 历史均值不是简单算术平均：
+<ul>
+<li>被打压的中概股：用"打压前均值 × (1 - 中概折价35-40%)"作为锚</li>
+<li>被低增速期拉低的科技股：用中位数而非均值</li>
+<li>IPO时间短(&lt;5年)：均值不可靠，用同行业对标</li>
+</ul>
+</div>
+
+<h3>5.2 alpha资产：PEG + 期望值</h3>
+<ul>
+<li>用Forward PE(机构一致预期)而非TTM</li>
+<li>PEG &lt; 0.5 = 强烈低估；0.5-1.0 = 合理；&gt; 1.5 = 看故事</li>
+<li>三档建仓：A线30% / B线60% / 极端档100%</li>
+<li>期望值决策：胜率 × 上行空间 - (1-胜率) × 下行空间，正期望才动手</li>
+</ul>
+
+<h3>5.3 跨市场套利：价格归一化指数法</h3>
+<p>同一公司A/H/US多地上市时，把所有市场股价归一化到IPO日=100，看相对涨跌差距而非PS/PE。</p>
+<ul>
+<li>差距 ≤ 5pct：随便选(看流动性/税负)</li>
+<li>差距 5-15pct：倾向便宜市场</li>
+<li>差距 15-25pct：强制选便宜市场</li>
+<li>差距 &gt; 25pct：买便宜市场+耐心等回归</li>
+<li><strong>反向避坑</strong>：差距收敛通常是"贵市场补跌"而非"便宜市场补涨"，所以永远买便宜端</li>
+</ul>
+
+<h3>5.4 卖出触发条件</h3>
+<table>
+<tr><th>持仓类型</th><th>触发卖出</th></tr>
+<tr><td>节点压舱石</td><td>仅在比值 &gt; 1.30 时部分获利(不全卖)；物理被替代时清仓</td></tr>
+<tr><td>AI alpha-技术兑现</td><td>财务兑现 + 估值过度反应；或3年技术路径被证伪</td></tr>
+<tr><td>AI alpha-早期赢家</td><td>商业化路径明确后估值过度反应；或被巨头收购/替代</td></tr>
+<tr><td>AI铲子β仓</td><td>硬时间窗(预设半年/一年)，到期强制砍；或泡沫破灭信号触发</td></tr>
+<tr><td>短线消息面</td><td>消息兑现立即砍；连续2周无新催化砍掉</td></tr>
+</table>
+
+<h2 id="s6">6. 心理纪律：两条护栏</h2>
+
+<h3>6.1 护栏A：防过度自信 / 时间窗口误判</h3>
+<div class="danger">
+<strong>风险</strong> —— "我太懂"会让我给某个判断加过高权重。即使判断方向正确，时间窗口可能比预期长2-3年，期间-40%回撤会触发情绪化操作。
+</div>
+<ul>
+<li><strong>单一节点持仓上限30%</strong>：再确信也不能超过</li>
+<li><strong>杠杆禁令</strong>：节点公司任何情况不加杠杆；alpha仓单笔杠杆 ≤ 50%</li>
+<li><strong>2年延后压力测试</strong>：下注前必须算"如果对但晚兑现2年，期间最大回撤多少，能扛住吗?"</li>
+<li><strong>时间戳判断</strong>：任何"X月内XX破灭"的判断必须打卡，到期必须复盘"为什么对/错"，再决定延期还是撤回</li>
+</ul>
+
+<h3>6.2 护栏B：防"low感"偏见 / 错过β</h3>
+<div class="danger">
+<strong>风险</strong> —— 行业人的审美偏见会让我讨厌"看起来low"的赢家。NVDA股价表面看就是泡沫，但泡沫维持5年也能让人翻倍，因为"看不上"而错过最大的β。
+</div>
+<ul>
+<li><strong>强制丑陋仓 ≥ AI alpha仓的15%</strong>：永远持有一定数量"看起来傻但市场在涨"的标的</li>
+<li><strong>季度审美审计</strong>：每季问自己"过去3个月哪些股涨超50%但我没买? 真有问题还是审美在挑剔?"，存档</li>
+<li><strong>悔不当初指数</strong>：记录所有"看上但没买"的标的，每月看一次。累计错过β &gt; 当年alpha收益的30% → 偏见警报</li>
+<li><strong>做空高门槛</strong>：节点公司可无视卖方研报，但bubble股必须看一致预期；盈利预测连续2季下调才允许做空</li>
+</ul>
+
+<h3>6.3 一般纪律(适用所有持仓)</h3>
+<ul>
+<li><strong>禁止追消息面短线超过5%</strong>：消息面是噪音不是信号</li>
+<li><strong>不画"终局配置图"</strong>：只做今天能行动的判断，不做"5年后理想配置"的空想</li>
+<li><strong>承认错了就改</strong>：连续2季基本面证伪 → 强制清仓，不许"再等等"</li>
+<li><strong>赛道接力法</strong>：爆发期建龙头，增速&lt;15%退出，换下一个赛道。没有股票要永远持有(节点压舱石除外)</li>
+<li><strong>段永平方法论作为边界</strong>：他的方法论给纪律(不懂不投/不预测/平价持有/看人看模式)，但<strong>判断"懂不懂"</strong>是我自己的事——AI领域我比他懂，AI外参考他</li>
+</ul>
+
+<h2 id="s7">7. 流程与监控：方法论的执行装置</h2>
+
+<h3>7.1 日常监控(每日)</h3>
+<ul>
+<li>节点压舱石 PE/均值比值排名(ai-rotation.html)</li>
+<li>跨市场AH溢价偏离(smic-ah-compare.html / 类似页面)</li>
+<li>逆向股票池红绿灯(stock-pool.html)</li>
+<li>AI泡沫温度计(bubble.html)</li>
+</ul>
+
+<h3>7.2 周度复核</h3>
+<ul>
+<li>alpha仓位的兑现进度 vs 时间窗口</li>
+<li>短线消息面持仓清理 / 续期决策</li>
+<li>新增观察标的入观察区(zone='watch')</li>
+</ul>
+
+<h3>7.3 月度评估</h3>
+<ul>
+<li>牛熊状态 / 仓位比例切换 (压舱石50-70% vs alpha 30-50%)</li>
+<li>悔不当初指数计算 → 偏见警报</li>
+<li>学习仓定投执行 + 学习笔记</li>
+</ul>
+
+<h3>7.4 季度审计</h3>
+<ul>
+<li>所有"X月内XX破灭"判断的复盘</li>
+<li>审美审计：哪些涨50%+的我没买? 为什么?</li>
+<li>能力圈边界检视：是否有标的我用了错的框架?</li>
+<li>节点资产准入清单复核(7条标准是否仍满足)</li>
+</ul>
+
+<h3>7.5 年度迭代</h3>
+<ul>
+<li>方法论本身的版本升级(本文档迭代到v2.0/v3.0)</li>
+<li>能力圈学习仓的"毕业"判断：消费/医药是否可以从学习仓升级到正式仓?</li>
+<li>段永平/巴菲特等参考体系的吸收 → 我的体系更新</li>
+</ul>
+
+<div class="principle">
+<strong>方法论的元规则 ——</strong> 这份文档每年至少更新1次。任何重大决策错误后立即触发更新。方法论不是教条，是不断逼近真实的工具。<br><br>
+但<strong>不要每天改</strong>。每天改 = 没有方法论 = 情绪化交易。改一次必须有充分理由，且必须在所有持仓和监控中同步生效。
+</div>
+
+<div class="footer">
+v1.0 · 2026年6月 · 王超个人投资底层操作系统<br>
+"方法对了都不晚"
+</div>
+
+</div>
+</body>
+</html>
