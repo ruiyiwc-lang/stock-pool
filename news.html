@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>持仓新闻监控</title>
+<title>持仓综合情报中心</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:1100px; margin:0 auto; font-size:16px; }
@@ -22,6 +22,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .freq-tag { font-size:11px; padding:2px 8px; border-radius:4px; font-weight:500; }
 .freq-tag.daily { background:rgba(93,173,226,.12); color:#5dade2; }
 .freq-tag.weekly { background:rgba(201,168,76,.12); color:#c9a84c; }
+.freq-tag.live { background:rgba(34,197,94,.12); color:#22c55e; }
 
 .news-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; }
 .news-item { padding:12px 0; border-bottom:1px solid rgba(30,58,95,.5); }
@@ -94,6 +95,22 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .fin-bar.prof { background:rgba(34,197,94,.6); }
 .fin-loading { color:#6b7b8d; font-size:13px; padding:20px; text-align:center; }
 
+/* 新增维度通用样式 */
+.dim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.dim-block { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 20px; }
+.dim-block-name { font-size:15px; font-weight:700; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.dim-block-name .dim-tier { font-size:11px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.dim-tier.t1 { background:rgba(201,168,76,.12); color:#c9a84c; }
+.dim-tier.t2 { background:rgba(93,173,226,.12); color:#5dade2; }
+.dim-tier.t3 { background:rgba(139,126,207,.12); color:#8b7ecf; }
+.dim-table { width:100%; border-collapse:collapse; font-size:12px; }
+.dim-table th { text-align:left; color:#6b7b8d; font-weight:600; padding:4px 6px; border-bottom:1px solid #1e3a5f; white-space:nowrap; }
+.dim-table td { padding:5px 6px; border-bottom:1px solid rgba(30,58,95,.3); color:#e0e6ed; white-space:nowrap; }
+.dim-table td.wrap { white-space:normal; max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+.dim-no-data { color:#6b7b8d; font-size:13px; padding:16px; text-align:center; }
+.clr-green { color:#22c55e; font-weight:600; }
+.clr-red { color:#ef4444; font-weight:600; }
+
 /* 数据校验面板 */
 .verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:16px; }
 .verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
@@ -123,6 +140,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   .tab-btn { padding:5px 10px; font-size:12px; }
   .earn-item { flex-direction:column; gap:6px; }
   .fin-grid { grid-template-columns:1fr; }
+  .dim-grid { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -147,14 +165,15 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 <!-- /Sidebar -->
 
 <a class="back-link" href="portfolio.html">&larr; 返回三档</a>
-<h1>持仓新闻监控</h1>
-<div class="subtitle">自动追踪三档标的 · 早8:00+晚20:00新闻 · 周六10:00财报/股权 · <span id="last-update">周末深度扫描 2026-06-20 10:00</span></div>
+<h1>持仓综合情报中心</h1>
+<div class="subtitle">自动追踪三档标的 · 新闻/财报/股东/回购/融券/大宗 · <span id="last-update">综合监控 2026-06-20</span></div>
 
 <!-- 统计面板 -->
 <div class="stats-panel" id="stats-panel">
   <div class="stat-item"><span class="stat-dot normal"></span><span class="stat-label">监控标的</span><span class="stat-val" id="stat-total">9</span></div>
   <div class="stat-item"><span class="stat-dot risk"></span><span class="stat-label">风险/政策预警</span><span class="stat-val" id="stat-alerts">0</span></div>
   <div class="stat-item"><span class="stat-dot normal"></span><span class="stat-label">本周新闻</span><span class="stat-val" id="stat-news">0</span></div>
+  <div class="stat-item"><span class="stat-dot normal"></span><span class="stat-label">数据维度</span><span class="stat-val">7</span></div>
 </div>
 
 <!-- 标的筛选tabs -->
@@ -223,7 +242,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 </div>
 <div class="news-item" data-stock="beigene" data-category="compete">
   <div class="news-item-head"><span class="stock-tag">百济神州</span><span class="news-tag compete">竞争</span></div>
-  <div class="news-title"><a href="https://tw.stock.yahoo.com/news/beone-medicines%E7%9A%84%E5%9F%BA%E7%A4%8E%E8%A1%80%E6%B6%B2%E5%AD%B8%E7%94%A2%E5%93%81%E7%B7%9A%E5%9C%A8eha-2026%E4%B8%8A%E5%BC%95%E9%A0%98b%E7%B4%B0%E8%83%9E%E7%99%8C%E7%97%87%E5%89%B5%E6%96%B0%E6%96%B0%E6%99%82%E4%BB%A3-184100323.html" target="_blank">BeOne EHA 2026：BTK降解剂tacabrutideg启动头对头III期对比pirtobrutinib</a></div>
+  <div class="news-title"><a href="https://tw.stock.yahoo.com/news/beone-medicines%E5%9C%A8eha-2026%E4%B8%8A%E5%BC%95%E9%A0%98b%E7%B4%B0%E8%83%9E%E7%99%8C%E7%97%87%E5%89%B5%E6%96%B0%E6%96%B0%E6%99%82%E4%BB%A3-184100323.html" target="_blank">BeOne EHA 2026：BTK降解剂tacabrutideg启动头对头III期对比pirtobrutinib</a></div>
   <div class="news-summary">EHA展示30余项数据集。Tacabrutideg在BTKi耐药人群显示持久缓解，已启动与礼来pirtobrutinib头对头III期。覆盖CLL全治疗周期的产品组合成型。</div>
   <div class="news-date">2026-06-14 · Yahoo/BeOne官方</div>
 </div>
@@ -263,16 +282,48 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
+<!-- 股东增减持 -->
+<div class="news-section" id="sec-holder">
+  <div class="section-title">股东增减持 <span class="freq-tag live">实时 · 东方财富</span></div>
+  <div class="dim-grid" id="holder-grid">
+    <!-- JS dynamic render -->
+  </div>
+</div>
+
+<!-- 回购动态 -->
+<div class="news-section" id="sec-buyback">
+  <div class="section-title">回购动态 <span class="freq-tag live">实时 · 东方财富/腾讯</span></div>
+  <div class="dim-grid" id="buyback-grid">
+    <!-- JS dynamic render -->
+  </div>
+</div>
+
+<!-- 融资融券 -->
+<div class="news-section" id="sec-margin">
+  <div class="section-title">融资融券 <span class="freq-tag live">实时 · A股专属</span></div>
+  <div class="dim-grid" id="margin-grid">
+    <!-- JS dynamic render -->
+  </div>
+</div>
+
+<!-- 大宗交易 -->
+<div class="news-section" id="sec-block">
+  <div class="section-title">大宗交易 <span class="freq-tag live">实时 · A股专属</span></div>
+  <div class="dim-grid" id="block-grid">
+    <!-- JS dynamic render -->
+  </div>
+</div>
+
 <!-- 数据校验面板 -->
 <div class="verify-panel" id="verifyPanel">
-  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 财报数据双源校验</div>
+  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 多维数据源校验</div>
   <div class="verify-grid" id="verifyGrid">
     <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
   </div>
   <div class="verify-summary" id="verifySummary"></div>
 </div>
 
-<div class="update-time">最后更新: <span id="update-ts">2026-06-20 10:00 (周末财报扫描)</span></div>
+<div class="update-time">最后更新: <span id="update-ts">2026-06-20 (综合情报中心)</span></div>
 
 <script>
 // ==== WATCH_LIST_START ====
@@ -289,6 +340,24 @@ var WATCH_LIST = [
 ];
 // ==== WATCH_LIST_END ====
 
+// ==== A股/港股代码映射 ====
+var A_CODE_MAP = {
+  smic: '688981', popmart: null, tencent: null, baba: null,
+  beigene: '688235', wuxi: '603259', catl: '300750', byd: '002594', maotai: '600519'
+};
+var HK_CODE_MAP = {
+  smic: '00981', popmart: '09992', tencent: '00700', baba: '09988',
+  beigene: '06160', wuxi: '02359', catl: '03750', byd: '01211', maotai: null
+};
+
+// 名字映射
+var NAME_MAP = {};
+WATCH_LIST.forEach(function(s){ NAME_MAP[s.key] = s.name; });
+
+// Tier映射
+var TIER_MAP = {};
+WATCH_LIST.forEach(function(s){ TIER_MAP[s.key] = s.tier; });
+
 // 动态生成tabs
 (function(){
   var tabsEl = document.getElementById('tabs');
@@ -299,7 +368,6 @@ var WATCH_LIST = [
     btn.textContent = s.name;
     tabsEl.appendChild(btn);
   });
-  // Tab 点击事件
   tabsEl.addEventListener('click', function(e){
     if(!e.target.classList.contains('tab-btn')) return;
     tabsEl.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -334,6 +402,25 @@ function updateStats(){
 }
 updateStats();
 
+// ===== 通用工具函数 =====
+function fmtAmt(n) {
+  if (n === null || n === undefined) return '--';
+  var abs = Math.abs(n);
+  if (abs >= 1e8) return (n/1e8).toFixed(2) + '亿';
+  if (abs >= 1e4) return (n/1e4).toFixed(1) + '万';
+  return n.toFixed(0);
+}
+
+function fmtDate(s) {
+  if (!s) return '--';
+  return s.substring(0, 10);
+}
+
+function tierClass(key) {
+  var t = TIER_MAP[key];
+  return t === 1 ? 't1' : (t === 2 ? 't2' : 't3');
+}
+
 // ===== 财报趋势自动拉取 =====
 var FIN_CONFIG = [
   { key:'smic', name:'中芯国际', tier:1, earningsCode:'688981.SH', type:'a' },
@@ -347,16 +434,7 @@ var FIN_CONFIG = [
   { key:'maotai', name:'贵州茅台', tier:3, earningsCode:'600519.SH', type:'a' }
 ];
 
-function fmtAmt(n) {
-  if (n === null || n === undefined) return '--';
-  var abs = Math.abs(n);
-  if (abs >= 1e8) return (n/1e8).toFixed(1) + '亿';
-  if (abs >= 1e4) return (n/1e4).toFixed(0) + '万';
-  return n.toFixed(0);
-}
-
 function renderFinBlock(cfg, quarters) {
-  // quarters: [{title, revenue, revYoy, profit, profitYoy}] newest first, up to 4
   var tierCls = cfg.tier===1?'t1':(cfg.tier===2?'t2':'t3');
   var tierLabel = '第'+cfg.tier+'档';
   var html = '<div class="fin-block">';
@@ -366,7 +444,6 @@ function renderFinBlock(cfg, quarters) {
     html += '</div>';
     return html;
   }
-  // Find max revenue for bar scale
   var maxRev = 0, maxProf = 0;
   quarters.forEach(function(q){ if(q.revenue && q.revenue>maxRev) maxRev=q.revenue; if(q.profit && Math.abs(q.profit)>maxProf) maxProf=Math.abs(q.profit); });
   html += '<table class="fin-table"><thead><tr><th>期间</th><th>营收</th><th>同比</th><th>净利</th><th>同比</th><th style="width:60px">趋势</th></tr></thead><tbody>';
@@ -422,12 +499,10 @@ function fetchFinHK(cfg) {
 
 function loadAllFinancials() {
   var grid = document.getElementById('fin-grid');
-  // Initial placeholders
   var placeholders = '';
   FIN_CONFIG.forEach(function(cfg){ placeholders += renderFinBlock(cfg, null); });
   grid.innerHTML = placeholders;
 
-  // Fetch all
   var promises = FIN_CONFIG.map(function(cfg){
     return (cfg.type==='a' ? fetchFinA(cfg) : fetchFinHK(cfg)).then(function(quarters){
       return {cfg:cfg, quarters:quarters};
@@ -438,15 +513,246 @@ function loadAllFinancials() {
     var html = '';
     results.forEach(function(r){ html += renderFinBlock(r.cfg, r.quarters); });
     grid.innerHTML = html;
-    // Store for verification and trigger cross-check
     window._finResults = results;
-    verifyFinancials(results);
+    runFullVerification();
   });
 }
 
-// ===== 数据双源校验系统 =====
-// 校验策略: 东财报表API作为主源，push2his.eastmoney日K价格+PE(TTM)反算净利润作为校验
-// 如果 PE(TTM) × 总股本 ≈ 报告净利润(年化)，则一致
+// ===== 股东增减持 =====
+function loadHolderChanges() {
+  var grid = document.getElementById('holder-grid');
+  var html = '';
+  var keys = Object.keys(A_CODE_MAP);
+  var promises = [];
+
+  keys.forEach(function(key) {
+    var code = A_CODE_MAP[key];
+    if (!code) {
+      promises.push(Promise.resolve({key: key, data: null, isHK: true}));
+      return;
+    }
+    var url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHARE_HOLDER_INCREASE&columns=ALL&filter=(SECURITY_CODE%3D%22'+code+'%22)&pageSize=3&sortColumns=NOTICE_DATE&sortTypes=-1&source=WEB&client=WEB&token=894050c76af8597a853f5b408b759f5d';
+    promises.push(fetch(url).then(function(r){return r.json();}).then(function(j){
+      if (j && j.result && j.result.data) return {key:key, data:j.result.data, isHK:false};
+      return {key:key, data:[], isHK:false};
+    }).catch(function(){ return {key:key, data:[], isHK:false}; }));
+  });
+
+  Promise.all(promises).then(function(results){
+    var html = '';
+    results.forEach(function(r){
+      var tc = tierClass(r.key);
+      html += '<div class="dim-block"><div class="dim-block-name"><span>'+NAME_MAP[r.key]+'</span><span class="dim-tier '+tc+'">第'+TIER_MAP[r.key]+'档</span></div>';
+      if (r.isHK) {
+        html += '<div class="dim-no-data">港股暂无数据</div>';
+      } else if (!r.data || r.data.length === 0) {
+        html += '<div class="dim-no-data">近期无增减持记录</div>';
+      } else {
+        html += '<table class="dim-table"><thead><tr><th>日期</th><th>股东</th><th>方向</th><th>变动股数</th><th>均价</th></tr></thead><tbody>';
+        r.data.forEach(function(d){
+          var dir = d.HOLDER_DIRECTION || d.CHANGE_DIRECTION || '';
+          var isIncrease = dir.indexOf('增') >= 0;
+          var dirCls = isIncrease ? 'clr-green' : 'clr-red';
+          var dirText = isIncrease ? '增持' : '减持';
+          var shares = d.CHANGE_SHARES_RATIO ? fmtAmt(d.CHANGE_SHARES_RATIO) : (d.CHANGE_SHARES ? fmtAmt(d.CHANGE_SHARES) : '--');
+          var price = d.AVERAGE_PRICE ? d.AVERAGE_PRICE.toFixed(2) : '--';
+          var holderName = d.HOLDER_NAME || d.SHAREHOLDER_NAME || '--';
+          if (holderName.length > 8) holderName = holderName.substring(0,8) + '..';
+          html += '<tr><td>'+fmtDate(d.NOTICE_DATE || d.END_DATE)+'</td><td class="wrap">'+holderName+'</td><td class="'+dirCls+'">'+dirText+'</td><td>'+shares+'</td><td>'+price+'</td></tr>';
+        });
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+    window._holderResults = results;
+  });
+}
+
+// ===== 回购动态 =====
+function loadBuybacks() {
+  var grid = document.getElementById('buyback-grid');
+  var keys = Object.keys(A_CODE_MAP);
+  var promises = [];
+
+  keys.forEach(function(key) {
+    var aCode = A_CODE_MAP[key];
+    var hkCode = HK_CODE_MAP[key];
+
+    if (aCode) {
+      // A-share buyback API
+      var url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_WEB_GPHG&columns=ALL&filter=(SCODE%3D%22'+aCode+'%22)&pageSize=3&sortColumns=TDATE&sortTypes=-1&source=WEB&client=WEB&token=894050c76af8597a853f5b408b759f5d';
+      promises.push(fetch(url).then(function(r){return r.json();}).then(function(j){
+        if (j && j.result && j.result.data) return {key:key, data:j.result.data, source:'eastmoney'};
+        return {key:key, data:[], source:'eastmoney'};
+      }).catch(function(){ return {key:key, data:[], source:'eastmoney'}; }));
+    } else if (hkCode) {
+      // HK buyback from ifzq kline HGcontent
+      var url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=hk'+hkCode+',day,,,30,qfq';
+      promises.push(fetch(url).then(function(r){return r.json();}).then(function(j){
+        var buybacks = [];
+        if (j && j.code === 0 && j.data) {
+          var stockData = j.data['hk'+hkCode] || j.data[Object.keys(j.data)[0]];
+          if (stockData && stockData.qfqday) {
+            stockData.qfqday.forEach(function(day){
+              if (day.length > 8 && day[8]) {
+                // HGcontent field - parse buyback info
+                var hg = day[8];
+                if (hg && hg.indexOf('HG') >= 0) {
+                  buybacks.push({date: day[0], content: hg});
+                }
+              }
+            });
+          }
+        }
+        return {key:key, data:buybacks.slice(0,3), source:'ifzq_hk'};
+      }).catch(function(){ return {key:key, data:[], source:'ifzq_hk'}; }));
+    } else {
+      promises.push(Promise.resolve({key:key, data:[], source:'none'}));
+    }
+  });
+
+  Promise.all(promises).then(function(results){
+    var html = '';
+    results.forEach(function(r){
+      var tc = tierClass(r.key);
+      html += '<div class="dim-block"><div class="dim-block-name"><span>'+NAME_MAP[r.key]+'</span><span class="dim-tier '+tc+'">第'+TIER_MAP[r.key]+'档</span></div>';
+      if (!r.data || r.data.length === 0) {
+        html += '<div class="dim-no-data">近期无回购记录</div>';
+      } else if (r.source === 'eastmoney') {
+        html += '<table class="dim-table"><thead><tr><th>日期</th><th>回购股数</th><th>金额</th><th>均价</th></tr></thead><tbody>';
+        r.data.forEach(function(d){
+          var date = fmtDate(d.TDATE || d.REPURCHASE_DATE);
+          var shares = d.TOTAL_NUM ? fmtAmt(d.TOTAL_NUM) : '--';
+          var amount = d.TOTAL_AMOUNT ? fmtAmt(d.TOTAL_AMOUNT) : '--';
+          var price = d.AVERAGE_PRICE ? d.AVERAGE_PRICE.toFixed(2) : (d.HIGH_PRICE ? d.HIGH_PRICE.toFixed(2) : '--');
+          html += '<tr><td>'+date+'</td><td>'+shares+'</td><td>'+amount+'</td><td>'+price+'</td></tr>';
+        });
+        html += '</tbody></table>';
+      } else if (r.source === 'ifzq_hk') {
+        html += '<table class="dim-table"><thead><tr><th>日期</th><th>回购详情</th></tr></thead><tbody>';
+        r.data.forEach(function(d){
+          html += '<tr><td>'+d.date+'</td><td class="wrap">'+d.content+'</td></tr>';
+        });
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+    window._buybackResults = results;
+  });
+}
+
+// ===== 融资融券 =====
+function loadMarginTrading() {
+  var grid = document.getElementById('margin-grid');
+  var keys = Object.keys(A_CODE_MAP);
+  var promises = [];
+
+  keys.forEach(function(key) {
+    var code = A_CODE_MAP[key];
+    if (!code) {
+      promises.push(Promise.resolve({key:key, data:null, isHK:true}));
+      return;
+    }
+    var url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_WEB_RZRQ_GGMX&columns=ALL&filter=(SCODE%3D%22'+code+'%22)&pageSize=5&sortColumns=DATE&sortTypes=-1&source=WEB&client=WEB&token=894050c76af8597a853f5b408b759f5d';
+    promises.push(fetch(url).then(function(r){return r.json();}).then(function(j){
+      if (j && j.result && j.result.data) return {key:key, data:j.result.data, isHK:false};
+      return {key:key, data:[], isHK:false};
+    }).catch(function(){ return {key:key, data:[], isHK:false}; }));
+  });
+
+  Promise.all(promises).then(function(results){
+    var html = '';
+    results.forEach(function(r){
+      var tc = tierClass(r.key);
+      html += '<div class="dim-block"><div class="dim-block-name"><span>'+NAME_MAP[r.key]+'</span><span class="dim-tier '+tc+'">第'+TIER_MAP[r.key]+'档</span></div>';
+      if (r.isHK) {
+        html += '<div class="dim-no-data">港股无融资融券</div>';
+      } else if (!r.data || r.data.length === 0) {
+        html += '<div class="dim-no-data">近期无融资融券数据</div>';
+      } else {
+        html += '<table class="dim-table"><thead><tr><th>日期</th><th>融资余额</th><th>融资净买</th><th>融券余额</th><th>收盘价</th></tr></thead><tbody>';
+        r.data.forEach(function(d){
+          var date = fmtDate(d.DATE || d.DIM_DATE);
+          var rzBal = d.RZYE ? fmtAmt(d.RZYE) : '--';
+          var rzNet = d.RZMRE ? (d.RZMRE - (d.RZCHE||0)) : (d.RZJME || null);
+          var rzNetStr = rzNet !== null ? fmtAmt(rzNet) : '--';
+          var rzNetCls = rzNet !== null ? (rzNet >= 0 ? 'clr-green' : 'clr-red') : '';
+          var rqBal = d.RQYE ? fmtAmt(d.RQYE) : '--';
+          var close = d.CLOSE_PRICE ? d.CLOSE_PRICE.toFixed(2) : (d.SPJ ? d.SPJ.toFixed(2) : '--');
+          html += '<tr><td>'+date+'</td><td>'+rzBal+'</td><td class="'+rzNetCls+'">'+rzNetStr+'</td><td>'+rqBal+'</td><td>'+close+'</td></tr>';
+        });
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+    window._marginResults = results;
+  });
+}
+
+// ===== 大宗交易 =====
+function loadBlockTrades() {
+  var grid = document.getElementById('block-grid');
+  var keys = Object.keys(A_CODE_MAP);
+  var promises = [];
+
+  keys.forEach(function(key) {
+    var code = A_CODE_MAP[key];
+    if (!code) {
+      promises.push(Promise.resolve({key:key, data:null, isHK:true}));
+      return;
+    }
+    var url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DATA_BLOCKTRADE&columns=ALL&filter=(SECURITY_CODE%3D%22'+code+'%22)&pageSize=5&sortColumns=TRADE_DATE&sortTypes=-1&source=WEB&client=WEB&token=894050c76af8597a853f5b408b759f5d';
+    promises.push(fetch(url).then(function(r){return r.json();}).then(function(j){
+      if (j && j.result && j.result.data) return {key:key, data:j.result.data, isHK:false};
+      return {key:key, data:[], isHK:false};
+    }).catch(function(){ return {key:key, data:[], isHK:false}; }));
+  });
+
+  Promise.all(promises).then(function(results){
+    var html = '';
+    results.forEach(function(r){
+      var tc = tierClass(r.key);
+      html += '<div class="dim-block"><div class="dim-block-name"><span>'+NAME_MAP[r.key]+'</span><span class="dim-tier '+tc+'">第'+TIER_MAP[r.key]+'档</span></div>';
+      if (r.isHK) {
+        html += '<div class="dim-no-data">港股无大宗交易数据</div>';
+      } else if (!r.data || r.data.length === 0) {
+        html += '<div class="dim-no-data">近期无大宗交易</div>';
+      } else {
+        html += '<table class="dim-table"><thead><tr><th>日期</th><th>成交价</th><th>溢折价</th><th>成交量</th><th>买/卖方</th></tr></thead><tbody>';
+        r.data.forEach(function(d){
+          var date = fmtDate(d.TRADE_DATE);
+          var price = d.DEAL_PRICE ? d.DEAL_PRICE.toFixed(2) : '--';
+          var closeP = d.CLOSE_PRICE || d.CLOSING_PRICE || 0;
+          var premium = (d.DEAL_PRICE && closeP) ? ((d.DEAL_PRICE - closeP) / closeP * 100) : null;
+          var premStr = premium !== null ? (premium >= 0 ? '+' : '') + premium.toFixed(2) + '%' : '--';
+          var premCls = premium !== null ? (premium >= 0 ? 'clr-green' : 'clr-red') : '';
+          var vol = d.DEAL_VOLUME ? fmtAmt(d.DEAL_VOLUME) : '--';
+          var buyer = d.BUYER_NAME || d.BUY_BRANCH || '--';
+          var seller = d.SELLER_NAME || d.SELL_BRANCH || '--';
+          if (buyer.length > 6) buyer = buyer.substring(0,6)+'..';
+          if (seller.length > 6) seller = seller.substring(0,6)+'..';
+          html += '<tr><td>'+date+'</td><td>'+price+'</td><td class="'+premCls+'">'+premStr+'</td><td>'+vol+'</td><td class="wrap" title="买:'+buyer+' / 卖:'+seller+'">'+buyer+'</td></tr>';
+        });
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+    window._blockResults = results;
+  });
+}
+
+// ===== 数据双源校验系统(增强版) =====
+var VERIFY_CODE_MAP = {
+  'smic': 'hk00981', 'popmart': 'hk09992', 'tencent': 'hk00700',
+  'baba': 'hk09988', 'beigene': 'hk06160', 'wuxi': 'sh603259',
+  'catl': 'sz300750', 'byd': 'hk01211', 'maotai': 'sh600519'
+};
+
+var ALL_VERIFY_RESULTS = [];
 
 function codeToSecid(code) {
   if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
@@ -455,77 +761,7 @@ function codeToSecid(code) {
   return null;
 }
 
-// Map FIN_CONFIG to live trading codes for verification
-var VERIFY_CODE_MAP = {
-  'smic': 'hk00981',
-  'popmart': 'hk09992',
-  'tencent': 'hk00700',
-  'baba': 'hk09988',
-  'beigene': 'hk06160',
-  'wuxi': 'sh603259',
-  'catl': 'sz300750',
-  'byd': 'hk01211',
-  'maotai': 'sh600519'
-};
-
-var VERIFY_RESULTS = [];
-
-function verifyFinancials(results) {
-  VERIFY_RESULTS = [];
-  var promises = results.map(function(r) {
-    var cfg = r.cfg;
-    var quarters = r.quarters;
-    var code = VERIFY_CODE_MAP[cfg.key];
-    if (!code) return Promise.resolve(null);
-    var secid = codeToSecid(code);
-    if (!secid) return Promise.resolve(null);
-
-    // Try push2his first (5s timeout), fallback to web.ifzq.gtimg.cn
-    return fetchVerifyPrice(code, secid).then(function(priceInfo) {
-      var result = {name: cfg.name, key: cfg.key, status: 'pending'};
-      if (!priceInfo) {
-        result.status = 'fail';
-        result.reason = '校验源(行情)不可用';
-        return result;
-      }
-      result.emPrice = priceInfo.price;
-      result.emDate = priceInfo.date;
-      result.src2Source = priceInfo.source;
-
-      if (quarters && quarters.length > 0) {
-        var latestQ = quarters[0];
-        result.src1Revenue = latestQ.revenue;
-        result.src1Profit = latestQ.profit;
-        result.src1Period = latestQ.title;
-        result.src1Source = '东财报表API';
-        result.src2Price = priceInfo.price;
-
-        if (latestQ.revenue && latestQ.revenue > 0 && priceInfo.price > 0) {
-          result.status = 'pass';
-          result.reason = '报表数据有效 · 行情验证价格' + priceInfo.price.toFixed(2) + ' ('+priceInfo.date+' · '+priceInfo.source+')';
-        } else if (priceInfo.price > 0) {
-          result.status = 'drift';
-          result.reason = '报表部分字段缺失 · 价格正常';
-        } else {
-          result.status = 'fail';
-          result.reason = '数据不完整';
-        }
-      } else {
-        result.status = 'fail';
-        result.reason = '主源无财报数据';
-      }
-      return result;
-    });
-  });
-
-  Promise.all(promises).then(function(verifyResults){
-    VERIFY_RESULTS = verifyResults.filter(function(r){return r !== null;});
-    renderVerifyPanel();
-  });
-}
-
 function fetchVerifyPrice(code, secid) {
-  // Try push2his with 5s timeout, fallback to ifzq
   var controller = new AbortController();
   var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
   var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
@@ -539,7 +775,6 @@ function fetchVerifyPrice(code, secid) {
     return {price: parseFloat(kline[2]), date: kline[0], source: 'eastmoney日K'};
   }).catch(function(){
     clearTimeout(timeoutId);
-    // Fallback: web.ifzq.gtimg.cn
     var ifzqUrl;
     if (code.indexOf('hk') === 0) {
       ifzqUrl = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param='+code+',day,,,1,qfq';
@@ -558,6 +793,117 @@ function fetchVerifyPrice(code, secid) {
   });
 }
 
+function runFullVerification() {
+  ALL_VERIFY_RESULTS = [];
+  var finResults = window._finResults || [];
+
+  // 1. 财报数据校验
+  var finPromises = finResults.map(function(r) {
+    var cfg = r.cfg;
+    var quarters = r.quarters;
+    var code = VERIFY_CODE_MAP[cfg.key];
+    if (!code) return Promise.resolve(null);
+    var secid = codeToSecid(code);
+    if (!secid) return Promise.resolve(null);
+
+    return fetchVerifyPrice(code, secid).then(function(priceInfo) {
+      var result = {name: cfg.name, key: cfg.key, dimension: '财报', status: 'pending'};
+      if (!priceInfo) {
+        result.status = 'fail';
+        result.reason = '校验源(行情)不可用';
+        return result;
+      }
+      result.freshness = priceInfo.date;
+      result.src = priceInfo.source;
+      if (quarters && quarters.length > 0) {
+        var latestQ = quarters[0];
+        result.src1Period = latestQ.title;
+        if (latestQ.revenue && latestQ.revenue > 0 && priceInfo.price > 0) {
+          result.status = 'pass';
+          result.reason = '报表+行情双源有效 (' + priceInfo.price.toFixed(2) + ')';
+        } else {
+          result.status = 'drift';
+          result.reason = '报表部分字段缺失';
+        }
+      } else {
+        result.status = 'fail';
+        result.reason = '主源无财报数据';
+      }
+      return result;
+    });
+  });
+
+  // 2. 股东增减持校验
+  var holderPromise = new Promise(function(resolve){
+    var check = function(){
+      if (window._holderResults) {
+        var items = window._holderResults.filter(function(r){return !r.isHK && r.data && r.data.length > 0;});
+        resolve({dimension:'股东增减持', count: items.length, total: window._holderResults.filter(function(r){return !r.isHK;}).length,
+          freshness: items.length > 0 ? fmtDate(items[0].data[0].NOTICE_DATE || items[0].data[0].END_DATE) : '--'});
+      } else { setTimeout(check, 500); }
+    };
+    check();
+  });
+
+  // 3. 回购校验
+  var buybackPromise = new Promise(function(resolve){
+    var check = function(){
+      if (window._buybackResults) {
+        var items = window._buybackResults.filter(function(r){return r.data && r.data.length > 0;});
+        resolve({dimension:'回购', count: items.length, total: window._buybackResults.length,
+          freshness: items.length > 0 && items[0].data[0].TDATE ? fmtDate(items[0].data[0].TDATE) : (items.length > 0 && items[0].data[0].date ? items[0].data[0].date : '--')});
+      } else { setTimeout(check, 500); }
+    };
+    check();
+  });
+
+  // 4. 融资融券校验
+  var marginPromise = new Promise(function(resolve){
+    var check = function(){
+      if (window._marginResults) {
+        var items = window._marginResults.filter(function(r){return !r.isHK && r.data && r.data.length > 0;});
+        resolve({dimension:'融资融券', count: items.length, total: window._marginResults.filter(function(r){return !r.isHK;}).length,
+          freshness: items.length > 0 ? fmtDate(items[0].data[0].DATE || items[0].data[0].DIM_DATE) : '--'});
+      } else { setTimeout(check, 500); }
+    };
+    check();
+  });
+
+  // 5. 大宗交易校验
+  var blockPromise = new Promise(function(resolve){
+    var check = function(){
+      if (window._blockResults) {
+        var items = window._blockResults.filter(function(r){return !r.isHK && r.data && r.data.length > 0;});
+        resolve({dimension:'大宗交易', count: items.length, total: window._blockResults.filter(function(r){return !r.isHK;}).length,
+          freshness: items.length > 0 ? fmtDate(items[0].data[0].TRADE_DATE) : '--'});
+      } else { setTimeout(check, 500); }
+    };
+    check();
+  });
+
+  Promise.all(finPromises).then(function(finVResults){
+    ALL_VERIFY_RESULTS = finVResults.filter(function(r){return r !== null;});
+
+    Promise.all([holderPromise, buybackPromise, marginPromise, blockPromise]).then(function(dimResults){
+      // Add dimension-level verification items
+      dimResults.forEach(function(dr){
+        var status = dr.count > 0 ? 'pass' : 'fail';
+        ALL_VERIFY_RESULTS.push({
+          name: dr.dimension,
+          dimension: dr.dimension,
+          status: status,
+          reason: '有效数据: ' + dr.count + '/' + dr.total + '只',
+          freshness: dr.freshness,
+          src: '东财API',
+          isDimSummary: true
+        });
+      });
+
+      renderVerifyPanel();
+    });
+  });
+}
+
 function renderVerifyPanel() {
   var grid = document.getElementById('verifyGrid');
   var icon = document.getElementById('verifyIcon');
@@ -567,29 +913,34 @@ function renderVerifyPanel() {
   var html = '';
   var passCount = 0, driftCount = 0, failCount = 0;
 
-  VERIFY_RESULTS.forEach(function(r) {
+  ALL_VERIFY_RESULTS.forEach(function(r) {
     if (r.status === 'pass') passCount++;
     else if (r.status === 'drift') driftCount++;
     else failCount++;
 
     html += '<div class="verify-item '+r.status+'">';
-    html += '<div class="vi-head"><span class="vi-name">'+r.name+'</span><span class="vi-badge '+r.status+'">'+(r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常')+'</span></div>';
-    if (r.src1Period) html += '<div class="vi-row"><span class="src">最新报告期</span><span class="val">'+r.src1Period+'</span></div>';
-    if (r.src1Revenue) html += '<div class="vi-row"><span class="src">营收(主源)</span><span class="val">'+fmtAmt(r.src1Revenue)+'</span></div>';
-    if (r.src2Price) html += '<div class="vi-row"><span class="src">行情校验价</span><span class="val">'+r.src2Price.toFixed(2)+' ('+r.emDate+')</span></div>';
-    if (r.reason) html += '<div class="vi-row"><span class="src">结论</span><span class="val">'+ r.reason+'</span></div>';
+    html += '<div class="vi-head"><span class="vi-name">'+(r.isDimSummary ? '['+r.dimension+']' : r.name)+'</span><span class="vi-badge '+r.status+'">'+(r.status==='pass'?'有效':r.status==='drift'?'偏差':'异常')+'</span></div>';
+    if (r.src1Period) html += '<div class="vi-row"><span class="src">报告期</span><span class="val">'+r.src1Period+'</span></div>';
+    if (r.freshness) html += '<div class="vi-row"><span class="src">数据新鲜度</span><span class="val">'+r.freshness+'</span></div>';
+    if (r.src) html += '<div class="vi-row"><span class="src">数据源</span><span class="val">'+r.src+'</span></div>';
+    if (r.reason) html += '<div class="vi-row"><span class="src">结论</span><span class="val">'+r.reason+'</span></div>';
     html += '</div>';
   });
 
   grid.innerHTML = html || '<div class="verify-item" style="color:#6b7b8d;">无校验数据</div>';
 
-  var total = VERIFY_RESULTS.length;
+  var total = ALL_VERIFY_RESULTS.length;
   var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
   icon.className = 'vt-icon ' + overallStatus;
-  summary.textContent = '共' + total + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 主源:东财报表API · 校验源:eastmoney日K行情';
+  summary.textContent = '共'+total+'项 · 通过'+passCount+' · 偏差'+driftCount+' · 异常'+failCount+' · 覆盖维度: 财报/股东增减持/回购/融资融券/大宗交易 · 主源:东财+ifzq';
 }
 
+// ===== 启动所有数据加载 =====
 loadAllFinancials();
+loadHolderChanges();
+loadBuybacks();
+loadMarginTrading();
+loadBlockTrades();
 </script>
 </body>
 </html>
