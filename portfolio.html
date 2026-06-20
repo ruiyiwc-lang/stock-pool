@@ -568,8 +568,8 @@ function getStatus(key, price) {
     closerSide = mainTag==='H'?'A':'H';
     closerDist = altDist;
   }
-  if (closerDist <= 5) return {text:'接近'+closerSide+'档 距'+closerDist.toFixed(1)+'%', cls:'near'};
-  return {text:'等待 距'+closerSide+' '+closerDist.toFixed(1)+'%', cls:'wait'};
+  if (closerDist <= 5) return {text:closerSide+'股接近A档 '+closerDist.toFixed(1)+'%', cls:'near'};
+  return {text:closerSide+'股距A档 '+closerDist.toFixed(1)+'%', cls:'wait'};
 }
 
 function renderGauge(key, price, side) {
