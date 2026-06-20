@@ -3,190 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>药明康德 603259 / 02359 - 跟踪面板</title>
+<title>药明康德 603259 / 02359 股票讨论看板</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:900px; margin:0 auto; font-size:16px; }
-h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
-.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
-.subtitle a { color:#c9a84c; text-decoration:none; }
+body { background:#0d1117; color:#c9d1d9; font-family:-apple-system,'PingFang SC',sans-serif; padding:16px; padding-left:80px; max-width:1200px; margin:0 auto; }
+a { color:#58a6ff; text-decoration:none; }
+a:hover { text-decoration:underline; }
 
-.section-divider { border:none; border-top:1px solid #1e3a5f; margin:28px 0 20px; }
-.section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
+/* Sidebar */
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0d1117;border-right:1px solid #30363d;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:64px;text-decoration:none;color:#8b949e;border-left:3px solid transparent;transition:all .2s;padding:6px 0}
+.sidebar a.nav-btn:hover{color:#d29922;background:rgba(210,153,34,.05)}
+.sidebar a.nav-btn.active{color:#d29922;border-left-color:#d29922;background:rgba(210,153,34,.08)}
+.sidebar a.nav-btn svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar a.nav-btn .nav-label{font-size:11px;line-height:1.2;white-space:nowrap}
 
-/* 红色警报横幅 */
-.alert-banner {
-  background:linear-gradient(135deg,#ff3b30,#c0392b);
-  color:#fff;
-  border-radius:12px;
-  padding:14px 18px;
-  margin-bottom:16px;
-  font-size:14px;
-  line-height:1.6;
+/* Cards */
+.card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:18px; margin-bottom:16px; }
+.card-title { font-size:16px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+
+/* Header */
+.page-title { font-size:32px; font-weight:700; background:linear-gradient(135deg,#3fb950,#56d364,#7ee787); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:4px; }
+.page-subtitle { font-size:14px; color:#8b949e; margin-bottom:20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; }
+.badge-live { background:rgba(63,185,80,.12); color:#3fb950; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* KPI Bar */
+.kpi-bar { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin-bottom:16px; }
+.kpi-item { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px 12px; text-align:center; }
+.kpi-item .kpi-val { font-size:22px; font-weight:700; color:#e6edf3; }
+.kpi-item .kpi-label { font-size:12px; color:#8b949e; margin-top:2px; }
+.kpi-item .kpi-delta { font-size:11px; font-weight:600; margin-top:2px; }
+.kpi-item .kpi-delta.up { color:#3fb950; }
+.kpi-item .kpi-delta.down { color:#f85149; }
+
+/* Chart */
+.chart-container { position:relative; width:100%; }
+.chart-container canvas { width:100%; display:block; }
+.chart-btns { display:flex; gap:6px; margin-top:10px; }
+.chart-btns button { background:#21262d; border:1px solid #30363d; color:#8b949e; border-radius:6px; padding:4px 12px; font-size:12px; cursor:pointer; transition:all .2s; }
+.chart-btns button:hover, .chart-btns button.active { background:#30363d; color:#e6edf3; border-color:#58a6ff; }
+
+/* Split Layout */
+.split { display:grid; grid-template-columns:3fr 2fr; gap:16px; margin-bottom:16px; }
+
+/* Donut Chart */
+.donut-wrap { display:flex; align-items:center; justify-content:center; position:relative; }
+.donut-center { position:absolute; text-align:center; }
+.donut-center .pct { font-size:28px; font-weight:700; color:#3fb950; }
+.donut-center .pct-label { font-size:12px; color:#8b949e; }
+
+/* Table */
+.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+.data-table th { text-align:left; color:#8b949e; font-weight:500; padding:8px; border-bottom:1px solid #30363d; }
+.data-table td { padding:8px; border-bottom:1px solid #21262d; color:#c9d1d9; }
+.data-table tr:hover { background:#1c2128; }
+
+/* Valuation Corridor */
+.corridor { position:relative; height:40px; background:linear-gradient(90deg,#f85149 0%,#d29922 30%,#3fb950 60%,#58a6ff 100%); border-radius:8px; margin:16px 0; }
+.corridor-marker { position:absolute; top:-6px; width:3px; height:52px; background:#e6edf3; border-radius:2px; transition:left .6s ease; }
+.corridor-marker::after { content:attr(data-label); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:11px; color:#e6edf3; white-space:nowrap; font-weight:600; background:#161b22; padding:2px 6px; border-radius:4px; }
+.corridor-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; margin-top:4px; }
+
+/* Sentiment Gauge */
+.sentiment-bar { height:14px; border-radius:7px; background:linear-gradient(90deg,#3fb950 0%,#56d364 25%,#d29922 50%,#f85149 75%,#da3633 100%); position:relative; margin:12px 0; }
+.sentiment-marker { position:absolute; top:-4px; width:4px; height:22px; background:#e6edf3; border-radius:2px; transition:left .6s; }
+.sentiment-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; }
+
+/* Stacked Bar */
+.stacked-bar { display:flex; height:24px; border-radius:6px; overflow:hidden; margin:10px 0; }
+.stacked-bar div { display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
+
+/* Grid layouts */
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.mini-card { background:#21262d; border-radius:8px; padding:12px; text-align:center; }
+.mini-card .mc-val { font-size:20px; font-weight:700; color:#e6edf3; }
+.mini-card .mc-label { font-size:11px; color:#8b949e; margin-top:4px; }
+.mini-card .mc-delta { font-size:11px; font-weight:600; margin-top:2px; }
+
+/* Holdings items */
+.holding-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #21262d; }
+.holding-item:last-child { border-bottom:none; }
+.holding-name { font-size:13px; font-weight:500; }
+.holding-tag { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.tag-buy { background:rgba(63,185,80,.12); color:#3fb950; }
+.tag-hold { background:rgba(210,153,34,.12); color:#d29922; }
+.tag-sell { background:rgba(248,81,73,.12); color:#f85149; }
+
+/* Update time */
+.update-time { text-align:center; font-size:12px; color:#8b949e; margin-top:24px; padding-bottom:40px; }
+
+/* Responsive */
+@media(max-width:768px) {
+  body { padding-left:16px; }
+  .sidebar { display:none; }
+  .split { grid-template-columns:1fr; }
+  .kpi-bar { grid-template-columns:repeat(3,1fr); }
+  .grid-4 { grid-template-columns:repeat(2,1fr); }
+  .page-title { font-size:24px; }
 }
-.alert-banner strong { font-weight:700; }
-.alert-banner .alert-tag {
-  display:inline-block;
-  font-size:12px;
-  background:rgba(255,255,255,0.2);
-  padding:2px 8px;
-  border-radius:4px;
-  margin-right:8px;
-  letter-spacing:0.5px;
-  font-weight:600;
+@media(max-width:480px) {
+  .kpi-bar { grid-template-columns:repeat(2,1fr); }
+  .grid-3 { grid-template-columns:1fr 1fr; }
 }
-
-/* 价格大卡片（双轨） */
-.price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.price-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:20px 22px; }
-.price-card .market-tag { font-size:12px; color:#c9a84c; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
-.price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-.price-big { font-size:40px; font-weight:700; color:#e0e6ed; letter-spacing:-1px; }
-.price-change { font-size:16px; font-weight:600; }
-.price-change.up { color:#1a7a4c; }
-.price-change.down { color:#c0392b; }
-.price-change.flat { color:#6b7b8d; }
-.price-meta { display:flex; gap:14px; margin-top:8px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
-.price-meta span b { color:#e0e6ed; }
-
-/* 进度条 */
-.gauge { margin-top:20px; position:relative; padding-bottom:36px; }
-.gauge-bar { height:12px; border-radius:6px; background:#2a3441; position:relative; overflow:visible; }
-.gauge-fill { height:100%; border-radius:6px; transition:width .6s; }
-.gauge-labels { display:flex; justify-content:space-between; font-size:13px; color:#6b7b8d; margin-top:10px; }
-.gauge-labels .lbl-b { color:#1a7a4c; font-weight:500; }
-.gauge-labels .lbl-a { color:#1e3a5f; font-weight:500; }
-.gauge-labels .lbl-r { color:#c0392b; font-weight:500; }
-.gauge-marker { position:absolute; top:0; width:0; height:0; transition:left .6s; }
-.gauge-marker-label { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:#e0e6ed; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 4px; border-radius:3px; }
-
-/* 通用卡片 */
-.kpi-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
-.kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.freq-tag { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; letter-spacing:0.3px; vertical-align:middle; margin-left:4px; }
-.freq-tag.live { background:rgba(192,57,43,0.10); color:#c0392b; }
-.freq-tag.daily { background:rgba(30,58,95,0.10); color:#1e3a5f; }
-.freq-tag.quarter { background:rgba(201,168,76,0.14); color:#9a7d2e; }
-.freq-tag.annual { background:rgba(74,58,138,0.10); color:#4a3a8a; }
-.freq-tag.static { background:rgba(107,123,141,0.14); color:#6b7b8d; }
-.kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-.kpi-item { text-align:center; padding:8px; background:#1a1f2e; border-radius:8px; }
-.kpi-item .val { font-size:22px; font-weight:700; color:#e0e6ed; }
-.kpi-item .lbl { font-size:13px; color:#6b7b8d; margin-top:2px; }
-.kpi-item .delta { font-size:12px; margin-top:2px; font-weight:600; }
-.kpi-item .delta.up { color:#1a7a4c; }
-.kpi-item .delta.down { color:#c0392b; }
-
-/* BIOSECURE 温度计 */
-.bio-card { background:#1a1510; border:1px solid #4a3520; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
-.bio-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#9a4d00; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.bio-thermo { background:linear-gradient(90deg,#34c759 0%,#ffcc00 35%,#ff9500 70%,#ff3b30 100%); height:14px; border-radius:7px; position:relative; }
-.bio-thermo-marker { position:absolute; top:-4px; width:4px; height:22px; background:#1c1c1e; border-radius:2px; }
-.bio-levels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
-.bio-status { margin-top:12px; padding:10px; background:#1a1f2e; border-radius:8px; font-size:14px; line-height:1.6; }
-.bio-status b { color:#c0392b; }
-
-/* 新闻卡片 */
-.news-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
-.news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.news-item { padding:10px 0; border-bottom:1px solid #1e3a5f; }
-.news-item:last-child { border-bottom:none; }
-.news-tag { display:inline-block; font-size:12px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
-.news-tag.policy { background:rgba(192,57,43,0.08); color:#c0392b; }
-.news-tag.order { background:rgba(26,122,76,0.08); color:#1a7a4c; }
-.news-tag.client { background:rgba(30,58,95,0.08); color:#1e3a5f; }
-.news-tag.capital { background:rgba(74,58,138,0.08); color:#4a3a8a; }
-.news-tag.earn { background:rgba(201,168,76,0.08); color:#9a7d2e; }
-.news-item .news-title { font-size:15px; font-weight:500; color:#e0e6ed; line-height:1.4; }
-.news-item .news-title a { color:#e0e6ed; text-decoration:none; }
-.news-item .news-title a:hover { color:#c9a84c; text-decoration:underline; }
-.news-item .news-summary { font-size:14px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
-.news-item .news-date { font-size:13px; color:#8fa0b3; margin-top:4px; }
-.news-empty { font-size:15px; color:#8fa0b3; text-align:center; padding:20px; }
-
-/* 订单表 */
-.order-table { width:100%; border-collapse:collapse; font-size:14px; }
-.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
-.order-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
-.order-table .pos { color:#1a7a4c; font-weight:600; }
-.order-table .neg { color:#c0392b; font-weight:600; }
-
-/* 信号 */
-.signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
-.sig-card { background:#111827; border:1px solid #1e3a5f; border-radius:10px; padding:14px 16px; }
-.sig-card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
-.sig-card ul { list-style:none; font-size:14px; line-height:1.8; }
-.sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
-.sig-buy li::before { background:#1a7a4c; }
-.sig-wait li::before { background:#c9a84c; }
-.sig-stop li::before { background:#c0392b; }
-.sig-sell li::before { background:#4a3a8a; }
-
-/* 建仓策略 */
-.strat-table { width:100%; border-collapse:collapse; font-size:14px; }
-.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
-.strat-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
-
-/* 催化剂日历 */
-.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #1e3a5f; font-size:14px; }
-.cal-item:last-child { border-bottom:none; }
-.cal-date { color:#c9a84c; font-weight:600; min-width:120px; font-size:13px; }
-.cal-desc { color:#e0e6ed; flex:1; font-size:14px; }
-.cal-tag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
-.cal-tag.hot { background:rgba(255,59,48,0.12); color:#c0392b; }
-.cal-tag.med { background:rgba(255,149,0,0.12); color:#9a4d00; }
-.cal-tag.cool { background:rgba(26,122,76,0.12); color:#1a7a4c; }
-
-/* 论点 */
-.thesis-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
-.thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
-.thesis-card p { font-size:14px; line-height:1.8; color:#4a5d6e; }
-.thesis-card strong { color:#e0e6ed; }
-
-.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
-.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#c9a84c; text-decoration:none; }
-.back-link:hover { text-decoration:underline; }
-
-@media(max-width:600px) {
-  .price-grid { grid-template-columns:1fr; }
-  .kpi-grid { grid-template-columns:1fr 1fr; }
-  .signals { grid-template-columns:1fr; }
-  .price-big { font-size:30px; }
-}
-
-/* 数据校验面板 */
-.verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:32px; }
-.verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-.verify-title .vt-icon { width:8px; height:8px; border-radius:50%; }
-.verify-title .vt-icon.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.5); }
-.verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
-.verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
-.verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
-.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
-.verify-item.pass { border-left:3px solid #22c55e; }
-.verify-item.drift { border-left:3px solid #eab308; }
-.verify-item.fail { border-left:3px solid #ef4444; }
-.vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-.vi-name { font-weight:700; color:#e0e6ed; }
-.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
-.vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
-.vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
-.vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
-.vi-row { display:flex; justify-content:space-between; color:#8fa0b3; margin-bottom:2px; }
-.vi-row .src { color:#6b7b8d; }
-.vi-row .val { color:#e0e6ed; font-weight:600; }
 </style>
 </head>
 <body data-active-page="wuxi">
+
 <!-- Sidebar -->
-<style>
-.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0a0f1a;border-right:1px solid #1e3a5f;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
-.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:72px;text-decoration:none;color:#6b7b8d;border-left:3px solid transparent;transition:all .2s;padding:8px 0}
-.sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
-.sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
-.sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
-</style>
 <nav class="sidebar">
 <a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
 <a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg><span class="nav-label">温度计</span></a>
@@ -202,823 +128,936 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 <a class="nav-btn" href="methodology.html" data-page="methodology"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg><span class="nav-label">方法论</span></a>
 </nav>
 <script>(function(){var p=document.body.getAttribute('data-active-page');if(p){var b=document.querySelector('.sidebar a[data-page="'+p+'"]');if(b)b.classList.add('active')}})()</script>
-<!-- /Sidebar -->
 
-<a class="back-link" href="index.html">&larr; 返回股票池</a>
-<h1>药明康德 603259 / 02359</h1>
-<div class="subtitle">A 档规则制定者 &middot; 创新药基础设施 &middot; 全球 CXO 龙头 &middot; <a href="https://www.wuxiapptec.cn/" target="_blank">官网</a> &middot; <a href="https://q.stock.sohu.com/cn/603259/" target="_blank">A股</a> &middot; <a href="https://xueqiu.com/S/02359" target="_blank">H股</a></div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║  最高级警报（1260H 事件，2026-06-08）    ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="alert-banner">
-  <span class="alert-tag">⚠ ACTIVE THREAT</span>
-  <strong>1260H 清单事件持续中</strong> · 美国国防部 2026-06-08 首次将公司纳入 "中国军工企业" 清单。公司 6/11 起诉国防部，目前等待法院初步裁决（预计 2026 Q3）。A+H 双双暴跌 5%+ 后已部分修复，公司持续回购 A 股+H 股稳定股价。<br>
-  <strong>核心风险：</strong>1260H 本身不直接禁运，但 BIOSECURE 法案可能借 2027 NDAA（11-12 月投票）卷土重来，需重点监测。
+<!-- ═══════════════════════════════════════════ -->
+<!-- 1. HEADER                                   -->
+<!-- ═══════════════════════════════════════════ -->
+<h1 class="page-title">药明康德 603259 / 02359 股票讨论看板</h1>
+<div class="page-subtitle">
+  第二档 &middot; 翻倍标的 &middot; 全球CXO龙头 &middot; BIOSECURE风险持续
+  <span class="badge badge-live">实时刷新</span>
+  <span style="margin-left:auto;font-size:12px;" id="update-time">--</span>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║     A+H 双轨实时价格                      ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div style="font-size:13px;color:#6b7b8d;margin:0 2px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:500;letter-spacing:0.3px;">
-  📈 A+H 双轨实时价格 <span class="freq-tag live">实时 · 30s</span>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 2. TOP KPI BAR (Dual Market)                -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="kpi-bar">
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-price-a">--</div>
+    <div class="kpi-label">A股价格 (CNY)</div>
+    <div class="kpi-delta" id="kpi-price-a-delta">--</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-price-hk">--</div>
+    <div class="kpi-label">H股价格 (HKD)</div>
+    <div class="kpi-delta" id="kpi-price-hk-delta">--</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-mktcap">--</div>
+    <div class="kpi-label">A股市值 (亿CNY)</div>
+    <div class="kpi-delta" id="kpi-mktcap-delta">&nbsp;</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-pe">--</div>
+    <div class="kpi-label">PE (TTM)</div>
+    <div class="kpi-delta" id="kpi-pe-delta">&nbsp;</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-eps">--</div>
+    <div class="kpi-label">EPS (TTM, CNY)</div>
+    <div class="kpi-delta" id="kpi-eps-delta">&nbsp;</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-revenue">--</div>
+    <div class="kpi-label">营收 (亿CNY)</div>
+    <div class="kpi-delta" id="kpi-rev-delta">&nbsp;</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-profit">--</div>
+    <div class="kpi-label">净利润 (亿CNY)</div>
+    <div class="kpi-delta" id="kpi-profit-delta">&nbsp;</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-val" id="kpi-rev-growth">--</div>
+    <div class="kpi-label">营收增速 YoY</div>
+    <div class="kpi-delta" id="kpi-growth-delta">&nbsp;</div>
+  </div>
 </div>
-<div class="price-grid">
 
-  <!-- A 股 -->
-  <div class="price-card">
-    <div class="market-tag">🇨🇳 A 股 · 603259.SH</div>
-    <div class="price-row">
-      <span class="price-big" id="a-price">102.72</span>
-      <span class="price-change up" id="a-change">+4.52 (+4.60%)</span>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 3. K-LINE CHART (A股)                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    日K线走势 (A股 603259)
+  </div>
+  <div class="chart-container">
+    <canvas id="kline-canvas" height="280"></canvas>
+  </div>
+  <div class="chart-btns">
+    <button data-days="5" data-market="a">1周</button>
+    <button data-days="30" data-market="a" class="active">1月</button>
+    <button data-days="90" data-market="a">3月</button>
+    <button data-days="180" data-market="a">6月</button>
+    <button data-days="365" data-market="a">1年</button>
+    <button data-days="30" data-market="hk" style="margin-left:12px;border-color:#d29922;color:#d29922;">H股1月</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 4. SPLIT: ANALYST RATING + INSTITUTIONAL    -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="split">
+  <!-- Left: Analyst Rating Donut -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d29922" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      分析师评级分布
     </div>
-    <div class="price-meta">
-      <span>Fwd PE <b id="a-pe">12.3x</b></span>
-      <span>PEG <b id="a-peg">0.49</b></span>
-      <span>市值 <b id="a-mc">2475亿</b></span>
-    </div>
-    <div class="gauge">
-      <div class="gauge-bar" id="a-bar">
-        <div class="gauge-fill" id="a-fill" style="width:0"></div>
-        <div class="gauge-marker" id="a-marker"><div class="gauge-marker-label" id="a-marker-lbl"></div></div>
+    <div class="donut-wrap" style="height:200px;">
+      <canvas id="donut-canvas" width="200" height="200"></canvas>
+      <div class="donut-center">
+        <div class="pct" id="donut-pct">--</div>
+        <div class="pct-label">看多占比</div>
       </div>
-      <div class="gauge-labels">
-        <span class="lbl-b">B ¥85</span>
-        <span class="lbl-a">A ¥110</span>
-        <span class="lbl-r">红 ¥190</span>
-      </div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;font-size:12px;">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb950;margin-right:4px;"></span>买入 <b id="analyst-buy">--</b></span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d29922;margin-right:4px;"></span>持有 <b id="analyst-hold">--</b></span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f85149;margin-right:4px;"></span>卖出 <b id="analyst-sell">--</b></span>
     </div>
   </div>
 
-  <!-- H 股 -->
-  <div class="price-card">
-    <div class="market-tag">🇭🇰 H 股 · 02359.HK</div>
-    <div class="price-row">
-      <span class="price-big" id="h-price">128.70</span>
-      <span class="price-change up" id="h-change">+6.20 (+5.06%)</span>
+  <!-- Right: Institutional Holdings -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bc8cff" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      主要机构持仓动态
     </div>
-    <div class="price-meta">
-      <span>Fwd PE <b id="h-pe">14.5x</b></span>
-      <span>PEG <b id="h-peg">0.58</b></span>
-      <span>市值 <b id="h-mc">393亿HK</b></span>
+    <div id="inst-holdings">
+      <div class="holding-item"><span class="holding-name">李革家族 (实控人)</span><span class="holding-tag tag-hold">持有</span></div>
+      <div class="holding-item"><span class="holding-name">香港中央结算 (港股通)</span><span class="holding-tag tag-hold">持有</span></div>
+      <div class="holding-item"><span class="holding-name">GIC 新加坡政府投资</span><span class="holding-tag tag-hold">持有</span></div>
+      <div class="holding-item"><span class="holding-name">贝莱德 BlackRock</span><span class="holding-tag tag-hold">持有</span></div>
+      <div class="holding-item"><span class="holding-name">先锋集团 Vanguard</span><span class="holding-tag tag-hold">持有</span></div>
     </div>
-    <div class="gauge">
-      <div class="gauge-bar" id="h-bar">
-        <div class="gauge-fill" id="h-fill" style="width:0"></div>
-        <div class="gauge-marker" id="h-marker"><div class="gauge-marker-label" id="h-marker-lbl"></div></div>
-      </div>
-      <div class="gauge-labels">
-        <span class="lbl-b">B HK$110</span>
-        <span class="lbl-a">A HK$140</span>
-        <span class="lbl-r">红 HK$240</span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   今日新闻（cron 每日 08:30 刷新）         ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="news-card">
-  <h2>📰 今日动态 <span class="freq-tag daily">日 · cron 23:00</span></h2>
-  <!-- NEWS_DATA_START -->
-  <div class="news-item">
-    <span class="news-tag capital">资本</span>
-    <span class="news-title"><a href="https://q.stock.sohu.com/cn/603259/" target="_blank">A+H 双轨大幅反弹：A股涨 4.6% 至 102.72 元，H股涨 5.1% 至 128.70 港元</a></span>
-    <div class="news-summary">连续修复 1260H 暴跌缺口，市场情绪显著回暖。公司持续回购 A+H 股稳定股价，累计 H 股回购超 4 亿港元。</div>
-    <div class="news-date">2026-06-18 · 行情数据</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag policy">政策</span>
-    <span class="news-title"><a href="https://finance.sina.com.cn/roll/2026-06-12/doc-iniccfxx0269300.shtml" target="_blank">药明康德起诉美国国防部 - 哥伦比亚特区联邦地区法院正式立案</a></span>
-    <div class="news-summary">公司主张国防部 1260H 决定缺乏事实依据，要求纠正错误认定。预计法院 Q3 给出初步裁决。</div>
-    <div class="news-date">2026-06-12 · 新浪财经</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag policy">政策</span>
-    <span class="news-title"><a href="https://www.drugtimes.cn/2026/06/10/yaomingkangderuhejiezhao1260h/" target="_blank">药明康德，如何接招 1260H？ - 医药魔方深度分析</a></span>
-    <div class="news-summary">修订后的 BIOSECURE Act 搭上 2026 NDAA 可能卷土重来，1260H 与 BIOSECURE 双轨并行风险分析。</div>
-    <div class="news-date">2026-06-10 · 医药魔方</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag policy">政策</span>
-    <span class="news-title"><a href="https://www.guancha.cn/xinzhiguanchasuo/2026_06_09_819878.shtml" target="_blank">药明康德出手：188 家中国企业又上美国清单</a></span>
-    <div class="news-summary">美国国防部更新 1260H 清单，80 家中国企业集团及 188 个关联实体被纳入，药明康德首次上榜。A+H 双双暴跌 5%+。</div>
-    <div class="news-date">2026-06-09 · 观察者网</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag capital">资本</span>
-    <span class="news-title"><a href="https://m.10jqka.com.cn/20260529/c677081496.shtml" target="_blank">累计分红回购金额近 250 亿元，超过净利润 40%</a></span>
-    <div class="news-summary">上市至今累计分红、回购并全部注销近 250 亿元。2026 年回购方案持续进行中。</div>
-    <div class="news-date">2026-05-29 · 同花顺</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag earn">业绩</span>
-    <span class="news-title"><a href="http://m.10jqka.com.cn/sn/20260427/57672053.shtml" target="_blank">2026Q1 营收首破百亿，毛利率攀升至 50.4%</a></span>
-    <div class="news-summary">营收 124.4 亿(+28.8%)，全年指引 513-530 亿元。化学业务强劲，TIDES 多肽板块持续受 GLP-1 全球放量驱动。</div>
-    <div class="news-date">2026-04-27 · 同花顺</div>
-  </div>
-  <div class="news-item">
-    <span class="news-tag order">订单</span>
-    <span class="news-title"><a href="https://wap.eastmoney.com/a/202404303065477721.html" target="_blank">GLP-1 大订单均为长期合同，正计划扩建新产能</a></span>
-    <div class="news-summary">一季度末 TIDES 在手订单同比增长超 70%，常州/泰兴新产能 Q3 投产。礼来/默沙东/诺和诺德 GLP-1 合同全部续约。</div>
-    <div class="news-date">2026-04-30 · 东方财富</div>
-  </div>
-  <!-- NEWS_DATA_END -->
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   BIOSECURE / 1260H 温度计               ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="bio-card">
-  <h2>🌡️ BIOSECURE / 1260H 中美摩擦温度计 <span class="freq-tag daily">日 · 事件评估</span></h2>
-  <div class="bio-thermo">
-    <div class="bio-thermo-marker" id="bio-marker" style="left:72%"></div>
-  </div>
-  <div class="bio-levels">
-    <span>0 平静</span>
-    <span>30 关注</span>
-    <span>60 警戒</span>
-    <span>100 危机</span>
-  </div>
-  <div class="bio-status">
-    <b id="bio-level">当前温度：72 / 100（警戒区上沿）</b><br>
-    <span id="bio-status-text">1260H 名单已落实 + 公司起诉中 + NDAA 11月投票临近 = 三层叠加。诉讼判决前难显著降温，但每次回购都是"抗议性买入"。如果美方法院裁决撤出 1260H，温度可降至 30；若 NDAA 通过含 BIOSECURE 条款，温度升至 95。</span>
+    <div style="font-size:11px;color:#8b949e;margin-top:10px;">数据来源: 上交所/港交所权益披露 (待cron更新)</div>
   </div>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   资金 / 管理层信号                        ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>💰 资金 / 管理层信号 · 个体行为透露集体信息 <span class="freq-tag daily">日 · 部分指标</span><span class="freq-tag quarter">季 · 部分指标</span></h2>
-  <table class="order-table">
-    <thead><tr><th>信号</th><th>当前状态</th><th>含义</th></tr></thead>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 5. TARGET PRICE TABLE                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    目标价格一览表
+  </div>
+  <table class="data-table" id="target-table">
+    <thead><tr><th>机构</th><th>目标价(CNY/HKD)</th><th>评级</th><th>日期</th></tr></thead>
     <tbody>
-      <tr>
-        <td><b>公司回购（A+H）</b></td>
-        <td class="pos">A 股 10 亿方案进行中 + H 股已回购 ¥4 亿+ 持续加码</td>
-        <td>管理层最清楚业务底牌——新增/加码=认为低估，停止=信心动摇</td>
-      </tr>
-      <tr>
-        <td><b>李革（创始人）持股变动</b></td>
-        <td class="pos">无显著减持 / 质押稳定</td>
-        <td>历史上有过减持但都是套现做风投，非看空药明。要看"为什么减"</td>
-      </tr>
-      <tr>
-        <td><b>港股通净买入（02359）</b></td>
-        <td>跟踪中</td>
-        <td><b>触发线</b>：南向连续 20 个交易日净买入 = 内地机构底部确认</td>
-      </tr>
-      <tr>
-        <td><b>非医药主题基金持仓</b></td>
-        <td>季报披露后扫</td>
-        <td>葛兰本来就重仓——要看张坤/林英睿这种价值派进场=药明从医药变"宏观底部资产"</td>
-      </tr>
-      <tr>
-        <td><b>国际投行覆盖状态</b></td>
-        <td class="pos">高盛/MS/巴克莱/Jefferies 维持覆盖</td>
-        <td class="neg">最坏信号=取消覆盖（compliance认为可能被制裁）。评级变动反而不重要</td>
-      </tr>
+      <tr><td>中金公司</td><td style="color:#3fb950;font-weight:600;">CNY 90.00</td><td><span class="holding-tag tag-buy">买入</span></td><td>2025-03</td></tr>
+      <tr><td>摩根士丹利</td><td style="color:#d29922;font-weight:600;">HKD 75.00</td><td><span class="holding-tag tag-hold">持有</span></td><td>2025-02</td></tr>
+      <tr><td>高盛</td><td style="color:#3fb950;font-weight:600;">HKD 80.00</td><td><span class="holding-tag tag-buy">增持</span></td><td>2025-03</td></tr>
+      <tr><td>瑞银</td><td style="color:#d29922;font-weight:600;">CNY 78.00</td><td><span class="holding-tag tag-hold">中性</span></td><td>2025-01</td></tr>
+      <tr><td>杰富瑞</td><td style="color:#3fb950;font-weight:600;">HKD 85.00</td><td><span class="holding-tag tag-buy">买入</span></td><td>2025-02</td></tr>
     </tbody>
   </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">这一类的特点是"机构和管理层比散户提前 1-2 季知道事实"。回购+港股通可日级 cron 跟踪，其余在<b>季报披露后 2 周</b>+<b>关键事件后</b>深扫。</p>
+  <div style="font-size:11px;color:#8b949e;margin-top:10px;">* 目标价待cron自动更新</div>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   业务基本面四象限（季度更新）              ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>🎯 业务基本面四象限 · 决定护城河是否还在 <span class="freq-tag quarter">季 · 财报披露</span></h2>
-  <table class="order-table">
-    <thead><tr><th>指标</th><th>当前值</th><th>健康线</th><th>警戒线</th><th>认错线</th><th>读数</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><b>① 产能利用率</b><br><span style="color:#8b949e;font-size:12px">小分子+TIDES整体</span></td>
-        <td>~80%（25年报披露）</td>
-        <td class="pos">70-85%</td>
-        <td>60-70%</td>
-        <td class="neg">&lt; 60%</td>
-        <td>常州 D&amp;M 产线满载，TIDES 反应器扩到 4.1 万升后 26H2 进入爬坡，未来12月最关键</td>
-      </tr>
-      <tr>
-        <td><b>② TIDES 兑现度</b><br><span style="color:#8b949e;font-size:12px">2026目标150亿 / +40%</span></td>
-        <td>2025: 113.7亿（+147%）</td>
-        <td class="pos">季度累计在线性进度</td>
-        <td>掉到 +20-30%</td>
-        <td class="neg">连2季 &lt; +15%</td>
-        <td>Q1/Q2/Q3 累计应在 37.5/75/112.5 亿，缺口=GLP-1见顶 / 客户分散 / 产能爬坡慢</td>
-      </tr>
-      <tr>
-        <td><b>③ 整体毛利率</b><br><span style="color:#8b949e;font-size:12px">D-to-M转化质量</span></td>
-        <td>2026Q1: 50.4%</td>
-        <td class="pos">≥ 50%</td>
-        <td>45-50%</td>
-        <td class="neg">&lt; 45%</td>
-        <td>50%+ 说明商业化生产端在升级；跌破=退化为纯代工，估值中枢应跟着降</td>
-      </tr>
-      <tr>
-        <td><b>④ 美国营收占比</b><br><span style="color:#8b949e;font-size:12px">地缘脱钩温度计</span></td>
-        <td>72%</td>
-        <td>稳定 65-75%</td>
-        <td>跌破 60%</td>
-        <td class="neg">12月内跌破 50%</td>
-        <td>跌得太快=Top 5 客户分散供应链；维持高位=没人脱钩，地缘故事被过度定价</td>
-      </tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">四象限互相印证。<b>产能利用率是综合体检表</b>——它同时反映地缘风险落地度+管理层执行力+行业β三件事。任一指标触发认错线 = 重估全部仓位。</p>
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   GLP-1 / ADC 订单管线                    ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>💊 GLP-1 / ADC 大订单管线 <span class="freq-tag quarter">季 · 财报+催化</span></h2>
-  <table class="order-table">
-    <thead><tr><th>客户</th><th>类型</th><th>状态</th><th>影响窗口</th></tr></thead>
-    <tbody>
-      <tr><td>礼来</td><td>GLP-1（替尔泊肽 / Orforglipron）</td><td class="pos">长期合同 · 多次扩产</td><td>2026-2030</td></tr>
-      <tr><td>默沙东</td><td>GLP-1 管线</td><td class="pos">长期合同进行中</td><td>2026-2028</td></tr>
-      <tr><td>诺和诺德</td><td>多肽供应链</td><td class="pos">TIDES 主要客户</td><td>2026-2029</td></tr>
-      <tr><td>罗氏 / BMS</td><td>ADC / 双抗</td><td class="pos">化学业务非 GLP-1 部分 +21.4%</td><td>2026-2027</td></tr>
-      <tr><td>TIDES 板块整体</td><td>多肽 + 寡核苷酸</td><td class="pos">2025Q1 同比 +187.6%</td><td>持续</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">大订单具体金额公司未单独披露，但 TIDES 在手订单增速远超总体，是核心增长引擎。</p>
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   海外产能建厂进度                         ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>🏗️ 海外产能建厂进度 · 重资产生意的死穴 <span class="freq-tag quarter">季 · 项目里程碑</span></h2>
-  <table class="order-table">
-    <thead><tr><th>项目</th><th>计划投产</th><th>状态</th><th>用途</th><th>风险点</th></tr></thead>
-    <tbody>
-      <tr>
-        <td>常州 / 泰兴 TIDES</td>
-        <td>2026 Q3-Q4</td>
-        <td class="pos">建设中</td>
-        <td>多肽反应器 4.1 万升（GLP-1 主力）</td>
-        <td>爬坡速度决定 26H2 营收兑现</td>
-      </tr>
-      <tr>
-        <td>美国特拉华米德尔敦</td>
-        <td>2026 H2-2027</td>
-        <td>建设中</td>
-        <td>本土化产能 / 应对 1260H</td>
-        <td class="neg">最危险——若 BIOSECURE 通过反成空置资产</td>
-      </tr>
-      <tr>
-        <td>新加坡基地</td>
-        <td>2027</td>
-        <td>建设中</td>
-        <td>避地缘中转 / 服务美日客户</td>
-        <td>合规审批进度</td>
-      </tr>
-      <tr>
-        <td>瑞士 Couvet（生物药）</td>
-        <td>已运营</td>
-        <td class="pos">满载</td>
-        <td>欧洲生物药 GMP 制剂</td>
-        <td>客户构成稳定</td>
-      </tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px"><b>监控两个时点</b>：① 原计划 vs 实际投产时间（延期=合规/执行问题）；② 投产后 6-12 月产能利用率（&lt; 60% = 订单跟不上产能，发债成本+折旧+空置=三杀）。最坏情景=美国厂建成但被禁用。</p>
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   创新药行业景气度（行业β）                ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>🌊 创新药行业景气度 · 药明的水池水位 <span class="freq-tag quarter">月-季 · 行业β</span></h2>
-  <p style="font-size:13px;color:#6b7b8d;margin-bottom:10px">药明押的不是某款药，而是整个行业的繁荣。客户活得好不好，决定订单源头水位。</p>
-  <table class="order-table">
-    <thead><tr><th>指标</th><th>频率</th><th>健康线</th><th>冰点线</th><th>含义</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><b>全球 biotech 一级融资额</b></td>
-        <td>季度</td>
-        <td class="pos">≥ 200 亿美元/季度</td>
-        <td class="neg">连 2 季同比 -30%</td>
-        <td>融资断流 → 6-12 月后传导到药明 backlog（2022-24 已演过一次）</td>
-      </tr>
-      <tr>
-        <td><b>全球 biotech IPO 数 + 破发率</b></td>
-        <td>季度</td>
-        <td class="pos">15-25 家/季，破发 &lt; 30%</td>
-        <td class="neg">&lt; 5 家/季 或 破发 &gt; 60%</td>
-        <td>二级不接盘 → 一级也不投 → 行业冰封</td>
-      </tr>
-      <tr>
-        <td><b>大药企 BD / 并购交易额</b></td>
-        <td>季度</td>
-        <td class="pos">活跃（与融资反向印证）</td>
-        <td>双双低迷 = 极度悲观</td>
-        <td>biotech 融资难时 BD 反而活跃（强生买传奇 / BMS 买百利）</td>
-      </tr>
-      <tr>
-        <td><b>GLP-1 全球月度处方量</b></td>
-        <td>月度</td>
-        <td class="pos">同比 +30%+</td>
-        <td class="neg">同比腰斩</td>
-        <td>Mounjaro / Wegovy 处方见顶 → TIDES 150 亿目标必落空</td>
-      </tr>
-      <tr>
-        <td><b>AI 制药 VC 融资额</b></td>
-        <td>季度</td>
-        <td class="pos">≥ $15 亿/季 (2024~$6.7B全年)</td>
-        <td class="neg">连 2 季同比 -50%</td>
-        <td>AI biotech融资活跃 → 更多项目进临床 → CDMO订单源头增加 (正面)</td>
-      </tr>
-      <tr>
-        <td><b>AI 药物新增 IND 申报数</b></td>
-        <td>季度</td>
-        <td class="pos">季度 ≥ 15 个新 IND</td>
-        <td class="neg">&lt; 5 个/季度</td>
-        <td>173+在研→进临床速度=药明CDMO远期订单池。加速=利好；停滞=AI制药泡沫破</td>
-      </tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">数据源：Evaluate Pharma / BioCentury 季度统计 / IQVIA 月报 / Eli Lilly &amp; Novo 财报。<b>这一类只在月/季级跟踪，不进入日级 cron</b>。</p>
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   AI 制药对 CXO 护城河影响                  ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>🤖 AI 制药对 CXO 护城河影响 · 药明的"铲"在变形 <span class="freq-tag quarter">季 · 趋势跟踪</span></h2>
-  <p style="font-size:13px;color:#6b7b8d;margin-bottom:12px">AI for Science 不摧毁药明，但改变它的价值结构——化学发现CRO被侵蚀，CDMO反而加强。核心判断：<b>铲的形状在变，但还是需要铲</b>。</p>
-
-  <table class="order-table">
-    <thead><tr><th>业务层</th><th>AI 影响方向</th><th>逻辑</th><th>跟踪指标</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><b>① 化学发现 CRO</b><br><span style="color:#8b949e;font-size:12px">~30-35% 收入</span></td>
-        <td class="neg">被削弱</td>
-        <td>AI虚拟筛选命中30-46% vs传统1-2%，合成量减少10-20x（Recursion 330个化合物 vs 传统3000-5000个）→ 单项目收入可能-50~80%</td>
-        <td>化学发现CRO单项目平均合同额（季报没直接披露，需跟踪"分子数/收入"比）</td>
-      </tr>
-      <tr>
-        <td><b>② 工艺/临床前 CRO</b><br><span style="color:#8b949e;font-size:12px">~20-25% 收入</span></td>
-        <td style="color:#9a7d2e;font-weight:600">中期安全</td>
-        <td>FDA仍要求实际动物毒理+真实PK数据。AI计算毒理可辅助但不替代。2030+若FDA接受in silico证据才受冲击</td>
-        <td>FDA对AI辅助数据的审评政策变化（guidance文件发布）</td>
-      </tr>
-      <tr>
-        <td><b>③ CDMO（生产）</b><br><span style="color:#8b949e;font-size:12px">~35-40% 收入，增最快</span></td>
-        <td class="pos">反而加强</td>
-        <td>AI让更多药更快进临床→临床试验需要GMP药物供应→CDMO需求不减反增。AI替代不了反应釜和洁净车间</td>
-        <td>全球IND申报总数增速（AI加速→IND井喷→CDMO订单）；TIDES在手订单</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="margin-top:14px;padding:12px;background:#111827;border-radius:8px;border:1px solid #1e3a5f">
-    <h4 style="font-size:13px;font-weight:700;color:#c9a84c;margin-bottom:8px">🔬 AI 制药关键标的跟踪（季度扫描）</h4>
-    <table class="order-table" style="font-size:13px">
-      <thead><tr><th>公司</th><th>定位</th><th>对药明含义</th><th>最新进展 (2026.06)</th></tr></thead>
-      <tbody>
-        <tr><td><b>Recursion</b> (RXRX)</td><td>表型组学AI平台</td><td>减少药明化学发现CRO订单量</td><td>5个临床资产 · 330化合物出PCC · 与赛诺菲/罗氏合作</td></tr>
-        <tr><td><b>Isomorphic Labs</b></td><td>AlphaFold系药物设计</td><td>远期替代靶点发现环节</td><td>融$6亿 · 诺华+礼来$30亿合作 · 2026底首个人体试验</td></tr>
-        <tr><td><b>英矽智能</b> (01231.HK)</td><td>AI全流程药企</td><td>药明客户变竞争对手？</td><td>Phase 2a Nature Medicine发表 · 礼来$27.5亿合作 · 年收$5624万</td></tr>
-        <tr><td><b>Schrödinger</b> (SDGR)</td><td>物理模拟+ML</td><td>卖平台给药企（跟药明并行）</td><td>Zasocitinib Phase 3 → 可能首个AI药获批(2027)</td></tr>
-        <tr><td><b>晶泰科技</b> (02228.HK)</td><td>AI制药基础设施</td><td>与药明竞争晶型/分子设计</td><td>DoveTree $59.9亿订单 · 港股18C首家</td></tr>
-      </tbody>
-    </table>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 6. SHAREHOLDING STRUCTURE                   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bc8cff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+    股权结构 (A股总股本 29.72亿股)
   </div>
-
-  <div style="margin-top:14px;padding:12px;background:#1a1510;border-radius:8px;border:1px solid #4a3520">
-    <h4 style="font-size:13px;font-weight:700;color:#9a4d00;margin-bottom:8px">⚡ AI 相关信号触发条件</h4>
-    <table class="order-table" style="font-size:13px">
-      <thead><tr><th>信号</th><th>触发条件</th><th>动作</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="color:#1a7a4c;font-weight:600">🟢 利好</td>
-          <td>药明宣布AI合作/收购（如收购AI CRO公司）；或大客户声明"AI+药明=互补而非替代"</td>
-          <td>护城河升级确认，加大CDMO权重估值</td>
-        </tr>
-        <tr>
-          <td style="color:#1a7a4c;font-weight:600">🟢 利好</td>
-          <td>全球IND申报数同比+30%+（AI加速效应传导到CDMO需求）</td>
-          <td>TIDES/CDMO超预期概率上升</td>
-        </tr>
-        <tr>
-          <td style="color:#9a7d2e;font-weight:600">🟡 观察</td>
-          <td>化学发现CRO收入增速连续2季跑输CDMO增速10个百分点以上</td>
-          <td>确认"AI侵蚀发现端"已从数据端体现</td>
-        </tr>
-        <tr>
-          <td style="color:#9a7d2e;font-weight:600">🟡 观察</td>
-          <td>英矽/Recursion宣布"不再外包化学合成给CRO"</td>
-          <td>化学发现CRO订单源头被切断的早期信号</td>
-        </tr>
-        <tr>
-          <td style="color:#c0392b;font-weight:600">🔴 警告</td>
-          <td>FDA发布guidance接受AI生成的毒理/PK数据替代动物实验</td>
-          <td>工艺/临床前CRO第二层也开始受冲击，需重估整体估值中枢</td>
-        </tr>
-        <tr>
-          <td style="color:#c0392b;font-weight:600">🔴 警告</td>
-          <td>Top 10药企中≥3家公开声明"AI已替代50%+外包化学发现需求"</td>
-          <td>化学CRO行业性萎缩确认——但若药明已转型CDMO为主，影响可控</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="stacked-bar" id="shareholder-bar">
+    <div style="width:25.3%;background:#3fb950;">李革家族 25.3%</div>
+    <div style="width:8.5%;background:#58a6ff;">港股通 8.5%</div>
+    <div style="width:66.2%;background:#30363d;color:#8b949e;">其他 66.2%</div>
   </div>
-
-  <div style="margin-top:12px;padding:10px 12px;background:#1a1f2e;border-radius:8px;font-size:13px;line-height:1.7;color:#4a5d6e">
-    <strong style="color:#e0e6ed">核心论断</strong>：AI对药明的影响 ≈ 电商对沃尔玛——线下门店（化学发现CRO）被冲击，但物流仓储网络（CDMO）因订单爆发反而更值钱。<b>关键跟踪：药明能否从"帮人筛化合物"转型为"帮人造GMP药"的速度</b>。当前CDMO占比已超化学发现CRO（好信号），TIDES增速+147%远超化学发现+18%（转型加速中）。<br>
-    <strong style="color:#e0e6ed">时间线判断</strong>：2026-2028 AI只加速发现端，临床仍是瓶颈，药明CDMO安全；2028-2032 FDA可能接受AI辅助临床，第二层开始受压；2032+ 全周期AI化→只有纯制造CDMO存活。<br>
-    <strong style="color:#e0e6ed">最不怕AI的部分</strong>：TIDES多肽生产（GLP-1）——AI加速的是新药设计，不影响已上市药的生产放量。GLP-1处方量不靠AI来，靠肥胖人群数量。
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:12px;">
+    <div style="text-align:center;"><div style="color:#3fb950;font-weight:600;">25.3%</div><div style="color:#8b949e;">李革家族(实控)</div></div>
+    <div style="text-align:center;"><div style="color:#58a6ff;font-weight:600;">8.5%</div><div style="color:#8b949e;">港股通持仓</div></div>
+    <div style="text-align:center;"><div style="color:#8b949e;font-weight:600;">66.2%</div><div style="color:#8b949e;">公众/机构</div></div>
   </div>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   三业务线分布                             ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>🧪 三业务线收入结构 · 2025 全年 <span class="freq-tag annual">年 · 年报</span></h2>
-  <table class="order-table">
-    <thead><tr><th>业务线</th><th>2025 收入</th><th>占比</th><th>同比</th></tr></thead>
-    <tbody>
-      <tr><td><b>化学业务（CRDMO）</b></td><td>364.7 亿</td><td>80.2%</td><td class="pos">+25.5%</td></tr>
-      <tr><td>&nbsp;&nbsp;├ 小分子 D&amp;M</td><td>~280 亿</td><td>~62%</td><td class="pos">+~18%</td></tr>
-      <tr><td>&nbsp;&nbsp;└ TIDES（GLP-1）</td><td>~75 亿</td><td>~16%</td><td class="pos">+~80-100%</td></tr>
-      <tr><td>测试业务</td><td>~62 亿</td><td>~14%</td><td class="pos">+2-5%</td></tr>
-      <tr><td>生物学业务</td><td>~25 亿</td><td>~5.5%</td><td class="pos">+~8%</td></tr>
-      <tr><td style="color:#8b949e">细胞与基因（ATU）</td><td>已剥离</td><td>—</td><td>美欧资产 2025H2 出售</td></tr>
-    </tbody>
-  </table>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 7. TURNOVER & MARKET METRICS                -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="grid-3" style="margin-bottom:16px;">
+  <div class="card" style="text-align:center;">
+    <div style="font-size:12px;color:#8b949e;">A股日成交额</div>
+    <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover">--</div>
+    <div style="font-size:11px;color:#8b949e;">亿CNY</div>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:12px;color:#8b949e;">换手率</div>
+    <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover-rate">--</div>
+    <div style="font-size:11px;color:#8b949e;">%</div>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:12px;color:#8b949e;">52周波动 (A股)</div>
+    <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-52w">--</div>
+    <div style="font-size:11px;color:#8b949e;">高 / 低</div>
+  </div>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   核心 KPI 矩阵                           ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="kpi-card">
-  <h2>📊 核心 KPI 矩阵 · 2025 年报 / 2026Q1 实绩 <span class="freq-tag annual">年/季 · 快照</span></h2>
-  <div class="kpi-grid">
-    <div class="kpi-item">
-      <div class="val">597.7亿</div>
-      <div class="lbl">在手订单 (2026Q1)</div>
-      <div class="delta up">+23.6% YoY</div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 8. TRADING SENTIMENT GRID                   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d29922" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+    多空交易情绪
+  </div>
+  <div class="grid-4">
+    <div class="mini-card">
+      <div class="mc-val" id="sent-margin">--</div>
+      <div class="mc-label">融资融券余额(亿)</div>
+      <div class="mc-delta" id="sent-margin-d">&nbsp;</div>
     </div>
-    <div class="kpi-item">
-      <div class="val">454.6亿</div>
-      <div class="lbl">2025 营收</div>
-      <div class="delta up">+15.8% YoY</div>
+    <div class="mini-card">
+      <div class="mc-val" id="sent-short">--</div>
+      <div class="mc-label">净空仓比例</div>
+      <div class="mc-delta" id="sent-short-d">&nbsp;</div>
     </div>
-    <div class="kpi-item">
-      <div class="val">191.5亿</div>
-      <div class="lbl">2025 归母净利</div>
-      <div class="delta up">+102.7% (含一次性)</div>
+    <div class="mini-card">
+      <div class="mc-val" id="sent-inst">--</div>
+      <div class="mc-label">机构持仓变化</div>
+      <div class="mc-delta" id="sent-inst-d">&nbsp;</div>
     </div>
-    <div class="kpi-item">
-      <div class="val">124.4亿</div>
-      <div class="lbl">2026Q1 营收</div>
-      <div class="delta up">+28.8% YoY</div>
-    </div>
-    <div class="kpi-item">
-      <div class="val">~225亿</div>
-      <div class="lbl">2026E 归母 (扣非)</div>
-      <div class="delta up">+25-30% YoY</div>
-    </div>
-    <div class="kpi-item">
-      <div class="val">87.4%</div>
-      <div class="lbl">海外营收占比</div>
-      <div class="delta down">美国 72% (集中度高)</div>
+    <div class="mini-card">
+      <div class="mc-val" id="sent-option">--</div>
+      <div class="mc-label">AH溢价指标</div>
+      <div class="mc-delta" id="sent-option-d">&nbsp;</div>
     </div>
   </div>
 </div>
 
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   静态策略区                               ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<hr class="section-divider">
-<div class="section-title">投资策略 &amp; 参考信息 <span class="freq-tag static">静态 · 策略框架</span></div>
-
-<!-- 决策信号 -->
-<div class="signals">
-  <div class="sig-card">
-    <h3 style="color:#1a7a4c">🟢 加速建仓信号</h3>
-    <ul class="sig-buy">
-      <li>A 股跌至 ¥85 以下（进入 B 档）</li>
-      <li>1260H 诉讼初裁有利公司</li>
-      <li>BIOSECURE 法案在 NDAA 投票被剔除</li>
-      <li>2026Q2/Q3 业绩超预期 + 上调指引</li>
-      <li>药明宣布AI战略合作/收购AI CRO（护城河升级）</li>
-      <li>任 2 项叠加 → 立刻加大手笔</li>
-    </ul>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 9. VALUATION CORRIDOR (A股)                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    估值走廊 (A股)
   </div>
-  <div class="sig-card">
-    <h3 style="color:#9a7d2e">🟡 暂缓建仓信号</h3>
-    <ul class="sig-wait">
-      <li>1260H 诉讼初裁不利</li>
-      <li>美国大客户公开"切割"声明</li>
-      <li>礼来 / 默沙东 GLP-1 订单延期</li>
-      <li>NDAA BIOSECURE 条款进入辩论</li>
-      <li>化学发现CRO收入连2季增速&lt;CDMO增速10pp+（AI侵蚀加速）</li>
-      <li>出现任一 → 观察一轮再说</li>
-    </ul>
+  <div style="position:relative;margin:20px 0;">
+    <div class="corridor">
+      <div class="corridor-marker" id="corridor-marker" style="left:50%;" data-label="当前价"></div>
+    </div>
+    <div class="corridor-labels">
+      <span style="color:#f85149;">深度低估 &yen;50</span>
+      <span style="color:#d29922;">合理区 &yen;65</span>
+      <span style="color:#3fb950;">A档 &yen;85</span>
+      <span style="color:#58a6ff;">止盈 PE&gt;25x</span>
+    </div>
   </div>
-  <div class="sig-card">
-    <h3 style="color:#c0392b">🔴 认错止损条件</h3>
-    <ul class="sig-stop">
-      <li>BIOSECURE 立法通过 + 强制脱钩</li>
-      <li>Top 5 客户 ≥ 2 家终止合同</li>
-      <li>在手订单连续 2 季环比下滑</li>
-      <li>美国营收占比 12 月内跌破 50%</li>
-      <li>产能利用率跌破 60%（空置三杀）</li>
-      <li>TIDES 连 2 季同比 &lt; +15%（150亿落空）</li>
-      <li>整体毛利率跌破 45%（退化为纯代工）</li>
-      <li>任一触发 → 重估全部仓位</li>
-    </ul>
-  </div>
-  <div class="sig-card">
-    <h3 style="color:#4a3a8a">🟣 止盈卖出条件</h3>
-    <ul class="sig-sell">
-      <li>A 股 ≥ ¥190 (PE &gt; 33x)</li>
-      <li>PEG &gt; 1.5（成长溢价透支）</li>
-      <li>美国大选 / 中美关系全面缓和后估值修复完毕</li>
-      <li>到达红线 → 分批 50% 减仓</li>
-    </ul>
+  <div style="text-align:center;font-size:14px;margin-top:8px;" id="corridor-text">
+    当前A股价 &yen;-- 距A档 --%
   </div>
 </div>
 
-<!-- 建仓策略 -->
-<div class="kpi-card">
-  <h2>📋 分档建仓策略 · A 档基础设施支柱 (8-10% 总仓位)</h2>
-  <table class="strat-table">
-    <thead><tr><th>档位</th><th>A 股价格</th><th>H 股价格</th><th>仓位</th><th>PE</th><th>逻辑</th></tr></thead>
-    <tbody>
-      <tr><td>第一档（A档内）</td><td>≤ ¥110</td><td>≤ HK$140</td><td>30%</td><td>≤ 14x</td><td><b>当前 ¥98.16 已触发</b>，1260H 把 PE 打到历史 5-10 分位</td></tr>
-      <tr><td>第二档（B档内）</td><td>≤ ¥85</td><td>≤ HK$110</td><td>60%</td><td>≤ 11x</td><td>1260H 诉讼初裁不利 / NDAA 辩论时</td></tr>
-      <tr><td>第三档（深恐慌）</td><td>≤ ¥65</td><td>≤ HK$85</td><td>满仓</td><td>≤ 8.3x</td><td>BIOSECURE 真通过的极端恐慌</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:11px;color:#8b949e;margin-top:8px">基准 EPS = ¥7.85 (2026E 一致预期中位数) · 同时监控两市场，便宜的先买 · 红线 ¥190 / HK$240 = PE 24x 减仓</p>
-</div>
-
-<!-- 催化剂日历 -->
-<div class="kpi-card">
-  <h2>📅 12 个月催化剂日历</h2>
-  <div class="cal-item"><div class="cal-date">2026-07-末</div><div class="cal-desc">2026 H1 中报披露 + 全年指引可能上调 <span class="cal-tag cool">业绩催化</span></div></div>
-  <div class="cal-item"><div class="cal-date">2026-07/08</div><div class="cal-desc">1260H 诉讼初步裁决 / 听证 <span class="cal-tag hot">关键裁决</span></div></div>
-  <div class="cal-item"><div class="cal-date">2026-09/10</div><div class="cal-desc">TIDES 常州/泰兴新产能投产爬坡 <span class="cal-tag cool">订单交付</span></div></div>
-  <div class="cal-item"><div class="cal-date">2026-10-末</div><div class="cal-desc">2026Q3 报告 <span class="cal-tag cool">业绩催化</span></div></div>
-  <div class="cal-item"><div class="cal-date">2026-11/12</div><div class="cal-desc">美国 2027 NDAA 投票（含 BIOSECURE 条款可能性） <span class="cal-tag hot">最大政策风险</span></div></div>
-  <div class="cal-item"><div class="cal-date">2026-Q4</div><div class="cal-desc">A 股 10 亿元回购完成 (上限 ¥156.95) <span class="cal-tag cool">资金面</span></div></div>
-  <div class="cal-item"><div class="cal-date">2027-01</div><div class="cal-desc">JPM 大会 - GLP-1 长期合同披露 <span class="cal-tag cool">订单催化</span></div></div>
-  <div class="cal-item"><div class="cal-date">2027-02/03</div><div class="cal-desc">2026 年报 + 可能特别分红 <span class="cal-tag cool">现金回报</span></div></div>
-</div>
-
-<!-- ╔══════════════════════════════════════════╗ -->
-<!-- ║   投资论点摘要                             ║ -->
-<!-- ╚══════════════════════════════════════════╝ -->
-<div class="thesis-card" style="border-left:3px solid #1a7a4c;">
-  <h2 style="color:#1a7a4c">独一档 · 创新药基础设施支柱</h2>
-  <p>
-    <strong>护城河</strong>：不是某个药能否成功，而是<strong>全球 Top 20 药企的强制合规级合作伙伴</strong>。规模（GMP 产能 10x 第二名）+ 监管（FDA / EMA 全套）+ 客户黏性（药品生命周期内不可替换）。<br><br>
-    <strong>独特性</strong>：组合里唯一与三创新药主体（百济 / 翰森 / 传奇）相关性低的标的——它收的是行业过路费，无论谁赢都赚。USER.md 定档 A 档"规则制定者"，与泡泡玛特同档。<br><br>
-    <strong>当前赔率</strong>：1260H 利空把 PE 打到 12x（5 年 5-10 分位），扣非 PEG ≈ 0.49。即使诉讼输（30% 概率）跌到 ¥65，赢（50% 概率）回到 ¥160-180。期望收益 +23%。<br><br>
-    <strong>核心赌注</strong>：①公司诉讼能否撤出 1260H ②BIOSECURE 能否在 2027 NDAA 被剔除 ③TIDES（GLP-1）订单能否持续 +80% 增长。<br><br>
-    <strong>认错线</strong>：BIOSECURE 真正立法通过 + 强制脱钩 + Top 5 客户终止合同 = 重估全部仓位。这之前任何回调都是机会。
-  </p>
-</div>
-
-<div class="verify-panel" id="verifyPanel">
-  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 数据双源校验</div>
-  <div class="verify-grid" id="verifyGrid">
-    <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 10. SENTIMENT THERMOMETER                   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f85149" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+    情绪温度计
   </div>
-  <div style="font-size:11px;color:#6b7b8d;margin-top:8px;" id="verifySummary"></div>
+  <div class="sentiment-bar">
+    <div class="sentiment-marker" id="sentiment-marker" style="left:50%;"></div>
+  </div>
+  <div class="sentiment-labels">
+    <span>极度恐慌</span>
+    <span>恐慌</span>
+    <span>中性</span>
+    <span>贪婪</span>
+    <span>极度贪婪</span>
+  </div>
+  <div style="text-align:center;margin-top:10px;font-size:13px;color:#8b949e;" id="sentiment-text">情绪指数: --</div>
 </div>
 
-<div class="update-time" id="update-time">数据更新中...</div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- 11. FINANCIAL SUMMARY                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="7" x2="22" y2="7"/><line x1="7" y1="11" x2="11" y2="11"/><line x1="7" y1="15" x2="9" y2="15"/></svg>
+    财务摘要 (最新季报)
+  </div>
+  <div class="grid-3">
+    <div class="mini-card">
+      <div class="mc-val" id="fin-gm">--</div>
+      <div class="mc-label">毛利率</div>
+      <div class="mc-delta" id="fin-gm-d">&nbsp;</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-val" id="fin-nm">--</div>
+      <div class="mc-label">净利率</div>
+      <div class="mc-delta" id="fin-nm-d">&nbsp;</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-val" id="fin-roe">--</div>
+      <div class="mc-label">ROE</div>
+      <div class="mc-delta" id="fin-roe-d">&nbsp;</div>
+    </div>
+  </div>
+</div>
 
+<!-- Update Footer -->
+<div class="update-time" id="footer-time">数据加载中...</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                  -->
+<!-- ═══════════════════════════════════════════ -->
 <script>
-// ===== 配置 =====
-var WUXI_CONFIG = {
-  a: {
-    code: 'sh603259',
-    basis: 7.85,        // 2026E EPS 一致预期 (RMB)
-    lineA: 110,
-    lineB: 85,
-    red: 190,
-    shares: 25.62e8,
-    growthE: 25
-  },
-  h: {
-    code: 'hk02359',
-    basis: 8.65,        // 2026E EPS HK 折算 (HKD)
-    lineA: 140,
-    lineB: 110,
-    red: 240,
-    shares: 3.12e8,
-    growthE: 25
-  }
+(function() {
+'use strict';
+
+// ── CONFIG ──────────────────────────────────────
+var CONFIG = {
+  name: '药明康德',
+  hkCode: 'hk02359',
+  aCode: 'sh603259',
+  secCode: '603259',
+  hkSecucode: '02359.HK',
+  sharesB: 29.72, // 亿股(A)
+  lineA: 85,     // A股价格
+  lineB: null,
+  lineR: null,
+  altLineA: 110, // H股参考价(非正式)
+  refreshInterval: 30000
 };
 
-// ===== JSONP 价格抓取 =====
-function fetchPrices() {
-  ['a', 'h'].forEach(function(market) {
-    var s = document.createElement('script');
-    s.src = 'https://qt.gtimg.cn/q=' + WUXI_CONFIG[market].code + '&_=' + Date.now();
-    s.onload = function() { s.remove(); };
-    s.onerror = function() { s.remove(); };
-    document.head.appendChild(s);
+// ── STATE ───────────────────────────────────────
+var STATE = {
+  priceA: null,
+  prevCloseA: null,
+  priceHK: null,
+  prevCloseHK: null,
+  turnover: null,
+  turnoverRate: null,
+  pe: null,
+  high52: null,
+  low52: null,
+  klineData: [],
+  klineMarket: 'a',
+  financials: [],
+  currentDays: 30,
+  epsTTM: null
+};
+
+// ── UTILITY ─────────────────────────────────────
+function $(id) { return document.getElementById(id); }
+function fmt(n, d) { if (n == null || isNaN(n)) return '--'; return Number(n).toFixed(d === undefined ? 2 : d); }
+function fmtB(n) { if (n == null || isNaN(n)) return '--'; return (n / 1e8).toFixed(2); }
+function pctStr(cur, prev) {
+  if (!cur || !prev || prev === 0) return '';
+  var p = ((cur - prev) / Math.abs(prev) * 100).toFixed(2);
+  return (p >= 0 ? '+' : '') + p + '%';
+}
+function setDelta(el, val, refVal) {
+  if (!el || val == null || refVal == null) return;
+  var p = ((val - refVal) / Math.abs(refVal) * 100);
+  el.textContent = (p >= 0 ? '+' : '') + p.toFixed(2) + '%';
+  el.className = 'kpi-delta ' + (p >= 0 ? 'up' : 'down');
+}
+
+// ── FETCH A-SHARE QUOTE (via qt.gtimg.cn) ───────
+function fetchQuoteA() {
+  var s = document.createElement('script');
+  s.src = 'https://qt.gtimg.cn/q=' + CONFIG.aCode;
+  s.onload = function() {
+    document.head.removeChild(s);
+    setTimeout(parseQuoteA, 100);
+  };
+  s.onerror = function() { document.head.removeChild(s); };
+  document.head.appendChild(s);
+}
+
+function parseQuoteA() {
+  try {
+    var varName = 'v_' + CONFIG.aCode;
+    var raw = eval(varName);
+    if (!raw) return;
+    var parts = raw.split('~');
+    if (parts.length < 45) return;
+
+    STATE.priceA = parseFloat(parts[3]);
+    STATE.prevCloseA = parseFloat(parts[4]);
+    STATE.turnover = parseFloat(parts[6]); // 成交额(万)
+    STATE.pe = parseFloat(parts[39]) || parseFloat(parts[45]);
+    STATE.turnoverRate = parseFloat(parts[38]);
+    STATE.high52 = parseFloat(parts[33]) || null;
+    STATE.low52 = parseFloat(parts[34]) || null;
+
+    renderQuoteA();
+  } catch(e) { console.warn('A-share quote parse error:', e); }
+}
+
+function renderQuoteA() {
+  var price = STATE.priceA;
+  var prevClose = STATE.prevCloseA;
+  if (!price) return;
+
+  // KPI A-share Price
+  $('kpi-price-a').textContent = fmt(price);
+  var chg = price - prevClose;
+  var chgPct = (chg / prevClose * 100);
+  var deltaEl = $('kpi-price-a-delta');
+  deltaEl.textContent = (chg >= 0 ? '+' : '') + fmt(chg) + ' (' + (chg >= 0 ? '+' : '') + fmt(chgPct) + '%)';
+  deltaEl.className = 'kpi-delta ' + (chg >= 0 ? 'up' : 'down');
+
+  // Market Cap (A股)
+  var mktcap = price * CONFIG.sharesB;
+  $('kpi-mktcap').textContent = fmt(mktcap, 0);
+
+  // PE from API
+  if (STATE.pe && STATE.pe > 0) {
+    $('kpi-pe').textContent = fmt(STATE.pe, 1);
+  }
+
+  // Turnover
+  if (STATE.turnover) {
+    $('kpi-turnover').textContent = fmt(STATE.turnover / 10000, 2); // 万→亿
+  }
+
+  // Turnover rate
+  if (STATE.turnoverRate) {
+    $('kpi-turnover-rate').textContent = fmt(STATE.turnoverRate);
+  }
+
+  // 52-week
+  if (STATE.high52 && STATE.low52) {
+    $('kpi-52w').textContent = fmt(STATE.high52,1) + ' / ' + fmt(STATE.low52,1);
+  }
+
+  // Valuation corridor (A股)
+  renderCorridor(price);
+
+  // Sentiment
+  renderSentiment(price);
+
+  // AH Premium
+  renderAHPremium();
+
+  // Update time
+  renderUpdateTime();
+}
+
+// ── FETCH H-SHARE QUOTE ─────────────────────────
+function fetchQuoteHK() {
+  var s = document.createElement('script');
+  s.src = 'https://qt.gtimg.cn/q=' + CONFIG.hkCode;
+  s.onload = function() {
+    document.head.removeChild(s);
+    setTimeout(parseQuoteHK, 100);
+  };
+  s.onerror = function() { document.head.removeChild(s); };
+  document.head.appendChild(s);
+}
+
+function parseQuoteHK() {
+  try {
+    var varName = 'v_' + CONFIG.hkCode;
+    var raw = eval(varName);
+    if (!raw) return;
+    var parts = raw.split('~');
+    if (parts.length < 10) return;
+
+    STATE.priceHK = parseFloat(parts[3]);
+    STATE.prevCloseHK = parseFloat(parts[4]);
+
+    renderQuoteHK();
+  } catch(e) { console.warn('HK quote parse error:', e); }
+}
+
+function renderQuoteHK() {
+  var price = STATE.priceHK;
+  var prevClose = STATE.prevCloseHK;
+  if (!price) return;
+
+  $('kpi-price-hk').textContent = fmt(price);
+  var chg = price - prevClose;
+  var chgPct = (chg / prevClose * 100);
+  var deltaEl = $('kpi-price-hk-delta');
+  deltaEl.textContent = (chg >= 0 ? '+' : '') + fmt(chg) + ' (' + (chg >= 0 ? '+' : '') + fmt(chgPct) + '%)';
+  deltaEl.className = 'kpi-delta ' + (chg >= 0 ? 'up' : 'down');
+
+  renderAHPremium();
+  renderUpdateTime();
+}
+
+// ── AH PREMIUM INDICATOR ────────────────────────
+function renderAHPremium() {
+  if (STATE.priceA && STATE.priceHK && STATE.priceHK > 0) {
+    // Approximate CNY/HKD rate ~0.92
+    var aInHKD = STATE.priceA / 0.92;
+    var premium = ((aInHKD - STATE.priceHK) / STATE.priceHK * 100).toFixed(1);
+    $('sent-option').textContent = premium + '%';
+    var optD = $('sent-option-d');
+    optD.textContent = premium > 0 ? 'A股溢价' : 'H股溢价';
+    optD.style.color = premium > 0 ? '#d29922' : '#3fb950';
+  }
+}
+
+// ── UPDATE TIME ─────────────────────────────────
+function renderUpdateTime() {
+  var now = new Date();
+  var timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+  $('update-time').textContent = '更新: ' + timeStr;
+  $('footer-time').textContent = '最后更新: ' + timeStr + ' | 每30秒自动刷新';
+}
+
+// ── VALUATION CORRIDOR (A股) ────────────────────
+function renderCorridor(price) {
+  // Corridor range: 50 (deep value) → 65 (fair) → 85 (A档) → 120 (止盈)
+  var min = 45;
+  var max = 120;
+  var range = max - min;
+  var pos = ((price - min) / range) * 100;
+  pos = Math.max(2, Math.min(98, pos));
+
+  var marker = $('corridor-marker');
+  marker.style.left = pos + '%';
+  marker.setAttribute('data-label', '\u00a5' + fmt(price));
+
+  var distA = ((CONFIG.lineA - price) / price * 100).toFixed(1);
+  var text = '当前A股价 \u00a5' + fmt(price) + ' ';
+  if (price < CONFIG.lineA) {
+    text += '距A档(\u00a585) +' + distA + '%';
+  } else {
+    text += '已超A档 ' + ((price - CONFIG.lineA) / CONFIG.lineA * 100).toFixed(1) + '%';
+  }
+
+  // PE-based take-profit check
+  if (STATE.epsTTM && STATE.epsTTM > 0) {
+    var currentPE = price / STATE.epsTTM;
+    if (currentPE > 25) {
+      text += ' | PE=' + fmt(currentPE,1) + 'x 已达止盈区';
+    } else {
+      text += ' | PE=' + fmt(currentPE,1) + 'x';
+    }
+  }
+
+  $('corridor-text').textContent = text;
+}
+
+// ── SENTIMENT THERMOMETER ───────────────────────
+function renderSentiment(price) {
+  // Heuristic based on position relative to corridor (50-110 range)
+  var min = 50;
+  var max = 110;
+  var pos = ((price - min) / (max - min)) * 100;
+  pos = Math.max(5, Math.min(95, pos));
+
+  $('sentiment-marker').style.left = pos + '%';
+
+  var label = '';
+  if (pos < 20) label = '极度恐慌';
+  else if (pos < 40) label = '恐慌';
+  else if (pos < 60) label = '中性';
+  else if (pos < 80) label = '贪婪';
+  else label = '极度贪婪';
+
+  $('sentiment-text').textContent = '情绪指数: ' + Math.round(pos) + '/100 (' + label + ')';
+}
+
+// ── FETCH K-LINE DATA ───────────────────────────
+function fetchKline(days, market) {
+  days = days || STATE.currentDays;
+  market = market || STATE.klineMarket;
+  STATE.currentDays = days;
+  STATE.klineMarket = market;
+
+  var url;
+  if (market === 'hk') {
+    url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=' + CONFIG.hkCode + ',day,,,' + days + ',qfq';
+  } else {
+    url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=' + CONFIG.aCode + ',day,,,' + days + ',qfq';
+  }
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      try {
+        var code = market === 'hk' ? CONFIG.hkCode : CONFIG.aCode;
+        var kdata = data.data[code];
+        var dayArr = kdata.qfqday || kdata.day || [];
+        STATE.klineData = dayArr;
+        renderKline();
+      } catch(e) { console.error('Kline parse error:', e); }
+    })
+    .catch(function(e) { console.error('Kline fetch error:', e); });
+}
+
+// ── RENDER K-LINE CHART (Canvas) ────────────────
+function renderKline() {
+  var canvas = $('kline-canvas');
+  var ctx = canvas.getContext('2d');
+  var data = STATE.klineData;
+
+  if (!data || data.length === 0) return;
+
+  // Set actual pixel size
+  var rect = canvas.parentElement.getBoundingClientRect();
+  var W = rect.width;
+  var H = 280;
+  canvas.width = W * (window.devicePixelRatio || 1);
+  canvas.height = H * (window.devicePixelRatio || 1);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+  var padding = { top: 20, right: 60, bottom: 50, left: 10 };
+  var chartW = W - padding.left - padding.right;
+  var priceH = H * 0.65 - padding.top;
+  var volTop = H * 0.7;
+  var volH = H - volTop - padding.bottom;
+
+  // Parse data: [date, open, close, high, low, volume]
+  var prices = data.map(function(d) {
+    return { date: d[0], open: +d[1], close: +d[2], high: +d[3], low: +d[4], vol: +d[5] };
+  });
+
+  // Find min/max
+  var allPrices = [];
+  var allVols = [];
+  prices.forEach(function(p) {
+    allPrices.push(p.high, p.low);
+    allVols.push(p.vol);
+  });
+  var pMin = Math.min.apply(null, allPrices) * 0.99;
+  var pMax = Math.max.apply(null, allPrices) * 1.01;
+  var vMax = Math.max.apply(null, allVols) * 1.2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  var barW = Math.max(2, (chartW / prices.length) * 0.7);
+  var gap = chartW / prices.length;
+
+  // Draw grid lines
+  ctx.strokeStyle = '#21262d';
+  ctx.lineWidth = 0.5;
+  for (var g = 0; g < 5; g++) {
+    var gy = padding.top + (priceH / 4) * g;
+    ctx.beginPath(); ctx.moveTo(padding.left, gy); ctx.lineTo(W - padding.right, gy); ctx.stroke();
+    // Price label
+    var gPrice = pMax - (pMax - pMin) * (g / 4);
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(gPrice.toFixed(2), W - padding.right + 4, gy + 3);
+  }
+
+  // Draw A档 reference line (only for A-share chart)
+  if (STATE.klineMarket === 'a' && CONFIG.lineA >= pMin && CONFIG.lineA <= pMax) {
+    var lineAY = padding.top + (1 - (CONFIG.lineA - pMin) / (pMax - pMin)) * priceH;
+    ctx.strokeStyle = 'rgba(63,185,80,0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(padding.left, lineAY); ctx.lineTo(W - padding.right, lineAY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#3fb950';
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('A\u6863 \u00a585', W - padding.right - 2, lineAY - 4);
+  }
+
+  // Draw candles
+  prices.forEach(function(p, i) {
+    var x = padding.left + gap * i + gap / 2;
+    var isUp = p.close >= p.open;
+    var color = isUp ? '#3fb950' : '#f85149';
+
+    // Wick
+    var highY = padding.top + (1 - (p.high - pMin) / (pMax - pMin)) * priceH;
+    var lowY = padding.top + (1 - (p.low - pMin) / (pMax - pMin)) * priceH;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, highY); ctx.lineTo(x, lowY); ctx.stroke();
+
+    // Body
+    var openY = padding.top + (1 - (p.open - pMin) / (pMax - pMin)) * priceH;
+    var closeY = padding.top + (1 - (p.close - pMin) / (pMax - pMin)) * priceH;
+    var bodyTop = Math.min(openY, closeY);
+    var bodyH = Math.max(1, Math.abs(closeY - openY));
+
+    ctx.fillStyle = color;
+    if (isUp) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x - barW/2, bodyTop, barW, bodyH);
+    } else {
+      ctx.fillRect(x - barW/2, bodyTop, barW, bodyH);
+    }
+
+    // Volume bar
+    var volBarH = (p.vol / vMax) * volH;
+    ctx.fillStyle = isUp ? 'rgba(63,185,80,0.4)' : 'rgba(248,81,73,0.4)';
+    ctx.fillRect(x - barW/2, volTop + volH - volBarH, barW, volBarH);
+
+    // X-axis date labels (every N bars)
+    var labelEvery = Math.max(1, Math.floor(prices.length / 6));
+    if (i % labelEvery === 0) {
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      var dateLabel = p.date.substring(5); // MM-DD
+      ctx.fillText(dateLabel, x, H - padding.bottom + 14);
+    }
+  });
+
+  // Volume separator line
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(padding.left, volTop - 4); ctx.lineTo(W - padding.right, volTop - 4); ctx.stroke();
+
+  // Label
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px -apple-system,sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('成交量', padding.left, volTop + 10);
+
+  // Market indicator
+  var mktLabel = STATE.klineMarket === 'hk' ? 'H\u80a1 02359' : 'A\u80a1 603259';
+  ctx.fillStyle = '#58a6ff';
+  ctx.font = '11px -apple-system,sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(mktLabel, W - padding.right, padding.top - 4);
+}
+
+// ── FETCH FINANCIALS (Eastmoney A-share) ────────
+function fetchFinancials() {
+  var url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_LICO_FN_CPD&columns=ALL&filter=(SECURITY_CODE%3D%22603259%22)&pageSize=8&sortColumns=NOTICE_DATE&sortTypes=-1&source=WEB&client=WEB';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      try {
+        if (data.result && data.result.data) {
+          STATE.financials = data.result.data;
+          renderFinancials();
+        }
+      } catch(e) { console.error('Financials parse error:', e); }
+    })
+    .catch(function(e) { console.error('Financials fetch error:', e); });
+}
+
+function renderFinancials() {
+  var fin = STATE.financials;
+  if (!fin || fin.length === 0) return;
+
+  var latest = fin[0];
+  var prev = fin.length > 1 ? fin[1] : null;
+  var prevYear = fin.length > 3 ? fin[3] : null; // ~4 quarters ago for YoY
+
+  // EPS TTM (sum of last 4 quarters)
+  var epsTTM = 0;
+  var count = Math.min(4, fin.length);
+  for (var i = 0; i < count; i++) {
+    epsTTM += (fin[i].BASIC_EPS || 0);
+  }
+  STATE.epsTTM = epsTTM;
+  $('kpi-eps').textContent = fmt(epsTTM);
+
+  // If we have annual-like data, the first entry might already be TTM
+  if (latest.BASIC_EPS && count < 4) {
+    $('kpi-eps').textContent = fmt(latest.BASIC_EPS);
+    STATE.epsTTM = latest.BASIC_EPS;
+  }
+
+  // Revenue (latest quarter)
+  var rev = latest.TOTAL_OPERATE_INCOME;
+  if (rev) {
+    $('kpi-revenue').textContent = fmtB(rev);
+  }
+
+  // Revenue YoY growth
+  if (rev && prevYear && prevYear.TOTAL_OPERATE_INCOME) {
+    var revGrowth = ((rev - prevYear.TOTAL_OPERATE_INCOME) / Math.abs(prevYear.TOTAL_OPERATE_INCOME) * 100);
+    $('kpi-rev-growth').textContent = (revGrowth >= 0 ? '+' : '') + fmt(revGrowth, 1) + '%';
+    var gEl = $('kpi-growth-delta');
+    gEl.textContent = revGrowth >= 0 ? 'YoY增长' : 'YoY下降';
+    gEl.className = 'kpi-delta ' + (revGrowth >= 0 ? 'up' : 'down');
+  }
+
+  // Net Profit
+  var profit = latest.PARENT_NETPROFIT;
+  if (profit) {
+    $('kpi-profit').textContent = fmtB(profit);
+    if (prevYear && prevYear.PARENT_NETPROFIT) {
+      setDelta($('kpi-profit-delta'), profit, prevYear.PARENT_NETPROFIT);
+    }
+  }
+
+  // PE (calculated from A-share price if API didn't provide)
+  if (STATE.priceA && STATE.epsTTM && STATE.epsTTM > 0) {
+    var peCalc = STATE.priceA / STATE.epsTTM;
+    if (!STATE.pe || STATE.pe <= 0) {
+      STATE.pe = peCalc;
+      $('kpi-pe').textContent = fmt(peCalc, 1);
+    }
+    // Re-render corridor with PE info
+    renderCorridor(STATE.priceA);
+  }
+
+  // Gross Margin
+  var gm = latest.XSMLL;
+  if (gm != null) {
+    $('fin-gm').textContent = fmt(gm, 1) + '%';
+    if (prev && prev.XSMLL != null) {
+      var gmD = $('fin-gm-d');
+      var diff = gm - prev.XSMLL;
+      gmD.textContent = (diff >= 0 ? '+' : '') + fmt(diff,1) + 'pp';
+      gmD.className = 'mc-delta ' + (diff >= 0 ? 'up' : 'down');
+      gmD.style.color = diff >= 0 ? '#3fb950' : '#f85149';
+    }
+  }
+
+  // Net Margin (calculate from profit/revenue)
+  if (profit && rev && rev > 0) {
+    var nm = (profit / rev * 100);
+    $('fin-nm').textContent = fmt(nm, 1) + '%';
+    if (prev && prev.PARENT_NETPROFIT && prev.TOTAL_OPERATE_INCOME) {
+      var prevNm = (prev.PARENT_NETPROFIT / prev.TOTAL_OPERATE_INCOME * 100);
+      var nmD = $('fin-nm-d');
+      var diffNm = nm - prevNm;
+      nmD.textContent = (diffNm >= 0 ? '+' : '') + fmt(diffNm,1) + 'pp';
+      nmD.className = 'mc-delta ' + (diffNm >= 0 ? 'up' : 'down');
+      nmD.style.color = diffNm >= 0 ? '#3fb950' : '#f85149';
+    }
+  }
+
+  // ROE
+  var roe = latest.WEIGHTAVG_ROE;
+  if (roe != null) {
+    $('fin-roe').textContent = fmt(roe, 1) + '%';
+    if (prev && prev.WEIGHTAVG_ROE != null) {
+      var roeD = $('fin-roe-d');
+      var diffRoe = roe - prev.WEIGHTAVG_ROE;
+      roeD.textContent = (diffRoe >= 0 ? '+' : '') + fmt(diffRoe,1) + 'pp';
+      roeD.className = 'mc-delta ' + (diffRoe >= 0 ? 'up' : 'down');
+      roeD.style.color = diffRoe >= 0 ? '#3fb950' : '#f85149';
+    }
+  }
+}
+
+// ── DONUT CHART (Analyst Ratings) ───────────────
+function renderDonut() {
+  // Placeholder data (to be updated by cron with real analyst data)
+  var buy = 22, hold = 8, sell = 2;
+  var total = buy + hold + sell;
+  var buyPct = (buy / total * 100).toFixed(1);
+
+  $('analyst-buy').textContent = buy;
+  $('analyst-hold').textContent = hold;
+  $('analyst-sell').textContent = sell;
+  $('donut-pct').textContent = buyPct + '%';
+
+  var canvas = $('donut-canvas');
+  var ctx = canvas.getContext('2d');
+  var cx = 100, cy = 100, r = 70, lineW = 20;
+
+  ctx.clearRect(0, 0, 200, 200);
+
+  var segments = [
+    { val: buy, color: '#3fb950' },
+    { val: hold, color: '#d29922' },
+    { val: sell, color: '#f85149' }
+  ];
+
+  var startAngle = -Math.PI / 2;
+  segments.forEach(function(seg) {
+    var sweep = (seg.val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, startAngle + sweep);
+    ctx.strokeStyle = seg.color;
+    ctx.lineWidth = lineW;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    startAngle += sweep + 0.03; // small gap
   });
 }
 
-// 价格回调通用函数
-function priceCallback(market, val) {
-  if (!val) return;
-  var f = val.split('~');
-  var price = parseFloat(f[3]);
-  var prevClose = parseFloat(f[4]);
-  if (isNaN(price) || isNaN(prevClose)) return;
-
-  var cfg = WUXI_CONFIG[market];
-  var changeAmt = (price - prevClose).toFixed(2);
-  var changePct = ((price - prevClose) / prevClose * 100).toFixed(2);
-  var sign = changeAmt >= 0 ? '+' : '';
-
-  document.getElementById(market + '-price').textContent = price.toFixed(2);
-  var chEl = document.getElementById(market + '-change');
-  chEl.textContent = sign + changeAmt + ' (' + sign + changePct + '%)';
-  chEl.className = 'price-change ' + (changeAmt > 0 ? 'up' : changeAmt < 0 ? 'down' : 'flat');
-
-  var pe = (price / cfg.basis).toFixed(1);
-  var peg = (parseFloat(pe) / cfg.growthE).toFixed(2);
-  document.getElementById(market + '-pe').textContent = pe + 'x';
-  document.getElementById(market + '-peg').textContent = peg;
-
-  var mc = price * cfg.shares / 1e8;
-  document.getElementById(market + '-mc').textContent = mc.toFixed(0) + (market === 'a' ? '亿' : '亿HK');
-
-  // 进度条
-  updateGauge(market, price, cfg);
-
-  document.getElementById('update-time').textContent =
-    '实时价格 · 30s 刷新 · ' + new Date().toLocaleString('zh-CN') + ' · 新闻每日 08:30 cron 刷新';
-}
-
-Object.defineProperty(window, 'v_sh603259', {
-  set: function(val) { priceCallback('a', val); },
-  configurable: true
-});
-Object.defineProperty(window, 'v_hk02359', {
-  set: function(val) { priceCallback('h', val); },
-  configurable: true
-});
-
-function updateGauge(market, price, cfg) {
-  var B = cfg.lineB, R = cfg.red, A = cfg.lineA;
-  var range = R - B;
-  var pct = Math.max(0, Math.min(100, (price - B) / range * 100));
-
-  var fill = document.getElementById(market + '-fill');
-  var marker = document.getElementById(market + '-marker');
-  var label = document.getElementById(market + '-marker-lbl');
-
-  if (price <= B) { fill.style.background = '#1a7a4c'; }
-  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f)'; }
-  else if (price < R) { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c)'; }
-  else { fill.style.background = 'linear-gradient(90deg,#1a7a4c,#1e3a5f,#c9a84c,#c0392b)'; }
-
-  fill.style.width = pct + '%';
-  marker.style.left = 'calc(' + pct + '% - 1px)';
-  label.textContent = (market === 'a' ? '¥' : 'HK$') + price.toFixed(0);
-
-  // A-line marker
-  var aPct = (A - B) / range * 100;
-  var aLine = document.getElementById(market + '-aline');
-  if (!aLine) {
-    aLine = document.createElement('div');
-    aLine.id = market + '-aline';
-    aLine.style.cssText = 'position:absolute;top:-3px;width:2.5px;height:18px;background:#1e3a5f;border-radius:1.5px;box-shadow:0 1px 3px rgba(30,58,95,0.3);z-index:2;';
-    document.getElementById(market + '-bar').appendChild(aLine);
-  }
-  aLine.style.left = aPct + '%';
-}
-
-fetchPrices();
-setInterval(fetchPrices, 30000);
-</script>
-
-<script>
-
-// ===== 数据双源校验 =====
-var VERIFY_RESULTS = {};
-
-function codeToSecid(code) {
-  if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
-  if (code.indexOf('sh') === 0) return '1.' + code.replace('sh','');
-  if (code.indexOf('sz') === 0) return '0.' + code.replace('sz','');
-  return null;
-}
-
-function fetchVerifyPrices() {
-  var items = [
-    {code:'sh603259', name:'药明A'},
-    {code:'hk02359', name:'药明H'}
-  ];
-  items.forEach(function(item) {
-    var secid = codeToSecid(item.code);
-    if (!secid) return;
-    var qtRaw = window['v_' + item.code];
-    var qtPrice = null;
-    if (qtRaw) {
-      var parts = (typeof qtRaw === 'string') ? qtRaw.split('~') : [];
-      qtPrice = parseFloat(parts[3]) || null;
-    }
-    var controller = new AbortController();
-    var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
-    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=' + secid + '&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
-    fetch(url, {signal: controller.signal}).then(function(r){
-      clearTimeout(timeoutId);
-      return r.json();
-    }).then(function(j){
-      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
-      var kline = j.data.klines[0].split(',');
-      var emClose = parseFloat(kline[2]);
-      recordVerify(item, qtPrice, emClose, 'eastmoney日K', kline[0]);
-    }).catch(function(){
-      clearTimeout(timeoutId);
-      fetchIfzqFallback(item, qtPrice);
+// ── CHART RANGE BUTTONS ─────────────────────────
+function setupChartButtons() {
+  var btns = document.querySelectorAll('.chart-btns button');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var days = parseInt(btn.getAttribute('data-days'));
+      var market = btn.getAttribute('data-market') || 'a';
+      fetchKline(days, market);
     });
   });
 }
 
-function fetchIfzqFallback(item, qtPrice) {
-  var code = item.code;
-  var ifzqCode, market;
-  if (code.indexOf('hk') === 0) { ifzqCode = code; market = code; }
-  else if (code.indexOf('sh') === 0 || code.indexOf('sz') === 0) { ifzqCode = code; market = code; }
-  else { recordVerify(item, qtPrice, null, 'ifzq', null); return; }
-  var url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
-  if (code.indexOf('hk') === 0) {
-    url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
+// ── TRADING SENTIMENT (Placeholder/Heuristic) ───
+function renderTradingSentiment() {
+  if (STATE.priceA) {
+    var pos = ((STATE.priceA - 50) / (110 - 50));
+    $('sent-margin').textContent = '--';
+    $('sent-short').textContent = '--';
+    $('sent-inst').textContent = pos > 0.5 ? '偏多' : '偏空';
+
+    var instD = $('sent-inst-d');
+    instD.textContent = pos > 0.5 ? '看多' : '看空';
+    instD.style.color = pos > 0.5 ? '#3fb950' : '#f85149';
   }
-  fetch(url).then(function(r){return r.json();}).then(function(j){
-    if (!j || j.code !== 0 || !j.data) throw new Error('no data');
-    var stockData = j.data[market] || j.data[Object.keys(j.data)[0]];
-    if (!stockData) throw new Error('no stock data');
-    var dayArr = stockData.qfqday || stockData.day;
-    if (!dayArr || dayArr.length === 0) throw new Error('no kline');
-    var lastDay = dayArr[dayArr.length - 1];
-    var ifzqClose = parseFloat(lastDay[2]);
-    recordVerify(item, qtPrice, ifzqClose, 'ifzq日K', lastDay[0]);
-  }).catch(function(){
-    recordVerify(item, qtPrice, null, 'ifzq', null);
-  });
 }
 
-function recordVerify(item, qtPrice, src2Price, src2Source, src2Date) {
-  if (qtPrice && src2Price) {
-    var diff = Math.abs(qtPrice - src2Price) / qtPrice * 100;
-    var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
-    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:src2Price, diff:diff, status:status, src2Source:src2Source, klineDate:src2Date};
-  } else if (qtPrice) {
-    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
-  } else {
-    VERIFY_RESULTS[item.code] = {name:item.name, src1:null, src2:src2Price||null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
-  }
-  renderVerifyPanel();
+// ── INIT & REFRESH ──────────────────────────────
+function init() {
+  // Fetch all data
+  fetchQuoteA();
+  fetchQuoteHK();
+  fetchKline(30, 'a');
+  fetchFinancials();
+  renderDonut();
+  setupChartButtons();
+
+  // Retry quotes after a short delay (script injection timing)
+  setTimeout(function() {
+    if (!STATE.priceA) fetchQuoteA();
+    if (!STATE.priceHK) fetchQuoteHK();
+  }, 2000);
+
+  setTimeout(renderTradingSentiment, 3000);
 }
 
-function renderVerifyPanel() {
-  var grid = document.getElementById('verifyGrid');
-  var icon = document.getElementById('verifyIcon');
-  var summary = document.getElementById('verifySummary');
-  if (!grid) return;
-  var html = '';
-  var passCount = 0, driftCount = 0, failCount = 0, totalCount = 0;
-  var codes = Object.keys(VERIFY_RESULTS).sort();
-  codes.forEach(function(code) {
-    var r = VERIFY_RESULTS[code];
-    totalCount++;
-    if (r.status === 'pass') passCount++;
-    else if (r.status === 'drift') driftCount++;
-    else failCount++;
-    html += '<div class="verify-item ' + r.status + '">';
-    html += '<div class="vi-head"><span class="vi-name">' + r.name + '</span><span class="vi-badge ' + r.status + '">' + (r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常') + '</span></div>';
-    html += '<div class="vi-row"><span class="src">qt.gtimg</span><span class="val">' + (r.src1 !== null ? r.src1.toFixed(2) : '失败') + '</span></div>';
-    html += '<div class="vi-row"><span class="src">' + (r.src2Source||'eastmoney') + (r.klineDate?' ('+r.klineDate+')':'') + '</span><span class="val">' + (r.src2 !== null ? r.src2.toFixed(2) : '失败') + '</span></div>';
-    if (r.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + r.diff.toFixed(2) + '%</span></div>';
-    html += '</div>';
-  });
-  grid.innerHTML = html;
-  var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
-  icon.className = 'vt-icon ' + overallStatus;
-  summary.textContent = '共' + totalCount + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 阈值: <1%通过/<3%偏差';
+function refresh() {
+  fetchQuoteA();
+  fetchQuoteHK();
+  setTimeout(renderTradingSentiment, 1500);
 }
 
-// Trigger verification after main data loads
-setTimeout(fetchVerifyPrices, 3000);
+// Start
+init();
+
+// Auto-refresh
+setInterval(refresh, CONFIG.refreshInterval);
+
+// Handle resize for chart
+var resizeTimeout;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(function() {
+    if (STATE.klineData.length > 0) renderKline();
+  }, 200);
+});
+
+})();
 </script>
 </body>
 </html>
