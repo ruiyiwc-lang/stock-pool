@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芯国际 00981 / 688981 - 跟踪面板</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:900px; margin:0 auto; font-size:16px; }
+h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:20px; }
+.subtitle a { color:#c9a84c; text-decoration:none; }
+
+.section-divider { border:none; border-top:1px solid #1e3a5f; margin:28px 0 20px; }
+.section-title { font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:#6b7b8d; margin-bottom:16px; font-weight:600; }
+
+/* 价格大卡片（双轨） */
+.price-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.price-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:20px 22px; }
+.price-card .market-tag { font-size:12px; color:#c9a84c; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.price-big { font-size:40px; font-weight:700; color:#e0e6ed; letter-spacing:-1px; }
+.price-change { font-size:16px; font-weight:600; }
+.price-change.up { color:#1a7a4c; }
+.price-change.down { color:#c0392b; }
+.price-change.flat { color:#6b7b8d; }
+.price-meta { display:flex; gap:14px; margin-top:8px; font-size:14px; color:#6b7b8d; flex-wrap:wrap; }
+.price-meta span b { color:#e0e6ed; }
+
+/* 进度条 */
+.gauge { margin-top:20px; position:relative; padding-bottom:36px; }
+.gauge-bar { height:12px; border-radius:6px; background:#2a3441; position:relative; overflow:visible; }
+.gauge-fill { height:100%; border-radius:6px; transition:width .6s; }
+.gauge-labels { display:flex; justify-content:space-between; font-size:13px; color:#6b7b8d; margin-top:10px; }
+.gauge-labels .lbl-b { color:#1a7a4c; font-weight:500; }
+.gauge-labels .lbl-a { color:#c9a84c; font-weight:500; }
+.gauge-labels .lbl-r { color:#c0392b; font-weight:500; }
+.gauge-marker { position:absolute; top:0; width:0; height:0; transition:left .6s; }
+.gauge-marker-label { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:#e0e6ed; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 4px; border-radius:3px; }
+
+/* 通用卡片 */
+.kpi-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.kpi-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.freq-tag { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; letter-spacing:0.3px; vertical-align:middle; margin-left:4px; }
+.freq-tag.live { background:rgba(192,57,43,0.10); color:#c0392b; }
+.freq-tag.daily { background:rgba(30,58,95,0.10); color:#1e3a5f; }
+.freq-tag.quarter { background:rgba(201,168,76,0.14); color:#9a7d2e; }
+.freq-tag.annual { background:rgba(74,58,138,0.10); color:#4a3a8a; }
+.freq-tag.static { background:rgba(107,123,141,0.14); color:#6b7b8d; }
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.kpi-item { text-align:center; padding:8px; background:#1a1f2e; border-radius:8px; }
+.kpi-item .val { font-size:22px; font-weight:700; color:#e0e6ed; }
+.kpi-item .lbl { font-size:13px; color:#6b7b8d; margin-top:2px; }
+.kpi-item .delta { font-size:12px; margin-top:2px; font-weight:600; }
+.kpi-item .delta.up { color:#1a7a4c; }
+.kpi-item .delta.down { color:#c0392b; }
+
+/* 地缘温度计 */
+.geo-card { background:#1a1510; border:1px solid #4a3520; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.geo-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; color:#9a4d00; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.geo-thermo { background:linear-gradient(90deg,#34c759 0%,#ffcc00 35%,#ff9500 70%,#ff3b30 100%); height:14px; border-radius:7px; position:relative; }
+.geo-thermo-marker { position:absolute; top:-4px; width:4px; height:22px; background:#1c1c1e; border-radius:2px; }
+.geo-levels { display:flex; justify-content:space-between; font-size:12px; color:#6b7b8d; margin-top:4px; }
+.geo-status { margin-top:12px; padding:10px; background:#1a1f2e; border-radius:8px; font-size:14px; line-height:1.6; }
+.geo-status b { color:#c0392b; }
+
+/* 新闻卡片 */
+.news-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.news-card h2 { font-size:18px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.news-item { padding:10px 0; border-bottom:1px solid #1e3a5f; }
+.news-item:last-child { border-bottom:none; }
+.news-tag { display:inline-block; font-size:12px; padding:2px 6px; border-radius:4px; font-weight:600; margin-right:8px; }
+.news-tag.policy { background:rgba(192,57,43,0.08); color:#c0392b; }
+.news-tag.order { background:rgba(26,122,76,0.08); color:#1a7a4c; }
+.news-tag.tech { background:rgba(30,58,95,0.08); color:#1e3a5f; }
+.news-tag.capital { background:rgba(74,58,138,0.08); color:#4a3a8a; }
+.news-tag.earn { background:rgba(201,168,76,0.08); color:#9a7d2e; }
+.news-item .news-title { font-size:15px; font-weight:500; color:#e0e6ed; line-height:1.4; }
+.news-item .news-title a { color:#e0e6ed; text-decoration:none; }
+.news-item .news-title a:hover { color:#c9a84c; text-decoration:underline; }
+.news-item .news-summary { font-size:14px; color:#4a5d6e; margin-top:4px; line-height:1.5; }
+.news-item .news-date { font-size:13px; color:#8fa0b3; margin-top:4px; }
+.news-empty { font-size:15px; color:#8fa0b3; text-align:center; padding:20px; }
+
+/* 订单表 */
+.order-table { width:100%; border-collapse:collapse; font-size:14px; }
+.order-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
+.order-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
+.order-table .pos { color:#1a7a4c; font-weight:600; }
+.order-table .neg { color:#c0392b; font-weight:600; }
+
+/* 信号 */
+.signals { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.sig-card { background:#111827; border:1px solid #1e3a5f; border-radius:10px; padding:14px 16px; }
+.sig-card h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.sig-card ul { list-style:none; font-size:14px; line-height:1.8; }
+.sig-card ul li::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.sig-buy li::before { background:#1a7a4c; }
+.sig-wait li::before { background:#c9a84c; }
+.sig-stop li::before { background:#c0392b; }
+.sig-sell li::before { background:#4a3a8a; }
+
+/* 建仓策略 */
+.strat-table { width:100%; border-collapse:collapse; font-size:14px; }
+.strat-table th { text-align:left; color:#6b7b8d; font-weight:500; padding:6px 8px; border-bottom:1px solid #1e3a5f; font-size:13px; }
+.strat-table td { padding:6px 8px; border-bottom:1px solid #1e3a5f; }
+
+/* 催化剂日历 */
+.cal-item { display:flex; gap:12px; padding:8px 0; border-bottom:1px solid #1e3a5f; font-size:14px; }
+.cal-item:last-child { border-bottom:none; }
+.cal-date { color:#c9a84c; font-weight:600; min-width:120px; font-size:13px; }
+.cal-desc { color:#e0e6ed; flex:1; font-size:14px; }
+.cal-tag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
+.cal-tag.hot { background:rgba(255,59,48,0.12); color:#c0392b; }
+.cal-tag.med { background:rgba(255,149,0,0.12); color:#9a4d00; }
+.cal-tag.cool { background:rgba(26,122,76,0.12); color:#1a7a4c; }
+
+/* 论点 */
+.thesis-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+.thesis-card h2 { font-size:18px; font-weight:600; margin-bottom:10px; }
+.thesis-card p { font-size:14px; line-height:1.8; color:#4a5d6e; }
+.thesis-card strong { color:#e0e6ed; }
+
+.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#c9a84c; text-decoration:none; }
+.back-link:hover { text-decoration:underline; }
+
+@media(max-width:600px) {
+  .price-grid { grid-template-columns:1fr; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .signals { grid-template-columns:1fr; }
+  .price-big { font-size:30px; }
+}
+
+/* 数据校验面板 */
+.verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:32px; }
+.verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.verify-title .vt-icon { width:8px; height:8px; border-radius:50%; }
+.verify-title .vt-icon.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.5); }
+.verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
+.verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
+.verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
+.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
+.verify-item.pass { border-left:3px solid #22c55e; }
+.verify-item.drift { border-left:3px solid #eab308; }
+.verify-item.fail { border-left:3px solid #ef4444; }
+.vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.vi-name { font-weight:700; color:#e0e6ed; }
+.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
+.vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
+.vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
+.vi-row { display:flex; justify-content:space-between; color:#8fa0b3; margin-bottom:2px; }
+.vi-row .src { color:#6b7b8d; }
+.vi-row .val { color:#e0e6ed; font-weight:600; }
+</style>
+</head>
+<body data-active-page="smic">
+<!-- Sidebar -->
+<style>
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0a0f1a;border-right:1px solid #1e3a5f;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:72px;text-decoration:none;color:#6b7b8d;border-left:3px solid transparent;transition:all .2s;padding:8px 0}
+.sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
+.sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
+.sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
+</style>
+<nav class="sidebar">
+<a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
+<a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg><span class="nav-label">温度计</span></a>
+<a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" rx="0.5"/><rect x="10" y="6" width="4" height="15" rx="0.5"/><rect x="17" y="3" width="4" height="18" rx="0.5"/><line x1="1" y1="21" x2="23" y2="21"/></svg><span class="nav-label">基石</span></a>
+<a class="nav-btn" href="portfolio.html" data-page="portfolio"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nav-label">三档</span></a>
+<a class="nav-btn" href="smic.html" data-page="smic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-label">中芯</span></a>
+<a class="nav-btn" href="popmart.html" data-page="popmart"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="nav-label">泡泡玛特</span></a>
+<a class="nav-btn" href="tencent.html" data-page="tencent"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="11" rx="7" ry="8"/><ellipse cx="9.5" cy="9" rx="1.5" ry="2"/><ellipse cx="14.5" cy="9" rx="1.5" ry="2"/><circle cx="9.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><path d="M9 14.5c0 1.5 1.3 2.5 3 2.5s3-1 3-2.5"/><path d="M7 18c-1 1.5-1.5 3-0.5 4 0.5 0.5 1.5 0 2-0.5"/><path d="M17 18c1 1.5 1.5 3 0.5 4-0.5 0.5-1.5 0-2-0.5"/></svg><span class="nav-label">腾讯</span></a>
+<a class="nav-btn" href="baba.html" data-page="baba"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg><span class="nav-label">阿里</span></a>
+<a class="nav-btn" href="wuxi.html" data-page="wuxi"><svg viewBox="0 0 24 24"><path d="M9 3v7.4a4 4 0 1 0 6 0V3"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="10" y1="7" x2="14" y2="7"/></svg><span class="nav-label">药明</span></a>
+<a class="nav-btn" href="beigene.html" data-page="beigene"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="nav-label">百济</span></a>
+<a class="nav-btn" href="news.html" data-page="news"><svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/><line x1="7" y1="16" x2="15" y2="16"/></svg><span class="nav-label">新闻</span></a>
+</nav>
+<script>(function(){var p=document.body.getAttribute('data-active-page');if(p){var b=document.querySelector('.sidebar a[data-page="'+p+'"]');if(b)b.classList.add('active')}})()</script>
+<!-- /Sidebar -->
+
+<a class="back-link" href="index.html">&larr; 返回股票池</a>
+<h1>中芯国际 00981 / 688981</h1>
+<div class="subtitle">第一档 &middot; 5x 双轮 &middot; 国产算力供给侧阀门 &middot; 条件概率建仓</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║     AH 双轨实时价格                        ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div style="font-size:13px;color:#6b7b8d;margin:0 2px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:500;letter-spacing:0.3px;">
+  AH双轨实时价格 <span class="freq-tag live">实时 · 30s</span>
+</div>
+<div class="price-grid">
+
+  <!-- H 股 -->
+  <div class="price-card">
+    <div class="market-tag">H 股 · 00981.HK</div>
+    <div class="price-row">
+      <span class="price-big" id="h-price">--</span>
+      <span class="price-change flat" id="h-change">--</span>
+    </div>
+    <div class="price-meta">
+      <span>Fwd PE <b id="h-pe">--</b></span>
+      <span>市值 <b id="h-mc">--</b></span>
+      <span>距A线 <b id="h-dist">--</b></span>
+    </div>
+    <div class="gauge">
+      <div class="gauge-bar" id="h-bar">
+        <div class="gauge-fill" id="h-fill" style="width:0"></div>
+        <div class="gauge-marker" id="h-marker"><div class="gauge-marker-label" id="h-marker-lbl"></div></div>
+      </div>
+      <div class="gauge-labels">
+        <span class="lbl-r">R HK$35</span>
+        <span class="lbl-b">B HK$50</span>
+        <span class="lbl-a">A HK$57.5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- A 股 -->
+  <div class="price-card">
+    <div class="market-tag">A 股 · 688981.SH</div>
+    <div class="price-row">
+      <span class="price-big" id="a-price">--</span>
+      <span class="price-change flat" id="a-change">--</span>
+    </div>
+    <div class="price-meta">
+      <span>Fwd PE <b id="a-pe">--</b></span>
+      <span>市值 <b id="a-mc">--</b></span>
+      <span>距A线 <b id="a-dist">--</b></span>
+    </div>
+    <div class="gauge">
+      <div class="gauge-bar" id="a-bar">
+        <div class="gauge-fill" id="a-fill" style="width:0"></div>
+        <div class="gauge-marker" id="a-marker"><div class="gauge-marker-label" id="a-marker-lbl"></div></div>
+      </div>
+      <div class="gauge-labels">
+        <span class="lbl-r">R ¥30.4</span>
+        <span class="lbl-b">B ¥43.4</span>
+        <span class="lbl-a">A ¥50</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   地缘+AI泡沫温度计                       ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="geo-card">
+  <h2>地缘+AI泡沫温度计 <span class="freq-tag daily">日 · 事件评估</span></h2>
+  <div class="geo-thermo">
+    <div class="geo-thermo-marker" id="geo-marker" style="left:45%"></div>
+  </div>
+  <div class="geo-levels">
+    <span>0 平静</span>
+    <span>30 关注</span>
+    <span>60 警戒</span>
+    <span>100 危机</span>
+  </div>
+  <div class="geo-status">
+    <b id="geo-level">当前温度：45 / 100（关注区）</b><br>
+    <span id="geo-status-text">美国对华半导体限制维持现状，无新增实体清单。AI泡沫未破，华为Ascend订单旺盛。条件概率核心：IF AI泡沫破裂(NVDA -50%) → 中芯85-95%概率到HK$50。当前需等待触发事件。</span>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   业务基本面四象限                          ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>业务基本面四象限 <span class="freq-tag quarter">季 · 财报披露</span></h2>
+  <table class="order-table">
+    <thead><tr><th>指标</th><th>当前值</th><th>健康线</th><th>警戒线</th><th>认错线</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>① 先进制程(N+1/N+2)产能利用率</b></td>
+        <td>~85%</td>
+        <td class="pos">&gt;80%</td>
+        <td>60-80%</td>
+        <td class="neg">&lt;60%</td>
+      </tr>
+      <tr>
+        <td><b>② 华为Ascend收入占比</b></td>
+        <td>~18%</td>
+        <td class="pos">15-25%</td>
+        <td>&gt;30%(过度集中)</td>
+        <td class="neg">&lt;10%(替代风险)</td>
+      </tr>
+      <tr>
+        <td><b>③ 整体毛利率</b></td>
+        <td>22%</td>
+        <td class="pos">&gt;20%</td>
+        <td>15-20%</td>
+        <td class="neg">&lt;15%</td>
+      </tr>
+      <tr>
+        <td><b>④ 成熟制程ASP趋势</b></td>
+        <td>持平/微升</td>
+        <td class="pos">持平</td>
+        <td>连2季下降</td>
+        <td class="neg">连4季下降</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">四象限互相印证。先进制程利用率是核心——它同时反映华为订单景气度+国产替代进度+制裁边际变化三件事。任一指标触发认错线 = 重估全部仓位。</p>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   收入结构分析                              ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>收入结构分析 <span class="freq-tag quarter">季 · 估算</span></h2>
+  <div class="kpi-grid">
+    <div class="kpi-item">
+      <div class="val">15-20%</div>
+      <div class="lbl">华为Ascend</div>
+      <div class="delta up">核心大客户</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">30-35%</div>
+      <div class="lbl">国产替代(非华为)</div>
+      <div class="delta up">持续增长</div>
+    </div>
+    <div class="kpi-item">
+      <div class="val">45-50%</div>
+      <div class="lbl">消费电子/IoT</div>
+      <div class="delta">基本盘</div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   买卖信号双栏                              ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<hr class="section-divider">
+<div class="section-title">决策信号 &amp; 策略 <span class="freq-tag static">静态 · 策略框架</span></div>
+
+<div class="signals">
+  <div class="sig-card">
+    <h3 style="color:#1a7a4c">买入信号</h3>
+    <ul class="sig-buy">
+      <li>AI泡沫破裂 + NVDA暴跌50%+</li>
+      <li>港股系统性恐慌</li>
+      <li>H股跌至HK$50以下</li>
+      <li>美国制裁边际放松</li>
+    </ul>
+  </div>
+  <div class="sig-card">
+    <h3 style="color:#9a7d2e">等待信号</h3>
+    <ul class="sig-wait">
+      <li>AI capex仍在加速</li>
+      <li>NVDA PE&gt;25x 未开始杀估值</li>
+      <li>华为无替代方案变化</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   建仓策略表                                ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>分档建仓策略 · 条件概率框架</h2>
+  <table class="strat-table">
+    <thead><tr><th>档位</th><th>H股价格</th><th>A股价格</th><th>PE</th><th>触发条件</th></tr></thead>
+    <tbody>
+      <tr><td><b>A档(首仓)</b></td><td>HK$57.5</td><td>¥50</td><td>~25x</td><td>AI泡沫初步确认</td></tr>
+      <tr><td><b>B档(重仓)</b></td><td>HK$50</td><td>¥43.4</td><td>~22x</td><td>AI泡沫破裂 + 恐慌蔓延</td></tr>
+      <tr><td style="color:#c0392b"><b>红线(认错)</b></td><td>HK$35</td><td>¥30.4</td><td>~15x</td><td>独占性崩塌 / 华为替代供应商出现</td></tr>
+      <tr><td style="color:#4a3a8a"><b>止盈</b></td><td colspan="4">FwdPE &gt; 30x 且产能见顶</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px">NTM EPS: H股 = HK$2.30 · A股 = ¥2.0 · 条件概率核心：只在AI泡沫破裂后才入场，非无条件建仓</p>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   催化剂日历                                ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="kpi-card">
+  <h2>催化剂日历</h2>
+  <div class="cal-item"><div class="cal-date">2026 Q3</div><div class="cal-desc">AI泡沫压力测试（NVDA财报 + hyperscaler capex指引） <span class="cal-tag hot">关键触发</span></div></div>
+  <div class="cal-item"><div class="cal-date">2026 H2</div><div class="cal-desc">华为Ascend 910C量产进度 <span class="cal-tag med">订单催化</span></div></div>
+  <div class="cal-item"><div class="cal-date">2027</div><div class="cal-desc">Rubin Ultra发布 → 海外AI算力代际切换 <span class="cal-tag hot">泡沫压测</span></div></div>
+  <div class="cal-item"><div class="cal-date">长期</div><div class="cal-desc">DUV多重曝光5nm良率爬坡 <span class="cal-tag cool">技术验证</span></div></div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   投资论点                                  ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="thesis-card" style="border-left:3px solid #1a7a4c;">
+  <h2 style="color:#1a7a4c">5x双轮 · 国产算力供给侧阀门</h2>
+  <p>
+    <strong>核心论点</strong>：5x双轮驱动——先进制程垄断租金（华为无替代选项）+ 成熟制程全球最低成本（国产DUV 1/5价 + 人工/电力低）。独立于全球AI周期——美国AI泡沫破反而加速国产替代。<br><br>
+    <strong>Kill thesis</strong>：华为找到替代供应商（概率&lt;5%）或 美国AI泡沫破但国产替代逻辑同步证伪。<br><br>
+    <strong>条件概率</strong>：不无条件买入。等待AI泡沫破裂（NVDA -50%）作为触发事件，届时中芯85-95%概率回落至HK$50以下，届时进入建仓窗口。泡沫不破则持续观望。
+  </p>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   今日新闻                                  ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="news-card">
+  <h2>今日动态 <span class="freq-tag daily">日 · cron</span></h2>
+  <!-- NEWS_DATA_START -->
+  <div class="news-empty">暂无新闻数据，等待 cron 刷新</div>
+  <!-- NEWS_DATA_END -->
+</div>
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║   数据校验面板                              ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="verify-panel" id="verifyPanel">
+  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 数据双源校验</div>
+  <div class="verify-grid" id="verifyGrid">
+    <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
+  </div>
+  <div style="font-size:11px;color:#6b7b8d;margin-top:8px;" id="verifySummary"></div>
+</div>
+
+<div class="update-time" id="update-time">数据更新中...</div>
+
+<script>
+// ===== 配置 =====
+var SMIC_CONFIG = {
+  h: {
+    code: 'hk00981',
+    basis: 2.30,        // NTM EPS (HKD)
+    lineA: 57.5,
+    lineB: 50,
+    red: 35,
+    shares: 79.72e8,    // H+A total shares approx
+    growthE: 20
+  },
+  a: {
+    code: 'sh688981',
+    basis: 2.0,         // NTM EPS (RMB)
+    lineA: 50,
+    lineB: 43.4,
+    red: 30.4,
+    shares: 79.72e8,
+    growthE: 20
+  }
+};
+
+// ===== JSONP 价格抓取 =====
+function fetchPrices() {
+  ['h', 'a'].forEach(function(market) {
+    var s = document.createElement('script');
+    s.src = 'https://qt.gtimg.cn/q=' + SMIC_CONFIG[market].code + '&_=' + Date.now();
+    s.onload = function() { s.remove(); };
+    s.onerror = function() { s.remove(); };
+    document.head.appendChild(s);
+  });
+}
+
+// 价格回调通用函数
+function priceCallback(market, val) {
+  if (!val) return;
+  var f = val.split('~');
+  var price = parseFloat(f[3]);
+  var prevClose = parseFloat(f[4]);
+  if (isNaN(price) || isNaN(prevClose)) return;
+
+  var cfg = SMIC_CONFIG[market];
+  var changeAmt = (price - prevClose).toFixed(2);
+  var changePct = ((price - prevClose) / prevClose * 100).toFixed(2);
+  var sign = changeAmt >= 0 ? '+' : '';
+
+  document.getElementById(market + '-price').textContent = price.toFixed(2);
+  var chEl = document.getElementById(market + '-change');
+  chEl.textContent = sign + changeAmt + ' (' + sign + changePct + '%)';
+  chEl.className = 'price-change ' + (changeAmt > 0 ? 'up' : changeAmt < 0 ? 'down' : 'flat');
+
+  var pe = (price / cfg.basis).toFixed(1);
+  document.getElementById(market + '-pe').textContent = pe + 'x';
+
+  var mc = price * cfg.shares / 1e8;
+  document.getElementById(market + '-mc').textContent = mc.toFixed(0) + (market === 'h' ? '亿HK' : '亿');
+
+  // 距A线
+  var distA = ((cfg.lineA - price) / price * 100).toFixed(1);
+  var distEl = document.getElementById(market + '-dist');
+  if (price > cfg.lineA) {
+    distEl.textContent = '已超A线 ' + (((price - cfg.lineA)/cfg.lineA)*100).toFixed(1) + '%';
+  } else {
+    distEl.textContent = distA + '%';
+  }
+
+  // 进度条
+  updateGauge(market, price, cfg);
+
+  document.getElementById('update-time').textContent =
+    '实时价格 · 30s 刷新 · ' + new Date().toLocaleString('zh-CN');
+}
+
+Object.defineProperty(window, 'v_hk00981', {
+  set: function(val) { priceCallback('h', val); },
+  configurable: true
+});
+Object.defineProperty(window, 'v_sh688981', {
+  set: function(val) { priceCallback('a', val); },
+  configurable: true
+});
+
+function updateGauge(market, price, cfg) {
+  // For SMIC: red < B < A, gauge goes from red(left) to A(right)
+  var R = cfg.red, B = cfg.lineB, A = cfg.lineA;
+  var range = A - R;
+  var pct = Math.max(0, Math.min(100, (price - R) / range * 100));
+
+  var fill = document.getElementById(market + '-fill');
+  var marker = document.getElementById(market + '-marker');
+  var label = document.getElementById(market + '-marker-lbl');
+
+  if (price <= R) { fill.style.background = '#c0392b'; }
+  else if (price <= B) { fill.style.background = 'linear-gradient(90deg,#c0392b,#1a7a4c)'; }
+  else if (price <= A) { fill.style.background = 'linear-gradient(90deg,#c0392b,#1a7a4c,#1e3a5f)'; }
+  else { fill.style.background = 'linear-gradient(90deg,#c0392b,#1a7a4c,#1e3a5f,#c9a84c)'; }
+
+  fill.style.width = Math.min(pct, 100) + '%';
+  marker.style.left = 'calc(' + Math.min(pct, 100) + '% - 1px)';
+  label.textContent = (market === 'h' ? 'HK$' : '¥') + price.toFixed(2);
+
+  // B-line marker
+  var bPct = (B - R) / range * 100;
+  var bLine = document.getElementById(market + '-bline');
+  if (!bLine) {
+    bLine = document.createElement('div');
+    bLine.id = market + '-bline';
+    bLine.style.cssText = 'position:absolute;top:-3px;width:2.5px;height:18px;background:#1a7a4c;border-radius:1.5px;box-shadow:0 1px 3px rgba(26,122,76,0.3);z-index:2;';
+    document.getElementById(market + '-bar').appendChild(bLine);
+  }
+  bLine.style.left = bPct + '%';
+}
+
+fetchPrices();
+setInterval(fetchPrices, 30000);
+</script>
+
+<script>
+// ===== 数据双源校验 =====
+var VERIFY_RESULTS = {};
+
+function codeToSecid(code) {
+  if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
+  if (code.indexOf('sh') === 0) return '1.' + code.replace('sh','');
+  if (code.indexOf('sz') === 0) return '0.' + code.replace('sz','');
+  return null;
+}
+
+function fetchVerifyPrices() {
+  var items = [
+    {code:'hk00981', name:'中芯H'},
+    {code:'sh688981', name:'中芯A'}
+  ];
+  items.forEach(function(item) {
+    var secid = codeToSecid(item.code);
+    if (!secid) return;
+    var qtRaw = window['v_' + item.code];
+    var qtPrice = null;
+    if (qtRaw) {
+      var parts = (typeof qtRaw === 'string') ? qtRaw.split('~') : [];
+      qtPrice = parseFloat(parts[3]) || null;
+    }
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
+    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=' + secid + '&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+    fetch(url, {signal: controller.signal}).then(function(r){
+      clearTimeout(timeoutId);
+      return r.json();
+    }).then(function(j){
+      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
+      var kline = j.data.klines[0].split(',');
+      var emClose = parseFloat(kline[2]);
+      recordVerify(item, qtPrice, emClose, 'eastmoney日K', kline[0]);
+    }).catch(function(){
+      clearTimeout(timeoutId);
+      fetchIfzqFallback(item, qtPrice);
+    });
+  });
+}
+
+function fetchIfzqFallback(item, qtPrice) {
+  var code = item.code;
+  var ifzqCode, market;
+  if (code.indexOf('hk') === 0) { ifzqCode = code; market = code; }
+  else if (code.indexOf('sh') === 0 || code.indexOf('sz') === 0) { ifzqCode = code; market = code; }
+  else { recordVerify(item, qtPrice, null, 'ifzq', null); return; }
+  var url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
+  if (code.indexOf('hk') === 0) {
+    url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
+  }
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || j.code !== 0 || !j.data) throw new Error('no data');
+    var stockData = j.data[market] || j.data[Object.keys(j.data)[0]];
+    if (!stockData) throw new Error('no stock data');
+    var dayArr = stockData.qfqday || stockData.day;
+    if (!dayArr || dayArr.length === 0) throw new Error('no kline');
+    var lastDay = dayArr[dayArr.length - 1];
+    var ifzqClose = parseFloat(lastDay[2]);
+    recordVerify(item, qtPrice, ifzqClose, 'ifzq日K', lastDay[0]);
+  }).catch(function(){
+    recordVerify(item, qtPrice, null, 'ifzq', null);
+  });
+}
+
+function recordVerify(item, qtPrice, src2Price, src2Source, src2Date) {
+  if (qtPrice && src2Price) {
+    var diff = Math.abs(qtPrice - src2Price) / qtPrice * 100;
+    var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:src2Price, diff:diff, status:status, src2Source:src2Source, klineDate:src2Date};
+  } else if (qtPrice) {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  } else {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:null, src2:src2Price||null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  }
+  renderVerifyPanel();
+}
+
+function renderVerifyPanel() {
+  var grid = document.getElementById('verifyGrid');
+  var icon = document.getElementById('verifyIcon');
+  var summary = document.getElementById('verifySummary');
+  if (!grid) return;
+  var html = '';
+  var passCount = 0, driftCount = 0, failCount = 0, totalCount = 0;
+  var codes = Object.keys(VERIFY_RESULTS).sort();
+  codes.forEach(function(code) {
+    var r = VERIFY_RESULTS[code];
+    totalCount++;
+    if (r.status === 'pass') passCount++;
+    else if (r.status === 'drift') driftCount++;
+    else failCount++;
+    html += '<div class="verify-item ' + r.status + '">';
+    html += '<div class="vi-head"><span class="vi-name">' + r.name + '</span><span class="vi-badge ' + r.status + '">' + (r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">qt.gtimg</span><span class="val">' + (r.src1 !== null ? r.src1.toFixed(2) : '失败') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">' + (r.src2Source||'eastmoney') + (r.klineDate?' ('+r.klineDate+')':'') + '</span><span class="val">' + (r.src2 !== null ? r.src2.toFixed(2) : '失败') + '</span></div>';
+    if (r.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + r.diff.toFixed(2) + '%</span></div>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
+  var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
+  icon.className = 'vt-icon ' + overallStatus;
+  summary.textContent = '共' + totalCount + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 阈值: <1%通过/<3%偏差';
+}
+
+// Trigger verification after main data loads
+setTimeout(fetchVerifyPrices, 3000);
+</script>
+</body>
+</html>
