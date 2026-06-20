@@ -14,7 +14,6 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .tier-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid #1e3a5f; }
 .tier-badge { padding:4px 12px; border-radius:6px; font-size:13px; font-weight:700; letter-spacing:.5px; }
 .tier-badge.pe { background:rgba(201,168,76,.15); color:#c9a84c; border:1px solid #c9a84c; }
-.tier-badge.threshold { background:rgba(93,173,226,.12); color:#5dade2; border:1px solid #5dade2; }
 .tier-label { font-size:18px; font-weight:600; }
 .tier-desc { font-size:13px; color:#6b7b8d; }
 
@@ -37,7 +36,6 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 /* 进度条 */
 .gauge-mini { position:relative; margin:48px 0 38px; height:10px; border-radius:5px; background:linear-gradient(to right,#22c55e 0%,#22c55e 33%,#5fb583 33%,#5fb583 55%,#eab308 55%,#eab308 75%,#ef4444 75%,#ef4444 100%); opacity:.85; }
-.gauge-mini.threshold-style { background:linear-gradient(to right,#ef4444 0%,#ef4444 20%,#22c55e 20%,#22c55e 40%,#5fb583 40%,#5fb583 60%,#5a6878 60%,#5a6878 100%); }
 .gauge-mini-marker { position:absolute; top:-12px; width:3px; height:26px; background:#fff; transform:translateX(-50%); border-radius:1px; box-shadow:0 0 6px rgba(255,255,255,.6); transition:left .6s; z-index:5; }
 .gauge-mini-label { position:absolute; top:-26px; transform:translateX(-50%); font-size:11px; color:#fff; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 6px; border-radius:3px; border:1px solid #c9a84c; }
 .gauge-ticks { position:absolute; top:0; left:0; right:0; height:10px; }
@@ -46,7 +44,6 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .gauge-ticks .tick-label.red { color:#ef4444; }
 .gauge-ticks .tick-label.b { color:#22c55e; }
 .gauge-ticks .tick-label.a { color:#c9a84c; }
-.gauge-ticks .tick-label.target { color:#5dade2; }
 
 /* 指标行 */
 .metrics { display:flex; flex-wrap:wrap; gap:16px; font-size:13px; color:#6b7b8d; margin-top:8px; }
@@ -84,18 +81,6 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .rank-badge.r2 { background:rgba(93,173,226,.1); color:#5dade2; border:1px solid #2a4a6b; }
 .rank-badge.r3 { background:rgba(107,123,141,.1); color:#6b7b8d; border:1px solid #3a4a5b; }
 
-/* AH 双面板 */
-.ah-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:8px; }
-.ah-panel { padding:12px 14px; background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; }
-.ah-panel.cheaper { border-color:#22c55e; box-shadow:inset 0 0 0 1px rgba(26,122,76,.2); }
-.ah-panel-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.ah-mkt { font-size:13px; font-weight:700; padding:2px 8px; border-radius:4px; }
-.ah-mkt.a { background:rgba(201,168,76,.15); color:#c9a84c; }
-.ah-mkt.h { background:rgba(93,173,226,.15); color:#5dade2; }
-.ah-panel .price-now { font-size:22px; }
-.ah-panel .gauge-mini { margin:44px 0 32px; }
-.cheaper-tag { font-size:11px; color:#22c55e; font-weight:600; padding:2px 6px; background:rgba(26,122,76,.1); border-radius:4px; }
-
 /* Rules section (collapsible) */
 .rules-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; }
 .rules-card summary { font-size:15px; font-weight:600; color:#c9a84c; cursor:pointer; list-style:none; }
@@ -105,13 +90,11 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .rules-card .rules-body { margin-top:14px; font-size:13px; color:#8b9db5; line-height:1.8; }
 .rules-card .rules-body h4 { font-size:14px; color:#e0e6ed; margin:14px 0 6px; font-weight:600; }
 .rules-card .rules-body ul { padding-left:18px; margin-bottom:10px; }
-.rules-card .rules-body .reminder { margin-top:14px; padding:10px 14px; background:rgba(234,179,8,.08); border-left:3px solid #eab308; border-radius:0 6px 6px 0; color:#eab308; font-weight:500; }
 
 @media(max-width:700px) {
   .price-now { font-size:24px; }
   .summary-grid { grid-template-columns:repeat(2,1fr); }
   .metrics { flex-direction:column; gap:6px; }
-  .ah-grid { grid-template-columns:1fr; gap:12px; }
 }
 </style>
 </head>
@@ -137,15 +120,14 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 <a class="back-link" href="index.html">&larr; 返回总览</a>
 <h1>AI基石股票 · 轮动监控</h1>
-<div class="subtitle">PE÷均值比值法(BABA/GOOG/TSMC) + 价格阈值法(中芯) · 每60秒刷新</div>
+<div class="subtitle">PE÷均值比值法 · BABA / GOOG / TSMC · 每60秒刷新</div>
 
 <!-- 汇总面板 -->
 <div class="summary-panel">
   <div class="summary-grid">
     <div class="summary-item"><div class="sv gold" id="sumRank1">--</div><div class="sl">当前#1</div></div>
     <div class="summary-item"><div class="sv" id="sumLowestRatio">--</div><div class="sl">最低比值</div></div>
-    <div class="summary-item"><div class="sv" id="sumSmicStatus">--</div><div class="sl">中芯状态</div></div>
-    <div class="summary-item"><div class="sv blue" id="sumAHPremium">--</div><div class="sl">中芯AH溢价</div></div>
+    <div class="summary-item"><div class="sv" id="sumVerdict">--</div><div class="sl">操作建议</div></div>
   </div>
 </div>
 
@@ -163,7 +145,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div>
         <span class="rank-badge r2" id="rank-baba">#-</span>
         <span class="stock-title">阿里巴巴</span>
-        <span class="stock-code">09988.HK</span>
+        <span class="stock-code">BABA (NYSE)</span>
       </div>
       <span class="status-tag wait" id="status-baba">加载中</span>
     </div>
@@ -188,7 +170,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div>
         <span class="rank-badge r2" id="rank-goog">#-</span>
         <span class="stock-title">谷歌</span>
-        <span class="stock-code">GOOGL</span>
+        <span class="stock-code">GOOGL (NASDAQ)</span>
       </div>
       <span class="status-tag wait" id="status-goog">加载中</span>
     </div>
@@ -213,7 +195,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div>
         <span class="rank-badge r2" id="rank-tsmc">#-</span>
         <span class="stock-title">台积电</span>
-        <span class="stock-code">TSM</span>
+        <span class="stock-code">TSM (NYSE)</span>
       </div>
       <span class="status-tag wait" id="status-tsmc">加载中</span>
     </div>
@@ -233,83 +215,12 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
-<!-- ========== 中芯国际 · 价格阈值 ========== -->
-<div class="tier-section">
-  <div class="tier-header">
-    <span class="tier-badge threshold">价格阈值</span>
-    <span class="tier-label">中芯国际</span>
-    <span class="tier-desc">折旧到期前瞻定价 · PE失真 · 2027Q1-Q2利润跳升</span>
-  </div>
-
-  <!-- 中芯国际 (AH) -->
-  <div class="stock-card" id="card-smic">
-    <div class="card-top">
-      <div>
-        <span class="stock-title">中芯国际</span>
-        <span class="stock-code">00981.HK / 688981.SH</span>
-      </div>
-      <span class="status-tag wait" id="status-smic">加载中</span>
-    </div>
-    <div class="ah-grid">
-      <div class="ah-panel" id="panel-smic-h">
-        <div class="ah-panel-head"><span class="ah-mkt h">H 00981</span><span class="cheaper-tag" id="cheap-smic-h" style="display:none">更便宜</span></div>
-        <div class="price-display"><span class="price-now" id="price-smic">--</span><span class="price-chg flat" id="chg-smic">--</span></div>
-        <div class="gauge-mini threshold-style" id="gauge-smic">
-          <div class="gauge-ticks">
-            <div class="tick" id="tick-smic-r"></div><div class="tick-label red" id="tl-smic-r"></div>
-            <div class="tick" id="tick-smic-b"></div><div class="tick-label b" id="tl-smic-b"></div>
-            <div class="tick" id="tick-smic-a"></div><div class="tick-label a" id="tl-smic-a"></div>
-          </div>
-          <div class="gauge-mini-marker" id="marker-smic"><div class="gauge-mini-label" id="ml-smic">--</div></div>
-        </div>
-      </div>
-      <div class="ah-panel" id="panel-smic-alt">
-        <div class="ah-panel-head"><span class="ah-mkt a">A 688981</span><span class="cheaper-tag" id="cheap-smic-alt" style="display:none">更便宜</span></div>
-        <div class="price-display"><span class="price-now" id="price-smic-alt">--</span><span class="price-chg flat" id="chg-smic-alt">--</span></div>
-        <div class="gauge-mini threshold-style" id="gauge-smic-alt">
-          <div class="gauge-ticks">
-            <div class="tick" id="tick-smic-alt-r"></div><div class="tick-label red" id="tl-smic-alt-r"></div>
-            <div class="tick" id="tick-smic-alt-b"></div><div class="tick-label b" id="tl-smic-alt-b"></div>
-            <div class="tick" id="tick-smic-alt-a"></div><div class="tick-label a" id="tl-smic-alt-a"></div>
-          </div>
-          <div class="gauge-mini-marker" id="marker-smic-alt"><div class="gauge-mini-label" id="ml-smic-alt">--</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="metrics" id="metrics-smic"></div>
-  </div>
-</div>
-
-<!-- 前瞻催化剂 -->
-<div class="stock-card" style="border-color:#1e3a5f;">
-  <div class="card-top">
-    <div><span class="stock-title" style="font-size:15px;">中芯前瞻 · 催化剂时间轴</span></div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px;">
-    <div style="padding:10px;background:#0d1321;border-radius:8px;border:1px solid #1e3a5f;">
-      <div style="color:#c9a84c;font-weight:600;margin-bottom:4px;">2026.06 当前</div>
-      <div style="color:#8b9db5;">折旧压制 + 产能扩张</div>
-      <div style="color:#e0e6ed;font-weight:600;margin-top:4px;">A档 HK$57.5</div>
-    </div>
-    <div style="padding:10px;background:#0d1321;border-radius:8px;border:1px solid #1e3a5f;">
-      <div style="color:#c9a84c;font-weight:600;margin-bottom:4px;">2027 Q1-Q2</div>
-      <div style="color:#8b9db5;">2022 capex折旧到期, 毛利25%+</div>
-      <div style="color:#22c55e;font-weight:600;margin-top:4px;">HK$129 → $186</div>
-    </div>
-    <div style="padding:10px;background:#0d1321;border-radius:8px;border:1px solid #1e3a5f;">
-      <div style="color:#c9a84c;font-weight:600;margin-bottom:4px;">2027 Q4</div>
-      <div style="color:#8b9db5;">含5nm期权 + 全产能满载</div>
-      <div style="color:#22c55e;font-weight:600;margin-top:4px;">HK$197-199</div>
-    </div>
-  </div>
-</div>
-
 <!-- 规则说明 (折叠) -->
 <details class="rules-card">
   <summary>规则说明</summary>
   <div class="rules-body">
-    <h4>一、PE÷均值比值法 (BABA / GOOG / TSMC)</h4>
-    <p>比值 = 当前PE(TTM) ÷ 历史均值PE锚定值。适用于15-30%稳定增速的成熟公司。</p>
+    <h4>PE÷均值比值法</h4>
+    <p>比值 = 当前PE(TTM) ÷ 历史均值PE锚定值。适用于15-30%稳定增速的成熟公司，三者同池轮动比较。</p>
     <ul>
       <li><strong style="color:#22c55e">加仓</strong>：排名第1 且 比值 &lt; 1.0</li>
       <li><strong style="color:#60a5fa">持有</strong>：排名第1 但 比值 ≥ 1.0；或非第1但比值 &lt; 1.0</li>
@@ -322,15 +233,6 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <li><strong>GOOG</strong>：23.6x — 近5年中位数PE</li>
       <li><strong>TSMC</strong>：25.8x — 含AI溢价周期中枢</li>
     </ul>
-    <h4>二、价格阈值法 (中芯国际)</h4>
-    <p>PE比值法对折旧过峰中的中芯失效——当前PE 117x(H)/225x(A)是折旧压低利润的假象。改用前瞻定价模型。</p>
-    <ul>
-      <li><strong style="color:#ef4444">红档 HK$35</strong>：极端恐慌 · AI泡沫全面破裂</li>
-      <li><strong style="color:#22c55e">B档 HK$50</strong>：60%仓位建仓区</li>
-      <li><strong style="color:#c9a84c">A档 HK$57.5</strong>：30%仓位起建区</li>
-    </ul>
-    <p>A股阈值(AH溢价折算): 红¥30.4 / B¥43.4 / A¥50</p>
-    <div class="reminder">中芯只买H股(AH面值1:1, A股常年溢价100%+)。A股阈值仅用于对照参考。催化剂窗口：2027Q1-Q2首季毛利25%+确认。</div>
   </div>
 </details>
 
@@ -340,35 +242,19 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 (function() {
 'use strict';
 
-// ===== PE Ratio Stocks =====
+// ===== PE Ratio Stocks (all US-listed) =====
 var PE_STOCKS = [
-  { id:'baba', name:'阿里巴巴', ticker:'09988.HK', qtCode:'hk09988', avgPE:25.0, unit:'HK$' },
+  { id:'baba', name:'阿里巴巴', ticker:'BABA', qtCode:'usBABA', avgPE:25.0, unit:'US$' },
   { id:'goog', name:'谷歌', ticker:'GOOGL', qtCode:'usGOOGL', avgPE:23.6, unit:'US$' },
   { id:'tsmc', name:'台积电', ticker:'TSM', qtCode:'usTSM', avgPE:25.8, unit:'US$' }
 ];
 
-// ===== SMIC Threshold Config =====
-var SMIC = {
-  H: { qtCode:'hk00981', unit:'HK$', lineA:57.5, lineB:50, lineR:35, gaugeMin:25, gaugeMax:100 },
-  A: { qtCode:'sh688981', unit:'¥', lineA:50, lineB:43.4, lineR:30.4, gaugeMin:22, gaugeMax:87 }
-};
-
 // PE gauge range: ratio 0.6 to 1.5
 var RATIO_MIN = 0.6, RATIO_MAX = 1.5;
-
-// FX
-var FX_HKD_CNY = 0.864;
-
-function fetchFX() {
-  fetch('https://open.er-api.com/v6/latest/HKD').then(function(r){return r.json();}).then(function(j){
-    if(j && j.rates && j.rates.CNY) FX_HKD_CNY = j.rates.CNY;
-  }).catch(function(){});
-}
 
 // ===== Tencent API fetch =====
 function fetchAll() {
   var codes = PE_STOCKS.map(function(s){return s.qtCode;});
-  codes.push(SMIC.H.qtCode, SMIC.A.qtCode);
   var s = document.createElement('script');
   s.src = 'https://qt.gtimg.cn/q='+codes.join(',')+'&_t='+Date.now();
   s.onload = function() {
@@ -383,19 +269,18 @@ function getField(code) {
   var raw = window['v_'+code];
   if(!raw) return null;
   var f = raw.split('~');
-  return { price:parseFloat(f[3])||0, prevClose:parseFloat(f[4])||0, pe:parseFloat(f[39])||0, chgPct:parseFloat(f[32])||0 };
+  return { price:parseFloat(f[3])||0, prevClose:parseFloat(f[4])||0, pe:parseFloat(f[39])||0 };
 }
 
 // ===== Process & Render =====
 function processData() {
-  // --- PE Stocks ---
   var peResults = [];
   for(var i=0; i<PE_STOCKS.length; i++) {
     var s = PE_STOCKS[i];
     var d = getField(s.qtCode);
     if(!d) continue;
     var ratio = d.pe > 0 ? d.pe / s.avgPE : 0;
-    peResults.push({ id:s.id, name:s.name, ticker:s.ticker, unit:s.unit, price:d.price, prevClose:d.prevClose, pe:d.pe, avgPE:s.avgPE, ratio:ratio, chgPct:d.chgPct });
+    peResults.push({ id:s.id, name:s.name, ticker:s.ticker, unit:s.unit, price:d.price, prevClose:d.prevClose, pe:d.pe, avgPE:s.avgPE, ratio:ratio });
   }
   // Sort by ratio ascending
   peResults.sort(function(a,b){ return a.ratio - b.ratio; });
@@ -421,12 +306,9 @@ function processData() {
     document.getElementById('sumRank1').textContent = peResults[0].name;
     document.getElementById('sumLowestRatio').textContent = peResults[0].ratio.toFixed(3);
     document.getElementById('sumLowestRatio').className = 'sv ' + (peResults[0].ratio < 1.0 ? 'green' : (peResults[0].ratio > 1.3 ? 'red' : 'gold'));
+    document.getElementById('sumVerdict').textContent = peResults[0].verdict;
+    document.getElementById('sumVerdict').className = 'sv ' + (peResults[0].cls==='buy'?'green':(peResults[0].cls==='expensive'?'red':'blue'));
   }
-
-  // --- SMIC ---
-  var hData = getField(SMIC.H.qtCode);
-  var aData = getField(SMIC.A.qtCode);
-  if(hData) renderSMIC(hData, aData);
 
   // Update time
   document.getElementById('updateTime').textContent = '最后更新：'+new Date().toLocaleString('zh-CN')+' · 每60秒自动刷新';
@@ -457,7 +339,6 @@ function renderPECard(r) {
   card.className = 'stock-card'+(r.cls==='buy'?' triggered':'')+(r.cls==='near'?' near':'');
   // Gauge (ratio scale 0.6 to 1.5)
   var range = RATIO_MAX - RATIO_MIN;
-  // Ticks: 0.8 = cheap zone, 1.0 = average, 1.3 = expensive
   var pos08 = ((0.8 - RATIO_MIN)/range*100);
   var pos10 = ((1.0 - RATIO_MIN)/range*100);
   var pos13 = ((1.3 - RATIO_MIN)/range*100);
@@ -481,101 +362,6 @@ function renderPECard(r) {
   el.innerHTML = parts.join(' · ');
 }
 
-function renderSMIC(hData, aData) {
-  // H card
-  document.getElementById('price-smic').textContent = SMIC.H.unit + ' ' + (hData.price>0?hData.price.toFixed(2):'--');
-  var hChg = hData.price - hData.prevClose;
-  var hChgEl = document.getElementById('chg-smic');
-  if(hData.prevClose>0) {
-    var hPct = (hChg/hData.prevClose*100).toFixed(2);
-    hChgEl.textContent = (hChg>=0?'+':'')+hChg.toFixed(2)+' ('+(hChg>=0?'+':'')+hPct+'%)';
-    hChgEl.className = 'price-chg '+(hChg>0?'up':(hChg<0?'down':'flat'));
-  }
-  renderSmicGauge('smic', hData.price, SMIC.H);
-
-  // A card
-  if(aData) {
-    document.getElementById('price-smic-alt').textContent = SMIC.A.unit + ' ' + (aData.price>0?aData.price.toFixed(2):'--');
-    var aChg = aData.price - aData.prevClose;
-    var aChgEl = document.getElementById('chg-smic-alt');
-    if(aData.prevClose>0) {
-      var aPct = (aChg/aData.prevClose*100).toFixed(2);
-      aChgEl.textContent = (aChg>=0?'+':'')+aChg.toFixed(2)+' ('+(aChg>=0?'+':'')+aPct+'%)';
-      aChgEl.className = 'price-chg '+(aChg>0?'up':(aChg<0?'down':'flat'));
-    }
-    renderSmicGauge('smic-alt', aData.price, SMIC.A);
-  }
-
-  // Status
-  var status = getSmicStatus(hData.price);
-  var stEl = document.getElementById('status-smic');
-  stEl.textContent = status.text;
-  stEl.className = 'status-tag '+status.cls;
-  var card = document.getElementById('card-smic');
-  card.className = 'stock-card'+(status.cls==='buy'?' triggered':'')+(status.cls==='near'?' near':'');
-
-  // AH premium
-  if(hData.price > 0 && aData && aData.price > 0) {
-    var aPriceHKD = aData.price / FX_HKD_CNY;
-    var premium = (aPriceHKD / hData.price - 1) * 100;
-    document.getElementById('sumAHPremium').textContent = 'A溢价+'+premium.toFixed(0)+'%';
-    // Cheaper indicator
-    var hCheaper = hData.price < aPriceHKD;
-    var hPanel = document.getElementById('panel-smic-h');
-    var aPanel = document.getElementById('panel-smic-alt');
-    if(hPanel) hPanel.classList.toggle('cheaper', hCheaper);
-    if(aPanel) aPanel.classList.toggle('cheaper', !hCheaper);
-    document.getElementById('cheap-smic-h').style.display = hCheaper ? 'inline-block':'none';
-    document.getElementById('cheap-smic-alt').style.display = !hCheaper ? 'inline-block':'none';
-  }
-
-  // Summary SMIC status
-  document.getElementById('sumSmicStatus').textContent = status.text;
-  document.getElementById('sumSmicStatus').className = 'sv '+(status.cls==='buy'?'green':(status.cls==='near'?'gold':''));
-
-  // Metrics
-  var mEl = document.getElementById('metrics-smic');
-  var parts = [];
-  if(hData.price > 0) {
-    var distA = ((hData.price/SMIC.H.lineA-1)*100).toFixed(1);
-    var cls = distA<=0?'val-green':(distA<=5?'val-gold':'');
-    parts.push('H距A档 <b class="'+cls+'">'+(distA>0?'+':'')+distA+'%</b>');
-  }
-  if(hData.price > 0 && SMIC.H.lineB) {
-    var distB = ((hData.price/SMIC.H.lineB-1)*100).toFixed(1);
-    parts.push('H距B档 <b>'+(distB>0?'+':'')+distB+'%</b>');
-  }
-  parts.push('<span style="opacity:.7">5x双轮 · 条件概率85-95%(IF泡沫破) · 只买H股</span>');
-  parts.push('<br><span style="color:#ef4444;font-size:12px;opacity:.8">🎯 等待：AI泡沫全面破裂 · NVDA季报暴雷+Hyperscaler集体削减capex</span>');
-  mEl.innerHTML = parts.join(' · ');
-}
-
-function getSmicStatus(hPrice) {
-  if(hPrice <= SMIC.H.lineR) return {text:'红线触发 · 极端恐慌', cls:'buy'};
-  if(hPrice <= SMIC.H.lineB) return {text:'B档触发 · 重仓', cls:'buy'};
-  if(hPrice <= SMIC.H.lineA) return {text:'A档触发 · 首仓', cls:'buy'};
-  var dist = ((hPrice/SMIC.H.lineA-1)*100);
-  if(dist <= 5) return {text:'接近A档 '+dist.toFixed(1)+'%', cls:'near'};
-  return {text:'距A档 +'+dist.toFixed(1)+'%', cls:'wait'};
-}
-
-function renderSmicGauge(prefix, price, config) {
-  var range = config.gaugeMax - config.gaugeMin;
-  // Ticks
-  var posR = ((config.lineR - config.gaugeMin)/range*100);
-  var posB = ((config.lineB - config.gaugeMin)/range*100);
-  var posA = ((config.lineA - config.gaugeMin)/range*100);
-  setTickPos('tick-'+prefix+'-r', posR, config.unit+config.lineR);
-  setTickPos('tick-'+prefix+'-b', posB, config.unit+config.lineB);
-  setTickPos('tick-'+prefix+'-a', posA, config.unit+config.lineA);
-  // Marker
-  var pct = Math.max(0, Math.min(100, (price - config.gaugeMin)/range*100));
-  var marker = document.getElementById('marker-'+prefix);
-  var label = document.getElementById('ml-'+prefix);
-  if(marker) marker.style.left = pct+'%';
-  if(label) label.textContent = config.unit + price.toFixed(1);
-}
-
 function setTickPos(tickId, pos, labelText) {
   var tick = document.getElementById(tickId);
   if(tick) tick.style.left = Math.max(0,Math.min(100,pos))+'%';
@@ -584,10 +370,8 @@ function setTickPos(tickId, pos, labelText) {
 }
 
 // ===== Init =====
-fetchFX();
 fetchAll();
 setInterval(fetchAll, 60000);
-setInterval(fetchFX, 3600000);
 })();
 </script>
 </body>
