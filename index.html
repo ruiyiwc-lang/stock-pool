@@ -205,6 +205,28 @@ body {
   background: rgba(34,197,94,0.15);
   color: #22c55e;
 }
+
+/* 数据校验面板 */
+.verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:32px; }
+.verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.verify-title .vt-icon { width:8px; height:8px; border-radius:50%; }
+.verify-title .vt-icon.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.5); }
+.verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
+.verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
+.verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
+.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
+.verify-item.pass { border-left:3px solid #22c55e; }
+.verify-item.drift { border-left:3px solid #eab308; }
+.verify-item.fail { border-left:3px solid #ef4444; }
+.vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.vi-name { font-weight:700; color:#e0e6ed; }
+.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
+.vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
+.vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
+.vi-row { display:flex; justify-content:space-between; color:#8fa0b3; margin-bottom:2px; }
+.vi-row .src { color:#6b7b8d; }
+.vi-row .val { color:#e0e6ed; font-weight:600; }
 </style>
 </head>
 <body data-active-page="index">
@@ -392,6 +414,130 @@ body {
   fetchData();
   setInterval(fetchData, 60000);
 })();
+</script>
+<div class="verify-panel" id="verifyPanel">
+  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 数据双源校验</div>
+  <div class="verify-grid" id="verifyGrid">
+    <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
+  </div>
+  <div style="font-size:11px;color:#6b7b8d;margin-top:8px;" id="verifySummary"></div>
+</div>
+
+
+<script>
+
+// ===== 数据双源校验 =====
+var VERIFY_RESULTS = {};
+
+function codeToSecid(code) {
+  if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
+  if (code.indexOf('sh') === 0) return '1.' + code.replace('sh','');
+  if (code.indexOf('sz') === 0) return '0.' + code.replace('sz','');
+  return null;
+}
+
+function fetchVerifyPrices() {
+  var items = [
+    {code:'hk09988', name:'BABA-HK'},
+    {code:'usGOOGL', name:'GOOG'},
+    {code:'usTSM', name:'TSM'},
+    {code:'hk00981', name:'中芯H'},
+    {code:'hk09992', name:'泡泡玛特'},
+    {code:'sh603259', name:'药明康德'}
+  ];
+  items.forEach(function(item) {
+    var secid = codeToSecid(item.code);
+    if (!secid) return;
+    var qtRaw = window['v_' + item.code];
+    var qtPrice = null;
+    if (qtRaw) {
+      var parts = (typeof qtRaw === 'string') ? qtRaw.split('~') : [];
+      qtPrice = parseFloat(parts[3]) || null;
+    }
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
+    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=' + secid + '&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+    fetch(url, {signal: controller.signal}).then(function(r){
+      clearTimeout(timeoutId);
+      return r.json();
+    }).then(function(j){
+      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
+      var kline = j.data.klines[0].split(',');
+      var emClose = parseFloat(kline[2]);
+      recordVerify(item, qtPrice, emClose, 'eastmoney日K', kline[0]);
+    }).catch(function(){
+      clearTimeout(timeoutId);
+      fetchIfzqFallback(item, qtPrice);
+    });
+  });
+}
+
+function fetchIfzqFallback(item, qtPrice) {
+  var code = item.code;
+  var ifzqCode, market;
+  if (code.indexOf('hk') === 0) { ifzqCode = code; market = code; }
+  else if (code.indexOf('sh') === 0 || code.indexOf('sz') === 0) { ifzqCode = code; market = code; }
+  else { recordVerify(item, qtPrice, null, 'ifzq', null); return; }
+  var url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
+  if (code.indexOf('hk') === 0) {
+    url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param=' + ifzqCode + ',day,,,1,qfq';
+  }
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || j.code !== 0 || !j.data) throw new Error('no data');
+    var stockData = j.data[market] || j.data[Object.keys(j.data)[0]];
+    if (!stockData) throw new Error('no stock data');
+    var dayArr = stockData.qfqday || stockData.day;
+    if (!dayArr || dayArr.length === 0) throw new Error('no kline');
+    var lastDay = dayArr[dayArr.length - 1];
+    var ifzqClose = parseFloat(lastDay[2]);
+    recordVerify(item, qtPrice, ifzqClose, 'ifzq日K', lastDay[0]);
+  }).catch(function(){
+    recordVerify(item, qtPrice, null, 'ifzq', null);
+  });
+}
+
+function recordVerify(item, qtPrice, src2Price, src2Source, src2Date) {
+  if (qtPrice && src2Price) {
+    var diff = Math.abs(qtPrice - src2Price) / qtPrice * 100;
+    var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:src2Price, diff:diff, status:status, src2Source:src2Source, klineDate:src2Date};
+  } else if (qtPrice) {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:qtPrice, src2:null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  } else {
+    VERIFY_RESULTS[item.code] = {name:item.name, src1:null, src2:src2Price||null, diff:null, status:'fail', src2Source:src2Source||'备选源'};
+  }
+  renderVerifyPanel();
+}
+
+function renderVerifyPanel() {
+  var grid = document.getElementById('verifyGrid');
+  var icon = document.getElementById('verifyIcon');
+  var summary = document.getElementById('verifySummary');
+  if (!grid) return;
+  var html = '';
+  var passCount = 0, driftCount = 0, failCount = 0, totalCount = 0;
+  var codes = Object.keys(VERIFY_RESULTS).sort();
+  codes.forEach(function(code) {
+    var r = VERIFY_RESULTS[code];
+    totalCount++;
+    if (r.status === 'pass') passCount++;
+    else if (r.status === 'drift') driftCount++;
+    else failCount++;
+    html += '<div class="verify-item ' + r.status + '">';
+    html += '<div class="vi-head"><span class="vi-name">' + r.name + '</span><span class="vi-badge ' + r.status + '">' + (r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">qt.gtimg</span><span class="val">' + (r.src1 !== null ? r.src1.toFixed(2) : '失败') + '</span></div>';
+    html += '<div class="vi-row"><span class="src">' + (r.src2Source||'eastmoney') + (r.klineDate?' ('+r.klineDate+')':'') + '</span><span class="val">' + (r.src2 !== null ? r.src2.toFixed(2) : '失败') + '</span></div>';
+    if (r.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + r.diff.toFixed(2) + '%</span></div>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
+  var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
+  icon.className = 'vt-icon ' + overallStatus;
+  summary.textContent = '共' + totalCount + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 阈值: <1%通过/<3%偏差';
+}
+
+// Trigger verification after main data loads
+setTimeout(fetchVerifyPrices, 3000);
 </script>
 </body>
 </html>
