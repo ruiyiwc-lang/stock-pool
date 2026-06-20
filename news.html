@@ -106,7 +106,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 <a class="back-link" href="portfolio.html">&larr; 返回三档</a>
 <h1>持仓新闻监控</h1>
-<div class="subtitle">自动追踪三档标的 · 早8:00+晚20:00新闻 · 周六10:00财报/股权 · <span id="last-update">手动初始化 2026-06-20</span></div>
+<div class="subtitle">自动追踪三档标的 · 早8:00+晚20:00新闻 · 周六10:00财报/股权 · <span id="last-update">周末深度扫描 2026-06-20 10:00</span></div>
 
 <!-- 统计面板 -->
 <div class="stats-panel" id="stats-panel">
@@ -218,12 +218,98 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   <div class="section-title">财报 & 股权变化 <span class="freq-tag weekly">周 · cron 周六 10:00</span></div>
   <div class="earnings-card" id="earnings-container">
 <!-- EARNINGS_DATA_START -->
-<div class="news-empty">暂无数据 · 等待周六 cron 执行后自动填充</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">中芯国际</div>
+    <div class="earn-item-detail">Q1营收$25.05亿(+11.5%) | 毛利率20.1% | 产能利用率93.1% | Q2指引:环比+14~16%,毛利率20~22%</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge upcoming">下次: Q2 2026.8</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">泡泡玛特</div>
+    <div class="earn-item-detail">FY2025营收371.2亿(+184.7%) | 经调整净利130.8亿(+284.5%) | 毛利率72.1% | 2026指引:增速≥20%</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge upcoming">下次: 中期 2026.8</span>
+    <br><span class="earn-badge change">段永平持股6.04%·第二大股东</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">腾讯</div>
+    <div class="earn-item-detail">Q1营收1965亿(+9%) | 归母净利581亿(+21%) | 游戏+6%/广告+20%/金科企服+9% | 资本开支370亿(AI)</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.5.13</span>
+    <br><span class="earn-badge change">6.12回购5.01亿港元·持续回购中</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">阿里巴巴</div>
+    <div class="earn-item-detail">FY26Q3营收2848亿(+9%剔除处置) | 云收入+36% | AI产品连续10季三位数增长 | 平头哥GPU量产</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge upcoming">下次: FY26Q4 2026.8</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">百济神州</div>
+    <div class="earn-item-detail">Q1营收105.44亿(+31%) | 净利16.08亿(超去年全年) | 百悦泽75.98亿(+33.5%) | 毛利率88.8%</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.5.9</span>
+    <br><span class="earn-badge change">高瓴退出董事会·持股降至4.89%</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">药明康德</div>
+    <div class="earn-item-detail">Q1营收124.4亿(+28.8%) | 扣非净利+83.6% | 毛利率50.4%创新高 | 在手订单597.7亿(+23.6%)</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.4.28</span>
+    <br><span class="earn-badge change">6.9公告10亿回购(员工持股)</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">宁德时代</div>
+    <div class="earn-item-detail">Q1营收1291亿(+52.5%) | 归母净利207亿(+48.5%) | 日赚2.3亿 | 产能利用率80~90% | 分红304亿</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.4.16</span>
+    <br><span class="earn-badge change">员工持股计划完成过户</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">比亚迪</div>
+    <div class="earn-item-detail">Q1营收1502亿(-11.8%) | 归母净利40.85亿(-55.4%) | 利润承压:价格战+出口关税 | 储能对冲中</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.4.29</span>
+  </div>
+</div>
+<div class="earn-item">
+  <div class="earn-item-left">
+    <div class="earn-item-name">贵州茅台</div>
+    <div class="earn-item-detail">Q1营收547亿(+6.3%) | 归母净利272亿(+1.5%) | 日赚3亿 | i茅台+267% | 增速放缓至个位数</div>
+  </div>
+  <div class="earn-item-right">
+    <span class="earn-badge reported">已报 2026.4.25</span>
+    <br><span class="earn-badge change">30亿回购已完成·全部注销</span>
+  </div>
+</div>
 <!-- EARNINGS_DATA_END -->
   </div>
 </div>
 
-<div class="update-time">最后更新: <span id="update-ts">-</span></div>
+<div class="update-time">最后更新: <span id="update-ts">2026-06-20 10:00 (周末财报扫描)</span></div>
 
 <script>
 // ==== WATCH_LIST_START ====
