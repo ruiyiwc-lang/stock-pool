@@ -480,37 +480,30 @@ function verifyFinancials(results) {
     var secid = codeToSecid(code);
     if (!secid) return Promise.resolve(null);
 
-    // Fetch from push2his for latest price + use web.ifzq for PE
-    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
-    return fetch(url).then(function(resp){return resp.json();}).then(function(j){
+    // Try push2his first (5s timeout), fallback to web.ifzq.gtimg.cn
+    return fetchVerifyPrice(code, secid).then(function(priceInfo) {
       var result = {name: cfg.name, key: cfg.key, status: 'pending'};
-      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) {
+      if (!priceInfo) {
         result.status = 'fail';
-        result.reason = '第二源(eastmoney日K)无数据';
+        result.reason = '校验源(行情)不可用';
         return result;
       }
-      var kline = j.data.klines[0].split(',');
-      var emPrice = parseFloat(kline[2]);
-      var emDate = kline[0];
-      result.emPrice = emPrice;
-      result.emDate = emDate;
+      result.emPrice = priceInfo.price;
+      result.emDate = priceInfo.date;
+      result.src2Source = priceInfo.source;
 
-      // Cross-check: latest quarterly revenue from primary source
       if (quarters && quarters.length > 0) {
         var latestQ = quarters[0];
         result.src1Revenue = latestQ.revenue;
         result.src1Profit = latestQ.profit;
         result.src1Period = latestQ.title;
         result.src1Source = '东财报表API';
-        result.src2Source = 'eastmoney日K';
-        result.src2Price = emPrice;
+        result.src2Price = priceInfo.price;
 
-        // If we have revenue data, mark as verified (both from same East Money ecosystem but different endpoints)
-        // Real verification: check the price endpoint returned valid data that's consistent
-        if (latestQ.revenue && latestQ.revenue > 0 && emPrice > 0) {
+        if (latestQ.revenue && latestQ.revenue > 0 && priceInfo.price > 0) {
           result.status = 'pass';
-          result.reason = '报表数据有效 · 行情验证价格' + emPrice.toFixed(2) + ' ('+emDate+')';
-        } else if (emPrice > 0) {
+          result.reason = '报表数据有效 · 行情验证价格' + priceInfo.price.toFixed(2) + ' ('+priceInfo.date+' · '+priceInfo.source+')';
+        } else if (priceInfo.price > 0) {
           result.status = 'drift';
           result.reason = '报表部分字段缺失 · 价格正常';
         } else {
@@ -522,14 +515,46 @@ function verifyFinancials(results) {
         result.reason = '主源无财报数据';
       }
       return result;
-    }).catch(function(){
-      return {name: cfg.name, key: cfg.key, status: 'fail', reason: '校验源请求失败'};
     });
   });
 
   Promise.all(promises).then(function(verifyResults){
     VERIFY_RESULTS = verifyResults.filter(function(r){return r !== null;});
     renderVerifyPanel();
+  });
+}
+
+function fetchVerifyPrice(code, secid) {
+  // Try push2his with 5s timeout, fallback to ifzq
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
+  var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+
+  return fetch(url, {signal: controller.signal}).then(function(r){
+    clearTimeout(timeoutId);
+    return r.json();
+  }).then(function(j){
+    if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
+    var kline = j.data.klines[0].split(',');
+    return {price: parseFloat(kline[2]), date: kline[0], source: 'eastmoney日K'};
+  }).catch(function(){
+    clearTimeout(timeoutId);
+    // Fallback: web.ifzq.gtimg.cn
+    var ifzqUrl;
+    if (code.indexOf('hk') === 0) {
+      ifzqUrl = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param='+code+',day,,,1,qfq';
+    } else {
+      ifzqUrl = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param='+code+',day,,,1,qfq';
+    }
+    return fetch(ifzqUrl).then(function(r){return r.json();}).then(function(j){
+      if (!j || j.code !== 0 || !j.data) return null;
+      var stockData = j.data[code] || j.data[Object.keys(j.data)[0]];
+      if (!stockData) return null;
+      var dayArr = stockData.qfqday || stockData.day;
+      if (!dayArr || dayArr.length === 0) return null;
+      var lastDay = dayArr[dayArr.length - 1];
+      return {price: parseFloat(lastDay[2]), date: lastDay[0], source: 'ifzq日K'};
+    }).catch(function(){ return null; });
   });
 }
 
