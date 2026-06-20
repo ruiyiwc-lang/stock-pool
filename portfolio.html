@@ -813,7 +813,8 @@ function fetchFX() {
 }
 
 function fetchVerifyPrices() {
-  // Fetch prices from push2his.eastmoney.com for all codes as cross-verification
+  // Fetch prices from two alternative sources for cross-verification
+  // Source priority: push2his.eastmoney.com → fallback: web.ifzq.gtimg.cn
   var allCodes = [];
   Object.keys(STOCKS).forEach(function(k) {
     allCodes.push({key: k, code: STOCKS[k].code, name: STOCKS[k].name});
@@ -823,38 +824,80 @@ function fetchVerifyPrices() {
   allCodes.forEach(function(item) {
     var secid = codeToSecid(item.code);
     if (!secid) return;
-    // push2his: latest 1 daily kline
-    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
-    fetch(url).then(function(r){return r.json();}).then(function(j){
-      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) {
-        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: null, diff: null, status: 'fail', src2Source: 'eastmoney'};
-        renderVerifyPanel();
-        return;
-      }
-      var kline = j.data.klines[0].split(',');
-      // kline: date,open,close,high,low,vol,amount
-      var emClose = parseFloat(kline[2]);
-      // Get qt.gtimg.cn price from window variable
-      var qtRaw = window['v_'+item.code];
-      var qtPrice = null;
-      if (qtRaw) qtPrice = parseFloat(qtRaw.split('~')[3]);
+    // Get qt.gtimg.cn price from window variable
+    var qtRaw = window['v_'+item.code];
+    var qtPrice = null;
+    if (qtRaw) qtPrice = parseFloat(qtRaw.split('~')[3]);
 
-      if (qtPrice && emClose) {
-        var diff = Math.abs(qtPrice - emClose) / qtPrice * 100;
-        // 盘中qt是实时但push2his是最新日K收盘，正常差异<2%
-        var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
-        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: emClose, diff: diff, status: status, src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K', klineDate: kline[0]};
-      } else if (qtPrice) {
-        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: null, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K'};
-      } else if (emClose) {
-        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: emClose, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K'};
-      }
-      renderVerifyPanel();
+    // Try push2his first, timeout 5s, fallback to ifzq
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function(){ controller.abort(); }, 5000);
+    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+
+    fetch(url, {signal: controller.signal}).then(function(r){
+      clearTimeout(timeoutId);
+      return r.json();
+    }).then(function(j){
+      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) throw new Error('no data');
+      var kline = j.data.klines[0].split(',');
+      var emClose = parseFloat(kline[2]);
+      recordVerify(item, qtPrice, emClose, 'eastmoney日K', kline[0]);
     }).catch(function(){
-      VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: null, diff: null, status: 'fail', src2Source: 'eastmoney'};
-      renderVerifyPanel();
+      clearTimeout(timeoutId);
+      // Fallback: web.ifzq.gtimg.cn kline
+      fetchIfzqFallback(item, qtPrice);
     });
   });
+}
+
+function fetchIfzqFallback(item, qtPrice) {
+  // web.ifzq.gtimg.cn returns daily kline for HK stocks as hk{code}, for A-shares as prefix+code
+  var code = item.code;
+  var ifzqCode, market;
+  if (code.indexOf('hk') === 0) {
+    ifzqCode = code; // hk00700
+    market = code; // key in response data
+  } else if (code.indexOf('sh') === 0 || code.indexOf('sz') === 0) {
+    ifzqCode = code; // sh600519
+    market = code;
+  } else {
+    recordVerify(item, qtPrice, null, 'ifzq', null);
+    return;
+  }
+  var url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param='+ifzqCode+',day,,,1,qfq';
+  if (code.indexOf('hk') === 0) {
+    url = 'https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param='+ifzqCode+',day,,,1,qfq';
+  }
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || j.code !== 0 || !j.data) throw new Error('no data');
+    var stockData = j.data[market] || j.data[Object.keys(j.data)[0]];
+    if (!stockData) throw new Error('no stock data');
+    // Try qfqday first, then day
+    var dayArr = stockData.qfqday || stockData.day;
+    if (!dayArr || dayArr.length === 0) throw new Error('no kline');
+    var lastDay = dayArr[dayArr.length - 1];
+    // [date, open, close, high, low, volume, ...]
+    var ifzqClose = parseFloat(lastDay[2]);
+    var ifzqDate = lastDay[0];
+    recordVerify(item, qtPrice, ifzqClose, 'ifzq日K', ifzqDate);
+  }).catch(function(){
+    recordVerify(item, qtPrice, null, 'ifzq', null);
+  });
+}
+
+function recordVerify(item, qtPrice, src2Price, src2Source, src2Date) {
+  if (qtPrice && src2Price) {
+    var diff = Math.abs(qtPrice - src2Price) / qtPrice * 100;
+    var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
+    VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: src2Price, diff: diff, status: status, src1Source: 'qt.gtimg.cn', src2Source: src2Source, klineDate: src2Date};
+  } else if (qtPrice) {
+    VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: null, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: src2Source || '备选源'};
+  } else if (src2Price) {
+    VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: src2Price, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: src2Source};
+  } else {
+    VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: null, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: src2Source || '备选源'};
+  }
+  renderVerifyPanel();
 }
 
 function renderVerifyPanel() {
