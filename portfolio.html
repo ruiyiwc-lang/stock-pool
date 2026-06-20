@@ -831,7 +831,7 @@ function renderEarningsBlock(el, quarters) {
 }
 
 function fetchEarningsA(key, secucode) {
-  var url = 'https://datacenter-web.eastmoney.com/api/data/get?type=RPT_LICO_FN_CPD&sty=ALL&token=894050c76af8597a853f5b408b759f5d&filter=(SECUCODE%3D%22' + encodeURIComponent(secucode) + '%22)&st=NOTICE_DATE&sr=-1&ps=4&p=1';
+  var url = 'https://datacenter-web.eastmoney.com/api/data/get?type=RPT_LICO_FN_CPD&sty=ALL&token=894050c76af8597a853f5b408b759f5d&filter=(SECUCODE%3D%22' + secucode + '%22)&st=NOTICE_DATE&sr=-1&ps=4&p=1';
   fetch(url).then(function(r){return r.json();}).then(function(j){
     if (!j || !j.result || !j.result.data) return;
     var data = j.result.data;
@@ -850,7 +850,7 @@ function fetchEarningsA(key, secucode) {
 }
 
 function fetchEarningsHK(key, secucode) {
-  var url = 'https://datacenter.eastmoney.com/securities/api/data/get?type=RPT_HKF10_FN_INCOME&sty=ALL&filter=(SECUCODE%3D%22' + encodeURIComponent(secucode) + '%22)(STD_ITEM_CODE+in+(%22004001001%22,%22004025002%22))&ps=10&sr=-1&st=REPORT_DATE&source=HSF10&client=APP';
+  var url = 'https://datacenter.eastmoney.com/securities/api/data/get?type=RPT_HKF10_FN_INCOME&sty=ALL&filter=(SECUCODE%3D%22' + secucode + '%22)(STD_ITEM_CODE+in+(%22004001001%22,%22004025002%22))&ps=10&sr=-1&st=REPORT_DATE&source=HSF10&client=APP';
   fetch(url).then(function(r){return r.json();}).then(function(j){
     if (!j || !j.result || !j.result.data) return;
     var data = j.result.data;
