@@ -512,11 +512,11 @@ function parseQuoteHK(raw) {
   
   STATE.priceHK = parseFloat(parts[3]);
   STATE.prevCloseHK = parseFloat(parts[4]);
-  STATE.turnoverHK = parseFloat(parts[6]); // 成交额(万)
-  STATE.pe = parseFloat(parts[45]) || parseFloat(parts[39]);
-  STATE.turnoverRateHK = parseFloat(parts[44]);
-  STATE.high52 = parseFloat(parts[33]) || null;
-  STATE.low52 = parseFloat(parts[34]) || null;
+  STATE.turnoverHK = parseFloat(parts[37]); // 成交额(元)
+  STATE.pe = parseFloat(parts[39]); // PE(TTM)
+  STATE.turnoverRateHK = parseFloat(parts[47]); // 换手率%
+  STATE.high52 = parseFloat(parts[48]) || null; // 52周最高
+  STATE.low52 = parseFloat(parts[49]) || null; // 52周最低
   
   renderQuoteHK();
 }
@@ -549,7 +549,7 @@ function parseQuoteA(raw) {
   
   STATE.priceA = parseFloat(parts[3]);
   STATE.prevCloseA = parseFloat(parts[4]);
-  STATE.turnoverA = parseFloat(parts[6]); // 成交额(万)
+  STATE.turnoverA = parseFloat(parts[37]); // 成交额(万元)
   
   renderQuoteA();
 }
@@ -580,7 +580,7 @@ function renderQuoteHK() {
   
   // HK Turnover
   if (STATE.turnoverHK) {
-    $('kpi-turnover-hk').textContent = fmt(STATE.turnoverHK / 10000, 2); // 万→亿
+    $('kpi-turnover-hk').textContent = fmt(STATE.turnoverHK / 1e8, 2); // 元→亿
   }
   
   // HK Turnover rate
