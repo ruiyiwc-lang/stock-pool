@@ -311,7 +311,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   <div class="stock-card" id="card-byd">
     <div class="card-top">
       <div>
-        <span class="stock-title">比亚迪</span><span class="stock-code">002594.SZ</span>
+        <span class="stock-title">比亚迪</span><span class="stock-code">1211.HK</span>
       </div>
       <span class="status-tag wait" id="status-byd">加载中</span>
     </div>
@@ -361,66 +361,80 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 var STOCKS = {
   smic: {
     code: 'hk00981', name:'中芯国际', unit:'HK$', tier:1,
+    altCode:'sh688981', altNote:'A股溢价106% · 只买H',
     lineA:57.5, lineB:50, lineR:35,
     gaugeMin:25, gaugeMax:100,
-    thesis:'5x双轮 · 等AI泡沫破灭情绪杀(条件概率85-95%)',
-    note:'止盈=FwdPE>30x且产能见顶 · 红=独占性崩塌认错 · 恐慌底HK$42-50'
+    thesis:'5x双轮 · 条件概率85-95%(IF泡沫破)',
+    note:'止盈=FwdPE>30x且产能见顶 · 红=独占性崩塌认错',
+    despair:'AI泡沫全面破裂 · NVDA季报暴雷+Hyperscaler集体削减capex · 港股系统性-40% · 半导体板块额外penalty'
   },
   popmart: {
     code: 'hk09992', name:'泡泡玛特', unit:'HK$', tier:1,
     lineA:150, lineB:120, lineR:100,
     gaugeMin:80, gaugeMax:250,
-    thesis:'段永平线=裸平台价值HK$152 · Labubu=0',
-    note:'止盈=PE>50x且增速<30% · 认错=连2Q非Labubu<20%+毛利<55%'
+    thesis:'段永平裸平台价HK$152 · Labubu=0',
+    note:'止盈=PE>50x且增速<30% · 认错=连2Q非Labubu<20%+毛利<55%',
+    despair:'Labubu生命周期见顶+补货导致二级市场崩盘 · 市场price-in单一IP依赖 · 基金被动减仓'
   },
   tencent: {
     code: 'hk00700', name:'腾讯', unit:'HK$', tier:2,
     lineA:430, lineB:400, lineR:350,
     gaugeMin:320, gaugeMax:560,
     thesis:'FwdPE 12x入场 · NTM EPS HK$36.3',
-    note:'止盈=FwdPE>20x且增速<10% · 红=击穿2022绝对底 · 时间止损2026.12.31'
+    note:'止盈=FwdPE>20x且增速<10% · 红=击穿2022底 · 时间止损2026.12.31',
+    despair:'日常摩擦即可 · 美联储鹰派/港股通南向减速/Prosus减持 · 一周内波动范围'
   },
   baba: {
     code: 'hk09988', name:'阿里巴巴', unit:'HK$', tier:2,
     lineA:null, lineB:null, lineR:null,
     held:true,
     thesis:'AI叙事+平头哥全栈+电商基础设施',
-    note:'已持仓 · 不设价格阈值 · 只监控'
+    note:'已持仓 · 不设阈值 · 只监控',
+    despair:''
   },
   beigene: {
     code: 'hk06160', name:'百济神州', unit:'HK$', tier:2,
+    altCode:'sh688235', altNote:'A股流动性差 · 选H股',
     lineA:144, lineB:null, lineR:null,
     gaugeMin:100, gaugeMax:220,
     thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
-    note:'止盈=PE>30x且增速<25% · 认错日2026.12.16 · 事故=biotech系统性抛售'
+    note:'止盈=PE>30x且增速<25% · 认错日2026.12.16',
+    despair:'全球biotech系统性抛售 · FDA审批黑天鹅 · 美国政治风险(53%美国收入) · Brukinsa竞品突破'
   },
   wuxi: {
     code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
+    altCode:'hk02359', altNote:'H股折价~10% · 但A股流动性更好',
     lineA:85, lineB:null, lineR:null,
     gaugeMin:50, gaugeMax:140,
-    thesis:'VC赌注定价 · 1年低点¥85.5(2025.12)',
-    note:'止盈=PE>25x且增速<15% · 事故=BIOSECURE投票/1260H · 认错=海外<45%'
+    thesis:'1年低点¥85.5(2025.12) · VC赌注定价',
+    note:'止盈=PE>25x且增速<15% · 认错=海外<45%',
+    despair:'BIOSECURE Act众议院排期投票 · 1260H实质推进 · 美国中期选举前反华情绪升温 · CXO产能全球过剩'
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
+    altCode:'hk03750', altNote:'H股溢价56% · 买A股',
     lineA:312, lineB:null, lineR:null,
     gaugeMin:200, gaugeMax:470,
-    thesis:'止盈PE30x÷2=15x入场 · NTM EPS ¥20.77',
-    note:'止盈=PE>30x且增速<20% · 事故=EV/储能需求证伪 · 等恐慌(会修复)'
+    thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77',
+    note:'止盈=PE>30x且增速<20% · 等恐慌(跌了会修复)',
+    despair:'全球EV/储能需求证伪 · 电池价格战毛利<15% · 产能严重过剩+客户破产坏账 · 类2025.07低点¥241'
   },
   byd: {
-    code: 'sz002594', name:'比亚迪', unit:'¥', tier:3,
-    lineA:57, lineB:null, lineR:null,
-    gaugeMin:40, gaugeMax:120,
-    thesis:'丰田锚12.5x PE · 无故事=制造业定价',
-    note:'止盈=PE>25x且增速<20% · 事故=行业出清+出海封杀 · 等认知收敛(不回来)'
+    code: 'hk01211', name:'比亚迪', unit:'HK$', tier:3,
+    altCode:'sz002594', altNote:'A股溢价26% · 买H股',
+    lineA:49, lineB:null, lineR:null,
+    gaugeMin:30, gaugeMax:110,
+    thesis:'丰田锚12.5x PE · H股更便宜',
+    note:'止盈=PE>25x且增速<20% · 等认知收敛(PE永久压缩)',
+    despair:'出海全面封杀(美+欧+东南亚关税) · 行业出清第三阶段中国品牌互杀 · 市场接受BYD=丰田 · A股系统性2635级别'
   },
   maotai: {
     code: 'sh600519', name:'贵州茅台', unit:'¥', tier:3,
     lineA:1000, lineB:null, lineR:null,
     gaugeMin:750, gaugeMax:1400,
-    thesis:'心理关口 · 14.5x PE · 破千=信仰崩塌',
-    note:'止盈=PE>25x且增速<5% · 事故=消费税/批价崩 · 破位后观察企稳再建'
+    thesis:'心理关口¥1000 · 14.5x PE · 破千=信仰崩',
+    note:'止盈=PE>25x且增速<5% · 破位后观察企稳再建',
+    despair:'白酒消费税落地 · 批价跌破¥1800+经销商大面积砸货 · 散户信仰崩塌+基金被动减仓+量化止损连锁'
   }
 };
 
@@ -488,7 +502,12 @@ function renderMetrics(key, price, prevClose) {
     var distB = ((price/s.lineB-1)*100).toFixed(1);
     parts.push('距B档 <b>'+(distB>0?'+':'')+distB+'%</b>');
   }
+  if (s.altNote) parts.push('<span style="color:#5dade2">'+s.altNote+'</span>');
   if (s.thesis) parts.push('<span style="opacity:.7">'+s.thesis+'</span>');
+  // Despair line
+  if (s.despair) {
+    parts.push('<br><span style="color:#c0392b;font-size:12px;opacity:.8">🎯 等待：'+s.despair+'</span>');
+  }
   el.innerHTML = parts.join(' · ');
 }
 
