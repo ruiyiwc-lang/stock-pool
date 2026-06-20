@@ -109,6 +109,30 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 @media(max-width:700px) {
   .earnings-grid { grid-template-columns:1fr; }
 }
+
+/* 数据校验面板 */
+.verify-panel { background:#0d1420; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-top:24px; margin-bottom:32px; }
+.verify-title { font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.verify-title .vt-icon { width:8px; height:8px; border-radius:50%; }
+.verify-title .vt-icon.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,.5); }
+.verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
+.verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
+.verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
+.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
+.verify-item.pass { border-left:3px solid #22c55e; }
+.verify-item.drift { border-left:3px solid #eab308; }
+.verify-item.fail { border-left:3px solid #ef4444; }
+.vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.vi-name { font-weight:700; color:#e0e6ed; }
+.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
+.vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
+.vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
+.vi-row { display:flex; justify-content:space-between; color:#8fa0b3; margin-bottom:2px; }
+.vi-row .src { color:#6b7b8d; }
+.vi-row .val { color:#e0e6ed; font-weight:600; }
+.vi-row .val.mismatch { color:#eab308; }
+.verify-summary { margin-top:10px; font-size:11px; color:#6b7b8d; text-align:right; }
 </style>
 </head>
 <body data-active-page="portfolio">
@@ -457,6 +481,15 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   </div>
 </div>
 
+<!-- 数据校验面板 -->
+<div class="verify-panel" id="verifyPanel">
+  <div class="verify-title"><span class="vt-icon ok" id="verifyIcon"></span> 数据双源校验</div>
+  <div class="verify-grid" id="verifyGrid">
+    <div class="verify-item" style="color:#6b7b8d;">校验中...</div>
+  </div>
+  <div class="verify-summary" id="verifySummary"></div>
+</div>
+
 <div class="update-time" id="updateTime">加载中...</div>
 
 <script>
@@ -726,16 +759,152 @@ function updateCard(key, price, prevClose, ahInfo) {
 
 // ===== 数据拉取 =====
 var FX_HKD_CNY = 0.864; // fallback default, refreshed via fetchFX
+var FX_SOURCE1 = null; // open.er-api
+var FX_SOURCE2 = null; // frankfurter
+
+// ===== 双源校验系统 =====
+var VERIFY_RESULTS = {}; // key -> {name, src1:{source,price}, src2:{source,price}, diff, status}
+var VERIFY_FX = {src1:null, src2:null, diff:null, status:'pending'};
+
+// East Money secid映射: 1=SH, 0=SZ, 116=HK
+function codeToSecid(code) {
+  if (code.indexOf('hk') === 0) return '116.' + code.replace('hk','');
+  if (code.indexOf('sh') === 0) return '1.' + code.replace('sh','');
+  if (code.indexOf('sz') === 0) return '0.' + code.replace('sz','');
+  return null;
+}
 
 function fetchFX() {
-  // open.er-api.com supports CORS and is free
-  fetch('https://open.er-api.com/v6/latest/HKD').then(function(r){return r.json();}).then(function(j){
+  // Source 1: open.er-api.com
+  var p1 = fetch('https://open.er-api.com/v6/latest/HKD').then(function(r){return r.json();}).then(function(j){
     if (j && j.rates && j.rates.CNY) {
-      FX_HKD_CNY = j.rates.CNY;
+      FX_SOURCE1 = j.rates.CNY;
+      FX_HKD_CNY = FX_SOURCE1;
       var fxEl = document.getElementById('fxRate');
       if (fxEl) fxEl.textContent = '1 HKD = ' + FX_HKD_CNY.toFixed(4) + ' CNY';
     }
-  }).catch(function(){});
+  }).catch(function(){ FX_SOURCE1 = null; });
+
+  // Source 2: frankfurter.app
+  var p2 = fetch('https://api.frankfurter.app/latest?from=HKD&to=CNY').then(function(r){return r.json();}).then(function(j){
+    if (j && j.rates && j.rates.CNY) {
+      FX_SOURCE2 = j.rates.CNY;
+    }
+  }).catch(function(){ FX_SOURCE2 = null; });
+
+  Promise.all([p1, p2]).then(function(){
+    // Verify FX
+    if (FX_SOURCE1 !== null && FX_SOURCE2 !== null) {
+      var diff = Math.abs(FX_SOURCE1 - FX_SOURCE2) / FX_SOURCE1 * 100;
+      VERIFY_FX = {src1: FX_SOURCE1, src2: FX_SOURCE2, diff: diff, status: diff < 0.5 ? 'pass' : (diff < 2 ? 'drift' : 'fail')};
+      // Use average if both valid
+      FX_HKD_CNY = (FX_SOURCE1 + FX_SOURCE2) / 2;
+    } else if (FX_SOURCE1 !== null) {
+      VERIFY_FX = {src1: FX_SOURCE1, src2: null, diff: null, status: 'fail'};
+      FX_HKD_CNY = FX_SOURCE1;
+    } else if (FX_SOURCE2 !== null) {
+      VERIFY_FX = {src1: null, src2: FX_SOURCE2, diff: null, status: 'fail'};
+      FX_HKD_CNY = FX_SOURCE2;
+    } else {
+      VERIFY_FX = {src1: null, src2: null, diff: null, status: 'fail'};
+    }
+    renderVerifyPanel();
+  });
+}
+
+function fetchVerifyPrices() {
+  // Fetch prices from push2his.eastmoney.com for all codes as cross-verification
+  var allCodes = [];
+  Object.keys(STOCKS).forEach(function(k) {
+    allCodes.push({key: k, code: STOCKS[k].code, name: STOCKS[k].name});
+    if (STOCKS[k].altCode) allCodes.push({key: k+'_alt', code: STOCKS[k].altCode, name: STOCKS[k].name+'('+STOCKS[k].altUnit+')'});
+  });
+
+  allCodes.forEach(function(item) {
+    var secid = codeToSecid(item.code);
+    if (!secid) return;
+    // push2his: latest 1 daily kline
+    var url = 'https://push2his.eastmoney.com/api/qt/stock/kline/get?secid='+secid+'&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57&klt=101&fqt=1&end=20500101&lmt=1';
+    fetch(url).then(function(r){return r.json();}).then(function(j){
+      if (!j || !j.data || !j.data.klines || j.data.klines.length === 0) {
+        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: null, diff: null, status: 'fail', src2Source: 'eastmoney'};
+        renderVerifyPanel();
+        return;
+      }
+      var kline = j.data.klines[0].split(',');
+      // kline: date,open,close,high,low,vol,amount
+      var emClose = parseFloat(kline[2]);
+      // Get qt.gtimg.cn price from window variable
+      var qtRaw = window['v_'+item.code];
+      var qtPrice = null;
+      if (qtRaw) qtPrice = parseFloat(qtRaw.split('~')[3]);
+
+      if (qtPrice && emClose) {
+        var diff = Math.abs(qtPrice - emClose) / qtPrice * 100;
+        // 盘中qt是实时但push2his是最新日K收盘，正常差异<2%
+        var status = diff < 1 ? 'pass' : (diff < 3 ? 'drift' : 'fail');
+        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: emClose, diff: diff, status: status, src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K', klineDate: kline[0]};
+      } else if (qtPrice) {
+        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: qtPrice, src2: null, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K'};
+      } else if (emClose) {
+        VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: emClose, diff: null, status: 'fail', src1Source: 'qt.gtimg.cn', src2Source: 'eastmoney日K'};
+      }
+      renderVerifyPanel();
+    }).catch(function(){
+      VERIFY_RESULTS[item.code] = {name: item.name, code: item.code, src1: null, src2: null, diff: null, status: 'fail', src2Source: 'eastmoney'};
+      renderVerifyPanel();
+    });
+  });
+}
+
+function renderVerifyPanel() {
+  var grid = document.getElementById('verifyGrid');
+  var icon = document.getElementById('verifyIcon');
+  var summary = document.getElementById('verifySummary');
+  if (!grid) return;
+
+  var html = '';
+  var passCount = 0, driftCount = 0, failCount = 0, totalCount = 0;
+
+  // FX verification item
+  totalCount++;
+  var fxStatus = VERIFY_FX.status;
+  if (fxStatus === 'pass') passCount++;
+  else if (fxStatus === 'drift') driftCount++;
+  else failCount++;
+
+  html += '<div class="verify-item '+fxStatus+'">';
+  html += '<div class="vi-head"><span class="vi-name">HKD/CNY 汇率</span><span class="vi-badge '+fxStatus+'">'+(fxStatus==='pass'?'一致':fxStatus==='drift'?'偏差':'异常')+'</span></div>';
+  html += '<div class="vi-row"><span class="src">open.er-api</span><span class="val">'+(VERIFY_FX.src1 !== null ? VERIFY_FX.src1.toFixed(5) : '失败')+'</span></div>';
+  html += '<div class="vi-row"><span class="src">frankfurter</span><span class="val'+(fxStatus==='drift'?' mismatch':'')+'">'+(VERIFY_FX.src2 !== null ? VERIFY_FX.src2.toFixed(5) : '失败')+'</span></div>';
+  if (VERIFY_FX.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + VERIFY_FX.diff.toFixed(3) + '%</span></div>';
+  html += '</div>';
+
+  // Price verification items
+  var codes = Object.keys(VERIFY_RESULTS).sort();
+  codes.forEach(function(code) {
+    var r = VERIFY_RESULTS[code];
+    totalCount++;
+    if (r.status === 'pass') passCount++;
+    else if (r.status === 'drift') driftCount++;
+    else failCount++;
+
+    html += '<div class="verify-item '+r.status+'">';
+    html += '<div class="vi-head"><span class="vi-name">'+r.name+'</span><span class="vi-badge '+r.status+'">'+(r.status==='pass'?'一致':r.status==='drift'?'偏差':'异常')+'</span></div>';
+    html += '<div class="vi-row"><span class="src">'+( r.src1Source||'qt.gtimg')+'</span><span class="val">'+(r.src1 !== null ? r.src1.toFixed(2) : '失败')+'</span></div>';
+    html += '<div class="vi-row"><span class="src">'+(r.src2Source||'eastmoney')+(r.klineDate?' ('+r.klineDate+')':'')+'</span><span class="val'+(r.status==='drift'?' mismatch':'')+'">'+(r.src2 !== null ? r.src2.toFixed(2) : '失败')+'</span></div>';
+    if (r.diff !== null) html += '<div class="vi-row"><span class="src">偏差</span><span class="val">' + r.diff.toFixed(2) + '%</span></div>';
+    html += '</div>';
+  });
+
+  grid.innerHTML = html;
+
+  // Overall status icon
+  var overallStatus = failCount > 0 ? 'err' : (driftCount > 0 ? 'warn' : 'ok');
+  icon.className = 'vt-icon ' + overallStatus;
+
+  // Summary
+  summary.textContent = '共' + totalCount + '项 · 通过' + passCount + ' · 偏差' + driftCount + ' · 异常' + failCount + ' · 阈值: 行情<1%通过/<3%偏差 · 汇率<0.5%通过/<2%偏差';
 }
 
 function computeAH(key, mainPrice) {
@@ -798,6 +967,8 @@ function fetchAll() {
       document.getElementById('sumBest').className = 'sv blue';
       // Time
       document.getElementById('updateTime').textContent = '最后更新：'+new Date().toLocaleString('zh-CN')+ ' · 每60秒自动刷新 · 1 HKD = ' + FX_HKD_CNY.toFixed(4) + ' CNY';
+      // Trigger verification after main data loads
+      fetchVerifyPrices();
     } catch(e) { console.error(e); }
     s.remove();
   };
