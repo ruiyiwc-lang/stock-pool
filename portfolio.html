@@ -96,8 +96,18 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .ah-panel .price-now { font-size:22px; }
 .ah-panel .gauge-mini { margin:44px 0 32px; }
 .cheaper-tag { font-size:11px; color:#22c55e; font-weight:600; padding:2px 6px; background:rgba(26,122,76,.1); border-radius:4px; }
+/* 财报季度方块 */
+.earnings-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px; }
+.earnings-block { background:rgba(255,255,255,.03); border:1px solid #1e3a5f; border-radius:8px; padding:10px 12px; }
+.earnings-block .eq-title { font-size:11px; color:#6b7b8d; margin-bottom:6px; font-weight:600; }
+.earnings-block .eq-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.earnings-block .eq-label { font-size:12px; color:#8fa0b3; }
+.earnings-block .eq-val { font-size:13px; font-weight:700; color:#e0e6ed; }
+.earnings-block .eq-yoy { font-size:11px; font-weight:600; margin-left:6px; }
+.eq-yoy.up { color:#22c55e; }
+.eq-yoy.down { color:#ef4444; }
 @media(max-width:700px) {
-  .ah-grid { grid-template-columns:1fr; gap:12px; }
+  .earnings-grid { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -180,6 +190,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       </div>
     </div>
     <div class="metrics" id="metrics-smic"></div>
+    <div class="earnings-grid" id="earnings-smic"></div>
   </div>
 
   <!-- 泡泡玛特 -->
@@ -203,6 +214,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div class="gauge-mini-marker" id="marker-popmart"><div class="gauge-mini-label" id="ml-popmart">--</div></div>
     </div>
     <div class="metrics" id="metrics-popmart"></div>
+    <div class="earnings-grid" id="earnings-popmart"></div>
   </div>
 </div>
 
@@ -235,6 +247,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div class="gauge-mini-marker" id="marker-tencent"><div class="gauge-mini-label" id="ml-tencent">--</div></div>
     </div>
     <div class="metrics" id="metrics-tencent"></div>
+    <div class="earnings-grid" id="earnings-tencent"></div>
   </div>
 
   <!-- 阿里 -->
@@ -251,6 +264,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <span class="price-chg flat" id="chg-baba">--</span>
     </div>
     <div class="metrics" id="metrics-baba"></div>
+    <div class="earnings-grid" id="earnings-baba"></div>
   </div>
 
   <!-- 百济 (AH) -->
@@ -289,6 +303,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       </div>
     </div>
     <div class="metrics" id="metrics-beigene"></div>
+    <div class="earnings-grid" id="earnings-beigene"></div>
   </div>
 
   <!-- 药明康德 (AH) -->
@@ -327,6 +342,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       </div>
     </div>
     <div class="metrics" id="metrics-wuxi"></div>
+    <div class="earnings-grid" id="earnings-wuxi"></div>
   </div>
 </div>
 
@@ -374,6 +390,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       </div>
     </div>
     <div class="metrics" id="metrics-catl"></div>
+    <div class="earnings-grid" id="earnings-catl"></div>
   </div>
 
   <!-- 比亚迪 (AH) -->
@@ -412,6 +429,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       </div>
     </div>
     <div class="metrics" id="metrics-byd"></div>
+    <div class="earnings-grid" id="earnings-byd"></div>
   </div>
 
   <!-- 茅台 -->
@@ -435,6 +453,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
       <div class="gauge-mini-marker" id="marker-maotai"><div class="gauge-mini-label" id="ml-maotai">--</div></div>
     </div>
     <div class="metrics" id="metrics-maotai"></div>
+    <div class="earnings-grid" id="earnings-maotai"></div>
   </div>
 </div>
 
@@ -450,6 +469,7 @@ var STOCKS = {
     altLineA:50, altLineB:43.4, altLineR:30.4,
     gaugeMin:25, gaugeMax:100,
     altGaugeMin:22, altGaugeMax:87,
+    earningsCode:"688981.SH", earningsType:"a",
     thesis:'5x双轮 · 条件概率85-95%(IF泡沫破)',
     note:'止盈=FwdPE>30x且产能见顶 · 红=独占性崩塌认错',
     despair:'AI泡沫全面破裂 · NVDA季报暴雷+Hyperscaler集体削减capex · 港股系统性-40% · 半导体板块额外penalty'
@@ -458,6 +478,7 @@ var STOCKS = {
     code: 'hk09992', name:'泡泡玛特', unit:'HK$', tier:1,
     lineA:150, lineB:120, lineR:100,
     gaugeMin:80, gaugeMax:250,
+    earningsCode:"09992.HK", earningsType:"hk",
     thesis:'段永平裸平台价HK$152 · Labubu=0',
     note:'止盈=PE>50x且增速<30% · 认错=连2Q非Labubu<20%+毛利<55%',
     despair:'Labubu生命周期见顶+补货导致二级市场崩盘 · 市场price-in单一IP依赖 · 基金被动减仓'
@@ -466,6 +487,7 @@ var STOCKS = {
     code: 'hk00700', name:'腾讯', unit:'HK$', tier:2,
     lineA:430, lineB:400, lineR:350,
     gaugeMin:320, gaugeMax:560,
+    earningsCode:"00700.HK", earningsType:"hk",
     thesis:'FwdPE 12x入场 · NTM EPS HK$36.3',
     note:'止盈=FwdPE>20x且增速<10% · 红=击穿2022底 · 时间止损2026.12.31',
     despair:'日常摩擦即可 · 美联储鹰派/港股通南向减速/Prosus减持 · 一周内波动范围'
@@ -474,6 +496,7 @@ var STOCKS = {
     code: 'hk09988', name:'阿里巴巴', unit:'HK$', tier:2,
     lineA:null, lineB:null, lineR:null,
     held:true,
+    earningsCode:"09988.HK", earningsType:"hk",
     thesis:'AI叙事+平头哥全栈+电商基础设施',
     note:'已持仓 · 不设阈值 · 只监控',
     despair:''
@@ -485,6 +508,7 @@ var STOCKS = {
     altLineA:124, altLineB:null, altLineR:null,
     gaugeMin:100, gaugeMax:220,
     altGaugeMin:86, altGaugeMax:190,
+    earningsCode:"688235.SH", earningsType:"a",
     thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
     note:'止盈=PE>30x且增速<25% · 认错日2026.12.16',
     despair:'全球biotech系统性抛售 · FDA审批黑天鹅 · 美国政治风险(53%美国收入) · Brukinsa竞品突破'
@@ -496,6 +520,7 @@ var STOCKS = {
     altLineA:98, altLineB:null, altLineR:null,
     gaugeMin:50, gaugeMax:140,
     altGaugeMin:58, altGaugeMax:162,
+    earningsCode:"603259.SH", earningsType:"a",
     thesis:'1年低点¥85.5(2025.12) · VC赌注定价',
     note:'止盈=PE>25x且增速<15% · 认错=海外<45%',
     despair:'BIOSECURE Act众议院排期投票 · 1260H实质推进 · 美国中期选举前反华情绪升温 · CXO产能全球过剩'
@@ -507,6 +532,7 @@ var STOCKS = {
     altLineA:361, altLineB:null, altLineR:null,
     gaugeMin:200, gaugeMax:470,
     altGaugeMin:231, altGaugeMax:544,
+    earningsCode:"300750.SZ", earningsType:"a",
     thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77 · A¥312/H HK$361双线',
     note:'止盈=PE>30x且增速<20% · 等恐慌(跌了会修复)',
     despair:'全球EV/储能需求证伪 · 电池价格战毛利<15% · 产能严重过剩+客户破产坏账 · 类2025.07低点¥241'
@@ -518,6 +544,7 @@ var STOCKS = {
     altLineA:57, altLineB:null, altLineR:null,
     gaugeMin:30, gaugeMax:110,
     altGaugeMin:26, altGaugeMax:95,
+    earningsCode:"002594.SZ", earningsType:"a",
     thesis:'丰田12.5x PE · A¥57/H HK$66双线 · 谁先到买谁',
     note:'止盈=PE>25x且增速<20% · 等认知收敛(PE永久压缩)',
     despair:'出海全面封杀(美+欧+东南亚关税) · 行业出清第三阶段中国品牌互杀 · 市场接受BYD=丰田 · A股系统性2635级别'
@@ -526,6 +553,7 @@ var STOCKS = {
     code: 'sh600519', name:'贵州茅台', unit:'¥', tier:3,
     lineA:1000, lineB:null, lineR:null,
     gaugeMin:750, gaugeMax:1400,
+    earningsCode:"600519.SH", earningsType:"a",
     thesis:'心理关口¥1000 · 14.5x PE · 破千=信仰崩',
     note:'止盈=PE>25x且增速<5% · 破位后观察企稳再建',
     despair:'白酒消费税落地 · 批价跌破¥1800+经销商大面积砸货 · 散户信仰崩塌+基金被动减仓+量化止损连锁'
@@ -777,8 +805,81 @@ function fetchAll() {
   document.body.appendChild(s);
 }
 
+// ===== 财报数据 =====
+function fmtNum(n) {
+  if (n === null || n === undefined) return '--';
+  var abs = Math.abs(n);
+  if (abs >= 1e8) return (n/1e8).toFixed(1) + '亿';
+  if (abs >= 1e4) return (n/1e4).toFixed(1) + '万';
+  return n.toFixed(0);
+}
+
+function renderEarningsBlock(el, quarters) {
+  // quarters: array of {title, revenue, revYoy, profit, profitYoy}
+  if (!quarters || quarters.length === 0) { el.innerHTML = '<span style="color:#6b7b8d;font-size:12px;">财报加载中...</span>'; return; }
+  var html = '';
+  quarters.slice(0,3).forEach(function(q) {
+    var revYoyCls = q.revYoy >= 0 ? 'up' : 'down';
+    var profYoyCls = q.profitYoy >= 0 ? 'up' : 'down';
+    html += '<div class="earnings-block">';
+    html += '<div class="eq-title">' + q.title + '</div>';
+    html += '<div class="eq-row"><span class="eq-label">营收</span><span class="eq-val">' + fmtNum(q.revenue) + '<span class="eq-yoy ' + revYoyCls + '">' + (q.revYoy >= 0 ? '+' : '') + q.revYoy.toFixed(1) + '%</span></span></div>';
+    html += '<div class="eq-row"><span class="eq-label">净利</span><span class="eq-val">' + fmtNum(q.profit) + '<span class="eq-yoy ' + profYoyCls + '">' + (q.profitYoy >= 0 ? '+' : '') + q.profitYoy.toFixed(1) + '%</span></span></div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function fetchEarningsA(key, secucode) {
+  var url = 'https://datacenter-web.eastmoney.com/api/data/get?type=RPT_LICO_FN_CPD&sty=ALL&token=894050c76af8597a853f5b408b759f5d&filter=(SECUCODE%3D%22' + encodeURIComponent(secucode) + '%22)&st=NOTICE_DATE&sr=-1&ps=4&p=1';
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || !j.result || !j.result.data) return;
+    var data = j.result.data;
+    var quarters = data.map(function(d) {
+      return {
+        title: d.DATATYPE || d.QDATE || '',
+        revenue: d.TOTAL_OPERATE_INCOME,
+        revYoy: d.YSTZ !== null && d.YSTZ !== undefined ? d.YSTZ : 0,
+        profit: d.PARENT_NETPROFIT,
+        profitYoy: d.SJLTZ !== null && d.SJLTZ !== undefined ? d.SJLTZ : 0
+      };
+    });
+    var el = document.getElementById('earnings-' + key);
+    if (el) renderEarningsBlock(el, quarters);
+  }).catch(function(e){ console.error('Earnings A err:', key, e); });
+}
+
+function fetchEarningsHK(key, secucode) {
+  var url = 'https://datacenter.eastmoney.com/securities/api/data/get?type=RPT_HKF10_FN_INCOME&sty=ALL&filter=(SECUCODE%3D%22' + encodeURIComponent(secucode) + '%22)(STD_ITEM_CODE+in+(%22004001001%22,%22004025002%22))&ps=10&sr=-1&st=REPORT_DATE&source=HSF10&client=APP';
+  fetch(url).then(function(r){return r.json();}).then(function(j){
+    if (!j || !j.result || !j.result.data) return;
+    var data = j.result.data;
+    // Group by report date
+    var map = {};
+    data.forEach(function(d) {
+      var rd = d.REPORT_DATE ? d.REPORT_DATE.substring(0,10) : '';
+      if (!map[rd]) map[rd] = {title: d.REPORT_TYPE_DETAILS || rd, revenue:null, revYoy:0, profit:null, profitYoy:0};
+      if (d.STD_ITEM_CODE === '004001001') { map[rd].revenue = d.AMOUNT; map[rd].revYoy = d.YOY_RATIO || 0; }
+      if (d.STD_ITEM_CODE === '004025002') { map[rd].profit = d.AMOUNT; map[rd].profitYoy = d.YOY_RATIO || 0; }
+    });
+    var quarters = Object.keys(map).sort().reverse().slice(0,3).map(function(k){return map[k];});
+    var el = document.getElementById('earnings-' + key);
+    if (el) renderEarningsBlock(el, quarters);
+  }).catch(function(e){ console.error('Earnings HK err:', key, e); });
+}
+
+function fetchAllEarnings() {
+  Object.keys(STOCKS).forEach(function(key) {
+    var s = STOCKS[key];
+    if (!s.earningsCode) return;
+    if (s.earningsType === 'a') fetchEarningsA(key, s.earningsCode);
+    else fetchEarningsHK(key, s.earningsCode);
+  });
+}
+
 fetchFX();
 fetchAll();
+fetchAllEarnings();
 setInterval(fetchAll, 60000);
 setInterval(fetchFX, 3600000); // refresh FX hourly
 </script>
