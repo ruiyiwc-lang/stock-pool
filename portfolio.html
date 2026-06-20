@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三档持仓监控</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0f1a; color:#e0e6ed; font-family:-apple-system,'PingFang SC','SF Pro Display','Helvetica Neue',sans-serif; padding:16px; padding-left:80px; max-width:1100px; margin:0 auto; font-size:16px; }
+h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+.subtitle { color:#6b7b8d; font-size:15px; margin-bottom:24px; }
+
+.tier-section { margin-bottom:32px; }
+.tier-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid #1e3a5f; }
+.tier-badge { padding:4px 12px; border-radius:6px; font-size:13px; font-weight:700; letter-spacing:.5px; }
+.tier-badge.t1 { background:rgba(201,168,76,.15); color:#c9a84c; border:1px solid #c9a84c; }
+.tier-badge.t2 { background:rgba(93,173,226,.12); color:#5dade2; border:1px solid #5dade2; }
+.tier-badge.t3 { background:rgba(107,123,141,.12); color:#6b7b8d; border:1px solid #4a5568; }
+.tier-label { font-size:18px; font-weight:600; }
+.tier-desc { font-size:13px; color:#6b7b8d; }
+
+/* 股票卡片 */
+.stock-card { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:12px; transition:border-color .2s; }
+.stock-card:hover { border-color:#c9a84c; }
+.stock-card.triggered { border-left:4px solid #1a7a4c; }
+.stock-card.near { border-left:4px solid #eab308; }
+
+.card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+.stock-title { font-size:18px; font-weight:700; }
+.stock-code { font-size:13px; color:#6b7b8d; margin-left:8px; }
+.stock-link { font-size:12px; color:#c9a84c; text-decoration:none; margin-left:8px; }
+.stock-link:hover { text-decoration:underline; }
+
+.price-display { display:flex; align-items:baseline; gap:8px; }
+.price-now { font-size:32px; font-weight:700; }
+.price-chg { font-size:15px; font-weight:600; }
+.price-chg.up { color:#1a7a4c; }
+.price-chg.down { color:#c0392b; }
+.price-chg.flat { color:#6b7b8d; }
+
+/* 进度条 */
+.gauge-mini { position:relative; margin:14px 0 38px; height:10px; border-radius:5px; background:linear-gradient(to right,#c0392b 0%,#c0392b 20%,#1a7a4c 20%,#1a7a4c 40%,#5fb583 40%,#5fb583 60%,#5a6878 60%,#5a6878 100%); opacity:.5; }
+.gauge-mini-marker { position:absolute; top:-4px; width:3px; height:18px; background:#fff; transform:translateX(-50%); border-radius:1px; box-shadow:0 0 6px rgba(255,255,255,.6); transition:left .6s; z-index:5; }
+.gauge-mini-label { position:absolute; top:14px; transform:translateX(-50%); font-size:11px; color:#fff; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 6px; border-radius:3px; border:1px solid #c9a84c; }
+.gauge-ticks { position:absolute; top:0; left:0; right:0; height:10px; }
+.gauge-ticks .tick { position:absolute; top:0; width:1px; height:10px; background:rgba(255,255,255,.35); }
+.gauge-ticks .tick-label { position:absolute; top:14px; transform:translateX(-50%); font-size:10px; white-space:nowrap; font-weight:600; }
+.gauge-ticks .tick-label.red { color:#c0392b; }
+.gauge-ticks .tick-label.b { color:#1a7a4c; }
+.gauge-ticks .tick-label.a { color:#c9a84c; }
+.gauge-ticks .tick-label.target { color:#5dade2; }
+
+/* 指标行 */
+.metrics { display:flex; flex-wrap:wrap; gap:16px; font-size:13px; color:#6b7b8d; margin-top:8px; }
+.metrics b { color:#e0e6ed; }
+.metrics .val-green { color:#1a7a4c; font-weight:600; }
+.metrics .val-red { color:#c0392b; font-weight:600; }
+.metrics .val-gold { color:#c9a84c; font-weight:600; }
+
+/* 状态 */
+.status-tag { display:inline-block; padding:3px 10px; border-radius:10px; font-size:12px; font-weight:600; }
+.status-tag.buy { background:rgba(26,122,76,.15); color:#1a7a4c; }
+.status-tag.wait { background:rgba(201,168,76,.12); color:#c9a84c; }
+.status-tag.near { background:rgba(234,179,8,.12); color:#eab308; }
+.status-tag.hold { background:rgba(93,173,226,.12); color:#5dade2; }
+
+/* 汇总面板 */
+.summary-panel { background:#111827; border:1px solid #1e3a5f; border-radius:12px; padding:18px 22px; margin-bottom:24px; }
+.summary-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
+.summary-item { text-align:center; }
+.summary-item .sv { font-size:20px; font-weight:700; }
+.summary-item .sl { font-size:12px; color:#6b7b8d; margin-top:2px; }
+.sv.green { color:#1a7a4c; }
+.sv.gold { color:#c9a84c; }
+.sv.red { color:#c0392b; }
+.sv.blue { color:#5dade2; }
+
+.update-time { text-align:center; font-size:13px; color:#8fa0b3; margin-top:20px; padding-bottom:40px; }
+.back-link { display:inline-block; margin-bottom:16px; font-size:14px; color:#c9a84c; text-decoration:none; }
+.back-link:hover { text-decoration:underline; }
+
+@media(max-width:700px) {
+  .price-now { font-size:24px; }
+  .summary-grid { grid-template-columns:repeat(2,1fr); }
+  .metrics { flex-direction:column; gap:6px; }
+}
+</style>
+</head>
+<body data-active-page="portfolio">
+<!-- Sidebar -->
+<style>
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0a0f1a;border-right:1px solid #1e3a5f;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:72px;text-decoration:none;color:#6b7b8d;border-left:3px solid transparent;transition:all .2s;padding:8px 0}
+.sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
+.sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
+.sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
+</style>
+<nav class="sidebar">
+<a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
+<a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/><line x1="11.5" y1="11" x2="11.5" y2="3.5"/></svg><span class="nav-label">温度计</span></a>
+<a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" rx="0.5"/><rect x="10" y="6" width="4" height="15" rx="0.5"/><rect x="17" y="3" width="4" height="18" rx="0.5"/><line x1="1" y1="21" x2="23" y2="21"/></svg><span class="nav-label">基石</span></a>
+<a class="nav-btn" href="portfolio.html" data-page="portfolio"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nav-label">三档</span></a>
+<a class="nav-btn" href="popmart.html" data-page="popmart"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><span class="nav-label">泡泡玛特</span></a>
+<a class="nav-btn" href="wuxi.html" data-page="wuxi"><svg viewBox="0 0 24 24"><path d="M9 3v7.4a4 4 0 1 0 6 0V3"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="10" y1="7" x2="14" y2="7"/></svg><span class="nav-label">药明</span></a>
+<a class="nav-btn" href="tencent.html" data-page="tencent"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="11" rx="7" ry="8"/><ellipse cx="9.5" cy="9" rx="1.5" ry="2"/><ellipse cx="14.5" cy="9" rx="1.5" ry="2"/><circle cx="9.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.5" r="0.7" fill="currentColor" stroke="none"/><path d="M9 14.5c0 1.5 1.3 2.5 3 2.5s3-1 3-2.5"/><path d="M7 18c-1 1.5-1.5 3-0.5 4 0.5 0.5 1.5 0 2-0.5"/><path d="M17 18c1 1.5 1.5 3 0.5 4-0.5 0.5-1.5 0-2-0.5"/></svg><span class="nav-label">腾讯</span></a>
+<a class="nav-btn" href="methodology.html" data-page="methodology"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg><span class="nav-label">方法论</span></a>
+</nav>
+<script>(function(){var p=document.body.getAttribute('data-active-page');if(p){var b=document.querySelector('.sidebar a[data-page="'+p+'"]');if(b)b.classList.add('active')}})()</script>
+<!-- /Sidebar -->
+
+<a class="back-link" href="index.html">&larr; 返回总览</a>
+<h1>三档持仓监控</h1>
+<div class="subtitle">全现金零持仓 · 2026.06.20确认 · 等待信号</div>
+
+<!-- 汇总面板 -->
+<div class="summary-panel">
+  <div class="summary-grid">
+    <div class="summary-item"><div class="sv" id="sumTriggered">--</div><div class="sl">已触发</div></div>
+    <div class="summary-item"><div class="sv" id="sumNear">--</div><div class="sl">接近A档(&lt;5%)</div></div>
+    <div class="summary-item"><div class="sv" id="sumWait">--</div><div class="sl">等待中</div></div>
+    <div class="summary-item"><div class="sv" id="sumBest">--</div><div class="sl">最接近信号</div></div>
+  </div>
+</div>
+
+<!-- ========== 第一档 5x核心 ========== -->
+<div class="tier-section">
+  <div class="tier-header">
+    <span class="tier-badge t1">第一档</span>
+    <span class="tier-label">5x 核心</span>
+    <span class="tier-desc">中芯国际(底仓) + 泡泡玛特(弹性仓)</span>
+  </div>
+
+  <!-- 中芯国际 -->
+  <div class="stock-card" id="card-smic">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">中芯国际</span><span class="stock-code">0981.HK</span>
+        <a class="stock-link" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym=981&sc_lang=zh-hk" target="_blank">港交所</a>
+      </div>
+      <span class="status-tag wait" id="status-smic">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-smic">--</span>
+      <span class="price-chg flat" id="chg-smic">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-smic">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-smic-r"></div><div class="tick-label red" id="tl-smic-r"></div>
+        <div class="tick" id="tick-smic-b"></div><div class="tick-label b" id="tl-smic-b"></div>
+        <div class="tick" id="tick-smic-a"></div><div class="tick-label a" id="tl-smic-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-smic"><div class="gauge-mini-label" id="ml-smic">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-smic"></div>
+  </div>
+
+  <!-- 泡泡玛特 -->
+  <div class="stock-card" id="card-popmart">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">泡泡玛特</span><span class="stock-code">9992.HK</span>
+        <a class="stock-link" href="popmart.html">详情页 →</a>
+      </div>
+      <span class="status-tag wait" id="status-popmart">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-popmart">--</span>
+      <span class="price-chg flat" id="chg-popmart">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-popmart">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-popmart-r"></div><div class="tick-label red" id="tl-popmart-r"></div>
+        <div class="tick" id="tick-popmart-b"></div><div class="tick-label b" id="tl-popmart-b"></div>
+        <div class="tick" id="tick-popmart-a"></div><div class="tick-label a" id="tl-popmart-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-popmart"><div class="gauge-mini-label" id="ml-popmart">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-popmart"></div>
+  </div>
+</div>
+
+<!-- ========== 第二档 翻倍 ========== -->
+<div class="tier-section">
+  <div class="tier-header">
+    <span class="tier-badge t2">第二档</span>
+    <span class="tier-label">翻倍</span>
+    <span class="tier-desc">腾讯 / 阿里(已持仓) / 百济 / 药明康德</span>
+  </div>
+
+  <!-- 腾讯 -->
+  <div class="stock-card" id="card-tencent">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">腾讯</span><span class="stock-code">0700.HK</span>
+        <a class="stock-link" href="tencent.html">详情页 →</a>
+      </div>
+      <span class="status-tag wait" id="status-tencent">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-tencent">--</span>
+      <span class="price-chg flat" id="chg-tencent">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-tencent">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-tencent-r"></div><div class="tick-label red" id="tl-tencent-r"></div>
+        <div class="tick" id="tick-tencent-b"></div><div class="tick-label b" id="tl-tencent-b"></div>
+        <div class="tick" id="tick-tencent-a"></div><div class="tick-label a" id="tl-tencent-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-tencent"><div class="gauge-mini-label" id="ml-tencent">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-tencent"></div>
+  </div>
+
+  <!-- 阿里 -->
+  <div class="stock-card" id="card-baba">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">阿里巴巴</span><span class="stock-code">9988.HK</span>
+        <span style="font-size:12px;color:#1a7a4c;margin-left:8px;font-weight:600;">✓ 已持仓</span>
+      </div>
+      <span class="status-tag hold" id="status-baba">已持仓</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-baba">--</span>
+      <span class="price-chg flat" id="chg-baba">--</span>
+    </div>
+    <div class="metrics" id="metrics-baba"></div>
+  </div>
+
+  <!-- 百济 -->
+  <div class="stock-card" id="card-beigene">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">百济神州</span><span class="stock-code">6160.HK</span>
+      </div>
+      <span class="status-tag wait" id="status-beigene">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-beigene">--</span>
+      <span class="price-chg flat" id="chg-beigene">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-beigene">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-beigene-r"></div><div class="tick-label red" id="tl-beigene-r"></div>
+        <div class="tick" id="tick-beigene-b"></div><div class="tick-label b" id="tl-beigene-b"></div>
+        <div class="tick" id="tick-beigene-a"></div><div class="tick-label a" id="tl-beigene-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-beigene"><div class="gauge-mini-label" id="ml-beigene">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-beigene"></div>
+  </div>
+
+  <!-- 药明康德 -->
+  <div class="stock-card" id="card-wuxi">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">药明康德</span><span class="stock-code">603259.SH</span>
+        <a class="stock-link" href="wuxi.html">详情页 →</a>
+      </div>
+      <span class="status-tag wait" id="status-wuxi">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-wuxi">--</span>
+      <span class="price-chg flat" id="chg-wuxi">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-wuxi">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-wuxi-r"></div><div class="tick-label red" id="tl-wuxi-r"></div>
+        <div class="tick" id="tick-wuxi-b"></div><div class="tick-label b" id="tl-wuxi-b"></div>
+        <div class="tick" id="tick-wuxi-a"></div><div class="tick-label a" id="tl-wuxi-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-wuxi"><div class="gauge-mini-label" id="ml-wuxi">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-wuxi"></div>
+  </div>
+</div>
+
+<!-- ========== 第三档 领域王者等价位 ========== -->
+<div class="tier-section">
+  <div class="tier-header">
+    <span class="tier-badge t3">第三档</span>
+    <span class="tier-label">领域王者等价位</span>
+    <span class="tier-desc">好公司但天花板可见 · 只在极端恐慌时捡</span>
+  </div>
+
+  <!-- 宁德时代 -->
+  <div class="stock-card" id="card-catl">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">宁德时代</span><span class="stock-code">300750.SZ</span>
+      </div>
+      <span class="status-tag wait" id="status-catl">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-catl">--</span>
+      <span class="price-chg flat" id="chg-catl">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-catl">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-catl-r"></div><div class="tick-label red" id="tl-catl-r"></div>
+        <div class="tick" id="tick-catl-b"></div><div class="tick-label b" id="tl-catl-b"></div>
+        <div class="tick" id="tick-catl-a"></div><div class="tick-label a" id="tl-catl-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-catl"><div class="gauge-mini-label" id="ml-catl">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-catl"></div>
+  </div>
+
+  <!-- 比亚迪 -->
+  <div class="stock-card" id="card-byd">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">比亚迪</span><span class="stock-code">002594.SZ</span>
+      </div>
+      <span class="status-tag wait" id="status-byd">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-byd">--</span>
+      <span class="price-chg flat" id="chg-byd">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-byd">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-byd-r"></div><div class="tick-label red" id="tl-byd-r"></div>
+        <div class="tick" id="tick-byd-b"></div><div class="tick-label b" id="tl-byd-b"></div>
+        <div class="tick" id="tick-byd-a"></div><div class="tick-label a" id="tl-byd-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-byd"><div class="gauge-mini-label" id="ml-byd">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-byd"></div>
+  </div>
+
+  <!-- 茅台 -->
+  <div class="stock-card" id="card-maotai">
+    <div class="card-top">
+      <div>
+        <span class="stock-title">贵州茅台</span><span class="stock-code">600519.SH</span>
+      </div>
+      <span class="status-tag wait" id="status-maotai">加载中</span>
+    </div>
+    <div class="price-display">
+      <span class="price-now" id="price-maotai">--</span>
+      <span class="price-chg flat" id="chg-maotai">--</span>
+    </div>
+    <div class="gauge-mini" id="gauge-maotai">
+      <div class="gauge-ticks">
+        <div class="tick" id="tick-maotai-r"></div><div class="tick-label red" id="tl-maotai-r"></div>
+        <div class="tick" id="tick-maotai-b"></div><div class="tick-label b" id="tl-maotai-b"></div>
+        <div class="tick" id="tick-maotai-a"></div><div class="tick-label a" id="tl-maotai-a"></div>
+      </div>
+      <div class="gauge-mini-marker" id="marker-maotai"><div class="gauge-mini-label" id="ml-maotai">--</div></div>
+    </div>
+    <div class="metrics" id="metrics-maotai"></div>
+  </div>
+</div>
+
+<div class="update-time" id="updateTime">加载中...</div>
+
+<script>
+// ===== 标的配置 =====
+var STOCKS = {
+  smic: {
+    code: 'hk00981', name:'中芯国际', unit:'HK$', tier:1,
+    lineA:70, lineB:57.5, lineR:50, target:170,
+    gaugeMin:40, gaugeMax:100,
+    thesis:'5x双轮=先进制程垄断租金+成熟制程全球最低成本',
+    note:'PE阈值15-18x · 国产DUV 28-29年跑通催化'
+  },
+  popmart: {
+    code: 'hk09992', name:'泡泡玛特', unit:'HK$', tier:1,
+    lineA:189, lineB:140, lineR:315, isRedSell:true,
+    gaugeMin:120, gaugeMax:340,
+    thesis:'裸平台(Labubu=0)=HK$150 · 段永平锚',
+    note:'5大IP全部高增长证明平台能力独立于单一IP'
+  },
+  tencent: {
+    code: 'hk00700', name:'腾讯', unit:'HK$', tier:2,
+    lineA:430, lineB:400, lineR:370, target:550,
+    gaugeMin:340, gaugeMax:580,
+    thesis:'FwdPE 12x入场 · NTM EPS HK$36.3',
+    note:'半年战术交易 · 时间止损2026.12.31'
+  },
+  baba: {
+    code: 'hk09988', name:'阿里巴巴', unit:'HK$', tier:2,
+    lineA:null, lineB:null, lineR:null,
+    held:true,
+    thesis:'AI叙事+平头哥全栈 · 唯一缺陷=中芯产能',
+    note:'已持仓 · 不设价格阈值'
+  },
+  beigene: {
+    code: 'hk06160', name:'百济神州', unit:'HK$', tier:2,
+    lineA:147, lineB:112, lineR:86,
+    gaugeMin:70, gaugeMax:200,
+    thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
+    note:'认错日2026.12.16 · A−档(53%美国依赖)'
+  },
+  wuxi: {
+    code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
+    lineA:110, lineB:85, lineR:190, isRedSell:true,
+    gaugeMin:60, gaugeMax:200,
+    thesis:'VC赌注定价 · PE14x含地缘折价',
+    note:'认错=海外<45%/TIDES连2季<15%/毛利<45%'
+  },
+  catl: {
+    code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
+    lineA:300, lineB:255, lineR:220,
+    gaugeMin:180, gaugeMax:450,
+    thesis:'全球电池王 · 37.9%市占 · 增速降估值未降',
+    note:'PE 15-18x才值得 · 产能过剩4x'
+  },
+  byd: {
+    code: 'sz002594', name:'比亚迪', unit:'¥', tier:3,
+    lineA:65, lineB:54, lineR:45,
+    gaugeMin:35, gaugeMax:110,
+    thesis:'丰田终局12x PE · 4.1%净利率',
+    note:'赢了一场没利润的战争 · 等腰斩'
+  },
+  maotai: {
+    code: 'sh600519', name:'贵州茅台', unit:'¥', tier:3,
+    lineA:1050, lineB:950, lineR:850,
+    gaugeMin:750, gaugeMax:1400,
+    thesis:'分红股定价 · 目标股息率7%',
+    note:'年轻人不喝酒了 · PE 15x = ¥1035'
+  }
+};
+
+// ===== 核心逻辑 =====
+function getStatus(key, price) {
+  var s = STOCKS[key];
+  if (s.held) return {text:'已持仓', cls:'hold'};
+  if (!s.lineA) return {text:'监控中', cls:'wait'};
+  if (s.isRedSell) {
+    // Red is sell line not buy
+    if (price <= s.lineB) return {text:'B档触发', cls:'buy'};
+    if (price <= s.lineA) return {text:'A档以下', cls:'buy'};
+    if (price >= s.lineR) return {text:'止盈区', cls:'sell'};
+    var distA = ((price/s.lineA -1)*100).toFixed(1);
+    if (distA <= 5) return {text:'接近A档 -'+distA+'%', cls:'near'};
+    return {text:'等待 距A+'+distA+'%', cls:'wait'};
+  } else {
+    if (price <= s.lineR) return {text:'红线触发!', cls:'buy'};
+    if (price <= s.lineB) return {text:'B档触发', cls:'buy'};
+    if (price <= s.lineA) return {text:'A档触发', cls:'buy'};
+    var distA = ((price/s.lineA -1)*100).toFixed(1);
+    if (distA <= 5) return {text:'接近A档 距-'+distA+'%', cls:'near'};
+    return {text:'等待 距A-'+distA+'%', cls:'wait'};
+  }
+}
+
+function renderGauge(key, price) {
+  var s = STOCKS[key];
+  if (!s.lineA || s.held) return;
+  var range = s.gaugeMax - s.gaugeMin;
+  // Position ticks
+  var posR = ((s.lineR - s.gaugeMin)/range*100);
+  var posB = ((s.lineB - s.gaugeMin)/range*100);
+  var posA = ((s.lineA - s.gaugeMin)/range*100);
+
+  function setTick(id,pos,label) {
+    var el = document.getElementById(id);
+    if(el) el.style.left = Math.max(0,Math.min(100,pos))+'%';
+    var lbl = document.getElementById(id.replace('tick-','tl-'));
+    if(lbl) { lbl.style.left = Math.max(0,Math.min(100,pos))+'%'; lbl.textContent = s.unit+label; }
+  }
+
+  if (s.isRedSell) {
+    setTick('tick-'+key+'-r', posR, s.lineR+' 止盈');
+    setTick('tick-'+key+'-b', posB, s.lineB);
+    setTick('tick-'+key+'-a', posA, s.lineA);
+  } else {
+    setTick('tick-'+key+'-r', posR, s.lineR);
+    setTick('tick-'+key+'-b', posB, s.lineB);
+    setTick('tick-'+key+'-a', posA, s.lineA);
+  }
+
+  // Marker
+  var pct = Math.max(0, Math.min(100, (price - s.gaugeMin)/range*100));
+  var marker = document.getElementById('marker-'+key);
+  var label = document.getElementById('ml-'+key);
+  if(marker) marker.style.left = pct+'%';
+  if(label) label.textContent = s.unit + price.toFixed(1);
+}
+
+function renderMetrics(key, price, prevClose) {
+  var s = STOCKS[key];
+  var el = document.getElementById('metrics-'+key);
+  if(!el) return;
+  var parts = [];
+  if (s.lineA && !s.held) {
+    var distA = ((price/s.lineA-1)*100).toFixed(1);
+    var cls = distA<=0 ? 'val-green' : (distA<=5 ? 'val-gold' : '');
+    parts.push('距A档 <b class="'+cls+'">'+(distA>0?'+':'')+distA+'%</b>');
+  }
+  if (s.lineB && !s.held) {
+    var distB = ((price/s.lineB-1)*100).toFixed(1);
+    parts.push('距B档 <b>'+(distB>0?'+':'')+distB+'%</b>');
+  }
+  if (s.thesis) parts.push('<span style="opacity:.7">'+s.thesis+'</span>');
+  el.innerHTML = parts.join(' · ');
+}
+
+function updateCard(key, price, prevClose) {
+  var s = STOCKS[key];
+  // Price
+  document.getElementById('price-'+key).textContent = s.unit + ' ' + price.toFixed(2);
+  // Change
+  var chg = price - prevClose;
+  var pct = (chg/prevClose*100).toFixed(2);
+  var chgEl = document.getElementById('chg-'+key);
+  chgEl.textContent = (chg>=0?'+':'')+chg.toFixed(2)+' ('+(chg>=0?'+':'')+pct+'%)';
+  chgEl.className = 'price-chg '+(chg>0?'up':(chg<0?'down':'flat'));
+  // Status
+  var st = getStatus(key, price);
+  var stEl = document.getElementById('status-'+key);
+  stEl.textContent = st.text;
+  stEl.className = 'status-tag '+st.cls;
+  // Card highlight
+  var card = document.getElementById('card-'+key);
+  card.className = 'stock-card' + (st.cls==='buy'?' triggered':'') + (st.cls==='near'?' near':'');
+  // Gauge
+  renderGauge(key, price);
+  // Metrics
+  renderMetrics(key, price, prevClose);
+}
+
+// ===== 数据拉取 =====
+function fetchAll() {
+  var codes = Object.keys(STOCKS).map(function(k){return STOCKS[k].code}).join(',');
+  var s = document.createElement('script');
+  s.src = 'https://qt.gtimg.cn/q='+codes+'&_t='+Date.now();
+  s.onload = function() {
+    try {
+      var triggered=0, near=0, wait=0, bestKey='', bestDist=999;
+      Object.keys(STOCKS).forEach(function(key) {
+        var code = STOCKS[key].code;
+        var varName = 'v_'+code;
+        var raw = window[varName];
+        if(!raw) return;
+        var f = raw.split('~');
+        var price = parseFloat(f[3]);
+        var prevClose = parseFloat(f[4]);
+        if(!price) return;
+        updateCard(key, price, prevClose);
+        // Count
+        var st = getStatus(key, price);
+        if(st.cls==='buy') triggered++;
+        else if(st.cls==='near') near++;
+        else if(st.cls==='wait') wait++;
+        // Best candidate
+        if(STOCKS[key].lineA && !STOCKS[key].held) {
+          var dist = Math.abs((price/STOCKS[key].lineA-1)*100);
+          if(dist < bestDist) { bestDist=dist; bestKey=key; }
+        }
+      });
+      // Summary
+      document.getElementById('sumTriggered').textContent = triggered;
+      document.getElementById('sumTriggered').className = 'sv'+(triggered>0?' green':'');
+      document.getElementById('sumNear').textContent = near;
+      document.getElementById('sumNear').className = 'sv'+(near>0?' gold':'');
+      document.getElementById('sumWait').textContent = wait;
+      document.getElementById('sumBest').textContent = bestKey ? STOCKS[bestKey].name : '--';
+      document.getElementById('sumBest').className = 'sv blue';
+      // Time
+      document.getElementById('updateTime').textContent = '最后更新：'+new Date().toLocaleString('zh-CN')+ ' · 每60秒自动刷新';
+    } catch(e) { console.error(e); }
+    s.remove();
+  };
+  s.onerror = function() { s.remove(); };
+  document.body.appendChild(s);
+}
+
+fetchAll();
+setInterval(fetchAll, 60000);
+</script>
+</body>
+</html>
