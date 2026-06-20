@@ -361,7 +361,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 var STOCKS = {
   smic: {
     code: 'hk00981', name:'中芯国际', unit:'HK$', tier:1,
-    altCode:'sh688981', altNote:'A股溢价113% · 只买H',
+    altCode:'sh688981', altAction:'只买H',
     lineA:57.5, lineB:50, lineR:35,
     gaugeMin:25, gaugeMax:100,
     thesis:'5x双轮 · 条件概率85-95%(IF泡沫破)',
@@ -394,7 +394,7 @@ var STOCKS = {
   },
   beigene: {
     code: 'hk06160', name:'百济神州', unit:'HK$', tier:2,
-    altCode:'sh688235', altNote:'A股溢价54% · 买H股',
+    altCode:'sh688235', altAction:'买H股',
     lineA:144, lineB:null, lineR:null,
     gaugeMin:100, gaugeMax:220,
     thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
@@ -403,7 +403,7 @@ var STOCKS = {
   },
   wuxi: {
     code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
-    altCode:'hk02359', altNote:'H股溢价8% · 买A股',
+    altCode:'hk02359', altAction:'买A股',
     lineA:85, lineB:null, lineR:null,
     gaugeMin:50, gaugeMax:140,
     thesis:'1年低点¥85.5(2025.12) · VC赌注定价',
@@ -412,7 +412,7 @@ var STOCKS = {
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
-    altCode:'hk03750', altNote:'H股溢价56% · 买A股',
+    altCode:'hk03750', altAction:'买A股',
     lineA:312, lineB:null, lineR:null,
     gaugeMin:200, gaugeMax:470,
     thesis:'止盈PE30x÷2=15x · NTM EPS ¥20.77',
@@ -421,7 +421,7 @@ var STOCKS = {
   },
   byd: {
     code: 'hk01211', name:'比亚迪', unit:'HK$', tier:3,
-    altCode:'sz002594', altNote:'A股溢价26% · 买H股',
+    altCode:'sz002594', altAction:'买H股',
     lineA:49, lineB:null, lineR:null,
     gaugeMin:30, gaugeMax:110,
     thesis:'丰田锚12.5x PE · H股更便宜',
@@ -488,7 +488,7 @@ function renderGauge(key, price) {
   if(label) label.textContent = s.unit + price.toFixed(1);
 }
 
-function renderMetrics(key, price, prevClose) {
+function renderMetrics(key, price, prevClose, ahInfo) {
   var s = STOCKS[key];
   var el = document.getElementById('metrics-'+key);
   if(!el) return;
@@ -502,7 +502,9 @@ function renderMetrics(key, price, prevClose) {
     var distB = ((price/s.lineB-1)*100).toFixed(1);
     parts.push('距B档 <b>'+(distB>0?'+':'')+distB+'%</b>');
   }
-  if (s.altNote) parts.push('<span style="color:#5dade2">'+s.altNote+'</span>');
+  if (ahInfo) {
+    parts.push('<span style="color:#5dade2">'+ahInfo+'</span>');
+  }
   if (s.thesis) parts.push('<span style="opacity:.7">'+s.thesis+'</span>');
   // Despair line
   if (s.despair) {
@@ -511,7 +513,7 @@ function renderMetrics(key, price, prevClose) {
   el.innerHTML = parts.join(' · ');
 }
 
-function updateCard(key, price, prevClose) {
+function updateCard(key, price, prevClose, ahInfo) {
   var s = STOCKS[key];
   // Price
   document.getElementById('price-'+key).textContent = s.unit + ' ' + price.toFixed(2);
@@ -532,27 +534,73 @@ function updateCard(key, price, prevClose) {
   // Gauge
   renderGauge(key, price);
   // Metrics
-  renderMetrics(key, price, prevClose);
+  renderMetrics(key, price, prevClose, ahInfo);
 }
 
 // ===== 数据拉取 =====
+var FX_HKD_CNY = 0.864; // fallback default, refreshed via fetchFX
+
+function fetchFX() {
+  // open.er-api.com supports CORS and is free
+  fetch('https://open.er-api.com/v6/latest/HKD').then(function(r){return r.json();}).then(function(j){
+    if (j && j.rates && j.rates.CNY) {
+      FX_HKD_CNY = j.rates.CNY;
+      var fxEl = document.getElementById('fxRate');
+      if (fxEl) fxEl.textContent = '1 HKD = ' + FX_HKD_CNY.toFixed(4) + ' CNY';
+    }
+  }).catch(function(){});
+}
+
+function computeAH(key, mainPrice) {
+  var s = STOCKS[key];
+  if (!s.altCode) return null;
+  var altRaw = window['v_'+s.altCode];
+  if (!altRaw) return null;
+  var altPrice = parseFloat(altRaw.split('~')[3]);
+  if (!altPrice) return null;
+  // Determine which is HK and which is A
+  var mainIsHK = s.code.indexOf('hk') === 0;
+  var altIsHK = s.altCode.indexOf('hk') === 0;
+  var hkPrice = mainIsHK ? mainPrice : altPrice;
+  var aPrice = mainIsHK ? altPrice : mainPrice;
+  // Normalize A-share (CNY) to HKD for comparison
+  var aPriceHKD = aPrice / FX_HKD_CNY;
+  // Premium from A perspective: if A in HKD > H, A premium positive
+  var premium = (aPriceHKD / hkPrice - 1) * 100;
+  var label;
+  if (premium > 0) {
+    label = 'A溢价' + premium.toFixed(1) + '% · ' + (s.altAction || '');
+  } else {
+    label = 'H溢价' + (-premium).toFixed(1) + '% · ' + (s.altAction || '');
+  }
+  // Add raw cross-market price for clarity
+  var altUnit = altIsHK ? 'HK$' : '¥';
+  label += ' · ' + (mainIsHK ? 'A股' : 'H股') + altUnit + altPrice.toFixed(2);
+  return label;
+}
+
 function fetchAll() {
-  var codes = Object.keys(STOCKS).map(function(k){return STOCKS[k].code}).join(',');
+  // Collect both primary and alt codes
+  var allCodes = [];
+  Object.keys(STOCKS).forEach(function(k){
+    allCodes.push(STOCKS[k].code);
+    if (STOCKS[k].altCode) allCodes.push(STOCKS[k].altCode);
+  });
   var s = document.createElement('script');
-  s.src = 'https://qt.gtimg.cn/q='+codes+'&_t='+Date.now();
+  s.src = 'https://qt.gtimg.cn/q='+allCodes.join(',')+'&_t='+Date.now();
   s.onload = function() {
     try {
       var triggered=0, near=0, wait=0, bestKey='', bestDist=999;
       Object.keys(STOCKS).forEach(function(key) {
         var code = STOCKS[key].code;
-        var varName = 'v_'+code;
-        var raw = window[varName];
+        var raw = window['v_'+code];
         if(!raw) return;
         var f = raw.split('~');
         var price = parseFloat(f[3]);
         var prevClose = parseFloat(f[4]);
         if(!price) return;
-        updateCard(key, price, prevClose);
+        var ahInfo = computeAH(key, price);
+        updateCard(key, price, prevClose, ahInfo);
         // Count
         var st = getStatus(key, price);
         if(st.cls==='buy') triggered++;
@@ -573,7 +621,7 @@ function fetchAll() {
       document.getElementById('sumBest').textContent = bestKey ? STOCKS[bestKey].name : '--';
       document.getElementById('sumBest').className = 'sv blue';
       // Time
-      document.getElementById('updateTime').textContent = '最后更新：'+new Date().toLocaleString('zh-CN')+ ' · 每60秒自动刷新';
+      document.getElementById('updateTime').textContent = '最后更新：'+new Date().toLocaleString('zh-CN')+ ' · 每60秒自动刷新 · 1 HKD = ' + FX_HKD_CNY.toFixed(4) + ' CNY';
     } catch(e) { console.error(e); }
     s.remove();
   };
@@ -581,8 +629,10 @@ function fetchAll() {
   document.body.appendChild(s);
 }
 
+fetchFX();
 fetchAll();
 setInterval(fetchAll, 60000);
+setInterval(fetchFX, 3600000); // refresh FX hourly
 </script>
 </body>
 </html>
