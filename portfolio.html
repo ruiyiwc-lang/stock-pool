@@ -111,7 +111,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 
 <a class="back-link" href="index.html">&larr; 返回总览</a>
 <h1>三档持仓监控</h1>
-<div class="subtitle">全现金零持仓 · 2026.06.20确认 · 等待信号</div>
+<div class="subtitle">阿里已持仓 · 其余全现金等信号 · 2026.06.20确认</div>
 
 <!-- 汇总面板 -->
 <div class="summary-panel">
@@ -281,7 +281,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
   <div class="tier-header">
     <span class="tier-badge t3">第三档</span>
     <span class="tier-label">领域王者等价位</span>
-    <span class="tier-desc">好公司但天花板可见 · 只在极端恐慌时捡</span>
+    <span class="tier-desc">止盈PE÷2=唯一买入点 · 破位观察企稳再建</span>
   </div>
 
   <!-- 宁德时代 -->
@@ -361,66 +361,66 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 var STOCKS = {
   smic: {
     code: 'hk00981', name:'中芯国际', unit:'HK$', tier:1,
-    lineA:57.5, lineB:50, lineR:35, target:170,
+    lineA:57.5, lineB:50, lineR:35,
     gaugeMin:25, gaugeMax:100,
-    thesis:'5x双轮 · 等AI泡沫破灭情绪杀',
-    note:'A=泡沫破跌35% · B=2026.03验证可达 · 红=独占性崩塌认错'
+    thesis:'5x双轮 · 等AI泡沫破灭情绪杀(条件概率85-95%)',
+    note:'止盈=FwdPE>30x且产能见顶 · 红=独占性崩塌认错 · 恐慌底HK$42-50'
   },
   popmart: {
     code: 'hk09992', name:'泡泡玛特', unit:'HK$', tier:1,
     lineA:150, lineB:120, lineR:100,
     gaugeMin:80, gaugeMax:250,
-    thesis:'段永平线=裸平台价值 · Labubu=0',
-    note:'止盈动态=PE>50x且增速<30% · 认错=连2Q Labubu负增+非Labubu<20%+毛利<55%+费用率>28%'
+    thesis:'段永平线=裸平台价值HK$152 · Labubu=0',
+    note:'止盈=PE>50x且增速<30% · 认错=连2Q非Labubu<20%+毛利<55%'
   },
   tencent: {
     code: 'hk00700', name:'腾讯', unit:'HK$', tier:2,
     lineA:430, lineB:400, lineR:350,
     gaugeMin:320, gaugeMax:560,
     thesis:'FwdPE 12x入场 · NTM EPS HK$36.3',
-    note:'止盈动态=FwdPE>20x且增速<10% · 红线=击穿2022绝对底 · 时间止损2026.12.31'
+    note:'止盈=FwdPE>20x且增速<10% · 红=击穿2022绝对底 · 时间止损2026.12.31'
   },
   baba: {
     code: 'hk09988', name:'阿里巴巴', unit:'HK$', tier:2,
     lineA:null, lineB:null, lineR:null,
     held:true,
-    thesis:'AI叙事+平头哥全栈 · 唯一缺陷=中芯产能',
-    note:'已持仓 · 不设价格阈值'
+    thesis:'AI叙事+平头哥全栈+电商基础设施',
+    note:'已持仓 · 不设价格阈值 · 只监控'
   },
   beigene: {
     code: 'hk06160', name:'百济神州', unit:'HK$', tier:2,
-    lineA:147, lineB:112, lineR:86,
-    gaugeMin:70, gaugeMax:200,
+    lineA:144, lineB:null, lineR:null,
+    gaugeMin:100, gaugeMax:220,
     thesis:'Brukinsa全球#1 BTKi · 2026指引$6.3-6.5B',
-    note:'认错日2026.12.16 · A−档(53%美国依赖)'
+    note:'止盈=PE>30x且增速<25% · 认错日2026.12.16 · 事故=biotech系统性抛售'
   },
   wuxi: {
     code: 'sh603259', name:'药明康德', unit:'¥', tier:2,
-    lineA:110, lineB:85, lineR:60,
-    gaugeMin:45, gaugeMax:150,
-    thesis:'VC赌注定价 · PE14x含地缘折价',
-    note:'止盈动态=PE>25x且增速<15% · 认错=1260H通过或海外<45%'
+    lineA:85, lineB:null, lineR:null,
+    gaugeMin:50, gaugeMax:140,
+    thesis:'VC赌注定价 · 1年低点¥85.5(2025.12)',
+    note:'止盈=PE>25x且增速<15% · 事故=BIOSECURE投票/1260H · 认错=海外<45%'
   },
   catl: {
     code: 'sz300750', name:'宁德时代', unit:'¥', tier:3,
-    lineA:300, lineB:255, lineR:220,
-    gaugeMin:180, gaugeMax:450,
-    thesis:'全球电池王 · 37.9%市占 · 增速降估值未降',
-    note:'PE 15-18x才值得 · 产能过剩4x'
+    lineA:312, lineB:null, lineR:null,
+    gaugeMin:200, gaugeMax:470,
+    thesis:'止盈PE30x÷2=15x入场 · NTM EPS ¥20.77',
+    note:'止盈=PE>30x且增速<20% · 事故=EV/储能需求证伪 · 等恐慌(会修复)'
   },
   byd: {
     code: 'sz002594', name:'比亚迪', unit:'¥', tier:3,
-    lineA:65, lineB:54, lineR:45,
-    gaugeMin:35, gaugeMax:110,
-    thesis:'丰田终局12x PE · 4.1%净利率',
-    note:'赢了一场没利润的战争 · 等腰斩'
+    lineA:57, lineB:null, lineR:null,
+    gaugeMin:40, gaugeMax:120,
+    thesis:'丰田锚12.5x PE · 无故事=制造业定价',
+    note:'止盈=PE>25x且增速<20% · 事故=行业出清+出海封杀 · 等认知收敛(不回来)'
   },
   maotai: {
     code: 'sh600519', name:'贵州茅台', unit:'¥', tier:3,
-    lineA:1050, lineB:950, lineR:850,
+    lineA:1000, lineB:null, lineR:null,
     gaugeMin:750, gaugeMax:1400,
-    thesis:'分红股定价 · 目标股息率7%',
-    note:'年轻人不喝酒了 · PE 15x = ¥1035'
+    thesis:'心理关口 · 14.5x PE · 破千=信仰崩塌',
+    note:'止盈=PE>25x且增速<5% · 事故=消费税/批价崩 · 破位后观察企稳再建'
   }
 };
 
@@ -429,38 +429,41 @@ function getStatus(key, price) {
   var s = STOCKS[key];
   if (s.held) return {text:'已持仓', cls:'hold'};
   if (!s.lineA) return {text:'监控中', cls:'wait'};
-  if (price <= s.lineR) return {text:'红线触发 · 认错', cls:'sell'};
-  if (price <= s.lineB) return {text:'B档触发 · 重仓', cls:'buy'};
+  if (s.lineR && price <= s.lineR) return {text:'红线触发 · 认错', cls:'sell'};
+  if (s.lineB && price <= s.lineB) return {text:'B档触发 · 重仓', cls:'buy'};
   if (price <= s.lineA) return {text:'A档触发 · 首仓', cls:'buy'};
   var distA = ((price/s.lineA -1)*100).toFixed(1);
-  if (distA <= 5) return {text:'接近A档 距-'+distA+'%', cls:'near'};
-  return {text:'等待 距A-'+distA+'%', cls:'wait'};
+  if (distA <= 5) return {text:'接近A档 距'+distA+'%', cls:'near'};
+  return {text:'等待 距A '+distA+'%', cls:'wait'};
 }
 
 function renderGauge(key, price) {
   var s = STOCKS[key];
   if (!s.lineA || s.held) return;
   var range = s.gaugeMax - s.gaugeMin;
-  // Position ticks
-  var posR = ((s.lineR - s.gaugeMin)/range*100);
-  var posB = ((s.lineB - s.gaugeMin)/range*100);
-  var posA = ((s.lineA - s.gaugeMin)/range*100);
 
   function setTick(id,pos,label) {
     var el = document.getElementById(id);
     if(el) el.style.left = Math.max(0,Math.min(100,pos))+'%';
     var lbl = document.getElementById(id.replace('tick-','tl-'));
-    if(lbl) { lbl.style.left = Math.max(0,Math.min(100,pos))+'%'; lbl.textContent = s.unit+label; }
+    if(lbl) { lbl.style.left = Math.max(0,Math.min(100,pos))+'%'; lbl.textContent = label ? s.unit+label : ''; }
   }
 
-  if (s.isRedSell) {
-    setTick('tick-'+key+'-r', posR, s.lineR+' 止盈');
+  var posA = ((s.lineA - s.gaugeMin)/range*100);
+  setTick('tick-'+key+'-a', posA, s.lineA);
+
+  if (s.lineB) {
+    var posB = ((s.lineB - s.gaugeMin)/range*100);
     setTick('tick-'+key+'-b', posB, s.lineB);
-    setTick('tick-'+key+'-a', posA, s.lineA);
   } else {
+    setTick('tick-'+key+'-b', -10, '');
+  }
+
+  if (s.lineR) {
+    var posR = ((s.lineR - s.gaugeMin)/range*100);
     setTick('tick-'+key+'-r', posR, s.lineR);
-    setTick('tick-'+key+'-b', posB, s.lineB);
-    setTick('tick-'+key+'-a', posA, s.lineA);
+  } else {
+    setTick('tick-'+key+'-r', -10, '');
   }
 
   // Marker
