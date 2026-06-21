@@ -16,7 +16,7 @@ a:hover { text-decoration:underline; }
 .sidebar a.nav-btn:hover{color:#d29922;background:rgba(210,153,34,.05)}
 .sidebar a.nav-btn.active{color:#d29922;border-left-color:#d29922;background:rgba(210,153,34,.08)}
 .sidebar a.nav-btn svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sidebar a.nav-btn .nav-label{font-size:11px;line-height:1.2;white-space:nowrap}
+.sidebar a.nav-btn .nav-label{font-size:13px;line-height:1.2;white-space:nowrap}
 
 /* Cards */
 .card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:18px; margin-bottom:16px; }
@@ -25,7 +25,7 @@ a:hover { text-decoration:underline; }
 /* Header */
 .page-title { font-size:32px; font-weight:700; background:linear-gradient(135deg,#3fb950,#56d364,#7ee787); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:4px; }
 .page-subtitle { font-size:14px; color:#8b949e; margin-bottom:20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; }
+.badge { display:inline-block; font-size:13px; font-weight:600; padding:2px 8px; border-radius:10px; }
 .badge-live { background:rgba(63,185,80,.12); color:#3fb950; animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
 
@@ -33,8 +33,8 @@ a:hover { text-decoration:underline; }
 .kpi-bar { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin-bottom:16px; }
 .kpi-item { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px 12px; text-align:center; }
 .kpi-item .kpi-val { font-size:22px; font-weight:700; color:#e6edf3; }
-.kpi-item .kpi-label { font-size:12px; color:#8b949e; margin-top:2px; }
-.kpi-item .kpi-delta { font-size:11px; font-weight:600; margin-top:2px; }
+.kpi-item .kpi-label { font-size:14px; color:#8b949e; margin-top:2px; }
+.kpi-item .kpi-delta { font-size:13px; font-weight:600; margin-top:2px; }
 .kpi-item .kpi-delta.up { color:#3fb950; }
 .kpi-item .kpi-delta.down { color:#f85149; }
 
@@ -42,7 +42,7 @@ a:hover { text-decoration:underline; }
 .chart-container { position:relative; width:100%; }
 .chart-container canvas { width:100%; display:block; }
 .chart-btns { display:flex; gap:6px; margin-top:10px; }
-.chart-btns button { background:#21262d; border:1px solid #30363d; color:#8b949e; border-radius:6px; padding:4px 12px; font-size:12px; cursor:pointer; transition:all .2s; }
+.chart-btns button { background:#21262d; border:1px solid #30363d; color:#8b949e; border-radius:6px; padding:4px 12px; font-size:14px; cursor:pointer; transition:all .2s; }
 .chart-btns button:hover, .chart-btns button.active { background:#30363d; color:#e6edf3; border-color:#58a6ff; }
 
 /* Split Layout */
@@ -52,7 +52,7 @@ a:hover { text-decoration:underline; }
 .donut-wrap { display:flex; align-items:center; justify-content:center; position:relative; }
 .donut-center { position:absolute; text-align:center; }
 .donut-center .pct { font-size:28px; font-weight:700; color:#3fb950; }
-.donut-center .pct-label { font-size:12px; color:#8b949e; }
+.donut-center .pct-label { font-size:14px; color:#8b949e; }
 
 /* Table */
 .data-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -63,37 +63,37 @@ a:hover { text-decoration:underline; }
 /* Valuation Corridor */
 .corridor { position:relative; height:40px; background:linear-gradient(90deg,#f85149 0%,#d29922 30%,#3fb950 60%,#58a6ff 100%); border-radius:8px; margin:16px 0; }
 .corridor-marker { position:absolute; top:-6px; width:3px; height:52px; background:#e6edf3; border-radius:2px; transition:left .6s ease; }
-.corridor-marker::after { content:attr(data-label); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:11px; color:#e6edf3; white-space:nowrap; font-weight:600; background:#161b22; padding:2px 6px; border-radius:4px; }
-.corridor-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; margin-top:4px; }
+.corridor-marker::after { content:attr(data-label); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:13px; color:#e6edf3; white-space:nowrap; font-weight:600; background:#161b22; padding:2px 6px; border-radius:4px; }
+.corridor-labels { display:flex; justify-content:space-between; font-size:13px; color:#8b949e; margin-top:4px; }
 
 /* Sentiment Gauge */
 .sentiment-bar { height:14px; border-radius:7px; background:linear-gradient(90deg,#3fb950 0%,#56d364 25%,#d29922 50%,#f85149 75%,#da3633 100%); position:relative; margin:12px 0; }
 .sentiment-marker { position:absolute; top:-4px; width:4px; height:22px; background:#e6edf3; border-radius:2px; transition:left .6s; }
-.sentiment-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; }
+.sentiment-labels { display:flex; justify-content:space-between; font-size:13px; color:#8b949e; }
 
 /* Stacked Bar */
 .stacked-bar { display:flex; height:24px; border-radius:6px; overflow:hidden; margin:10px 0; }
-.stacked-bar div { display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
+.stacked-bar div { display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:#fff; }
 
 /* Grid layouts */
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
 .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
 .mini-card { background:#21262d; border-radius:8px; padding:12px; text-align:center; }
 .mini-card .mc-val { font-size:20px; font-weight:700; color:#e6edf3; }
-.mini-card .mc-label { font-size:11px; color:#8b949e; margin-top:4px; }
-.mini-card .mc-delta { font-size:11px; font-weight:600; margin-top:2px; }
+.mini-card .mc-label { font-size:13px; color:#8b949e; margin-top:4px; }
+.mini-card .mc-delta { font-size:13px; font-weight:600; margin-top:2px; }
 
 /* Holdings items */
 .holding-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #21262d; }
 .holding-item:last-child { border-bottom:none; }
 .holding-name { font-size:13px; font-weight:500; }
-.holding-tag { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.holding-tag { font-size:14px; padding:2px 6px; border-radius:4px; font-weight:600; }
 .tag-buy { background:rgba(63,185,80,.12); color:#3fb950; }
 .tag-hold { background:rgba(210,153,34,.12); color:#d29922; }
 .tag-sell { background:rgba(248,81,73,.12); color:#f85149; }
 
 /* Update time */
-.update-time { text-align:center; font-size:12px; color:#8b949e; margin-top:24px; padding-bottom:40px; }
+.update-time { text-align:center; font-size:14px; color:#8b949e; margin-top:24px; padding-bottom:40px; }
 
 /* Responsive */
 @media(max-width:768px) {
@@ -137,7 +137,7 @@ a:hover { text-decoration:underline; }
 <div class="page-subtitle">
   第一档 &middot; 5x核心 &middot; 文化符号品类王 &middot; 全球IP平台
   <span class="badge badge-live">实时刷新</span>
-  <span style="margin-left:auto;font-size:12px;" id="update-time">--</span>
+  <span style="margin-left:auto;font-size:14px;" id="update-time">--</span>
 </div>
 
 <!-- ═══════════════════════════════════════════ -->
@@ -218,7 +218,7 @@ a:hover { text-decoration:underline; }
         <div class="pct-label">看多占比</div>
       </div>
     </div>
-    <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;font-size:12px;">
+    <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;font-size:14px;">
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb950;margin-right:4px;"></span>买入 <b id="analyst-buy">--</b></span>
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d29922;margin-right:4px;"></span>持有 <b id="analyst-hold">--</b></span>
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f85149;margin-right:4px;"></span>卖出 <b id="analyst-sell">--</b></span>
@@ -238,7 +238,7 @@ a:hover { text-decoration:underline; }
       <div class="holding-item"><span class="holding-name">富达 Fidelity</span><span class="holding-tag tag-buy">增持</span></div>
       <div class="holding-item"><span class="holding-name">JPMorgan</span><span class="holding-tag tag-hold">持有</span></div>
     </div>
-    <div style="font-size:11px;color:#8b949e;margin-top:10px;">数据来源: 港交所权益披露 (待cron更新)</div>
+    <div style="font-size:13px;color:#8b949e;margin-top:10px;">数据来源: 港交所权益披露 (待cron更新)</div>
   </div>
 </div>
 
@@ -260,7 +260,7 @@ a:hover { text-decoration:underline; }
       <tr><td>中金公司</td><td style="color:#3fb950;font-weight:600;">HK$218</td><td><span class="holding-tag tag-buy">跑赢行业</span></td><td>2026-06</td></tr>
     </tbody>
   </table>
-  <div style="font-size:11px;color:#8b949e;margin-top:10px;">* 目标价待cron自动更新</div>
+  <div style="font-size:13px;color:#8b949e;margin-top:10px;">* 目标价待cron自动更新</div>
 </div>
 
 <!-- ═══════════════════════════════════════════ -->
@@ -276,7 +276,7 @@ a:hover { text-decoration:underline; }
     <div style="width:3.5%;background:#58a6ff;">司德 3.5%</div>
     <div style="width:47.3%;background:#30363d;color:#8b949e;">公众 47.3%</div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:12px;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:14px;">
     <div style="text-align:center;"><div style="color:#3fb950;font-weight:600;">49.2%</div><div style="color:#8b949e;">王宁 (创始人)</div></div>
     <div style="text-align:center;"><div style="color:#58a6ff;font-weight:600;">3.5%</div><div style="color:#8b949e;">司德 (联合创始人)</div></div>
     <div style="text-align:center;"><div style="color:#8b949e;font-weight:600;">47.3%</div><div style="color:#8b949e;">公众持股</div></div>
@@ -288,19 +288,19 @@ a:hover { text-decoration:underline; }
 <!-- ═══════════════════════════════════════════ -->
 <div class="grid-3" style="margin-bottom:16px;">
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">日成交额</div>
+    <div style="font-size:14px;color:#8b949e;">日成交额</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover">--</div>
-    <div style="font-size:11px;color:#8b949e;">亿HK$</div>
+    <div style="font-size:13px;color:#8b949e;">亿HK$</div>
   </div>
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">换手率</div>
+    <div style="font-size:14px;color:#8b949e;">换手率</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover-rate">--</div>
-    <div style="font-size:11px;color:#8b949e;">%</div>
+    <div style="font-size:13px;color:#8b949e;">%</div>
   </div>
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">52周波动</div>
+    <div style="font-size:14px;color:#8b949e;">52周波动</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-52w">--</div>
-    <div style="font-size:11px;color:#8b949e;">高 / 低</div>
+    <div style="font-size:13px;color:#8b949e;">高 / 低</div>
   </div>
 </div>
 
