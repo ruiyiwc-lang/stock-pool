@@ -16,7 +16,7 @@ a:hover { text-decoration:underline; }
 .sidebar a.nav-btn:hover{color:#d29922;background:rgba(210,153,34,.05)}
 .sidebar a.nav-btn.active{color:#d29922;border-left-color:#d29922;background:rgba(210,153,34,.08)}
 .sidebar a.nav-btn svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sidebar a.nav-btn .nav-label{font-size:11px;line-height:1.2;white-space:nowrap}
+.sidebar a.nav-btn .nav-label{font-size:13px;line-height:1.2;white-space:nowrap}
 
 /* Cards */
 .card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:18px; margin-bottom:16px; }
@@ -25,7 +25,7 @@ a:hover { text-decoration:underline; }
 /* Header */
 .page-title { font-size:32px; font-weight:700; background:linear-gradient(135deg,#bc8cff,#a371f7,#8957e5); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:4px; }
 .page-subtitle { font-size:14px; color:#8b949e; margin-bottom:20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; }
+.badge { display:inline-block; font-size:13px; font-weight:600; padding:2px 8px; border-radius:10px; }
 .badge-live { background:rgba(63,185,80,.12); color:#3fb950; animation:pulse 2s infinite; }
 .badge-vc { background:rgba(188,140,255,.12); color:#bc8cff; }
 .badge-warn { background:rgba(248,81,73,.12); color:#f85149; animation:pulse 1.5s infinite; }
@@ -35,8 +35,8 @@ a:hover { text-decoration:underline; }
 .kpi-bar { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin-bottom:16px; }
 .kpi-item { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px 12px; text-align:center; }
 .kpi-item .kpi-val { font-size:22px; font-weight:700; color:#e6edf3; }
-.kpi-item .kpi-label { font-size:12px; color:#8b949e; margin-top:2px; }
-.kpi-item .kpi-delta { font-size:11px; font-weight:600; margin-top:2px; }
+.kpi-item .kpi-label { font-size:14px; color:#8b949e; margin-top:2px; }
+.kpi-item .kpi-delta { font-size:13px; font-weight:600; margin-top:2px; }
 .kpi-item .kpi-delta.up { color:#3fb950; }
 .kpi-item .kpi-delta.down { color:#f85149; }
 
@@ -44,7 +44,7 @@ a:hover { text-decoration:underline; }
 .chart-container { position:relative; width:100%; }
 .chart-container canvas { width:100%; display:block; }
 .chart-btns { display:flex; gap:6px; margin-top:10px; }
-.chart-btns button { background:#21262d; border:1px solid #30363d; color:#8b949e; border-radius:6px; padding:4px 12px; font-size:12px; cursor:pointer; transition:all .2s; }
+.chart-btns button { background:#21262d; border:1px solid #30363d; color:#8b949e; border-radius:6px; padding:4px 12px; font-size:14px; cursor:pointer; transition:all .2s; }
 .chart-btns button:hover, .chart-btns button.active { background:#30363d; color:#e6edf3; border-color:#58a6ff; }
 
 /* Split Layout */
@@ -59,17 +59,17 @@ a:hover { text-decoration:underline; }
 /* Valuation Corridor */
 .corridor { position:relative; height:40px; background:linear-gradient(90deg,#f85149 0%,#d29922 30%,#3fb950 60%,#bc8cff 100%); border-radius:8px; margin:16px 0; }
 .corridor-marker { position:absolute; top:-6px; width:3px; height:52px; background:#e6edf3; border-radius:2px; transition:left .6s ease; }
-.corridor-marker::after { content:attr(data-label); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:11px; color:#e6edf3; white-space:nowrap; font-weight:600; background:#161b22; padding:2px 6px; border-radius:4px; }
-.corridor-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; margin-top:4px; }
+.corridor-marker::after { content:attr(data-label); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:13px; color:#e6edf3; white-space:nowrap; font-weight:600; background:#161b22; padding:2px 6px; border-radius:4px; }
+.corridor-labels { display:flex; justify-content:space-between; font-size:13px; color:#8b949e; margin-top:4px; }
 
 /* Sentiment Gauge */
 .sentiment-bar { height:14px; border-radius:7px; background:linear-gradient(90deg,#3fb950 0%,#56d364 25%,#d29922 50%,#f85149 75%,#da3633 100%); position:relative; margin:12px 0; }
 .sentiment-marker { position:absolute; top:-4px; width:4px; height:22px; background:#e6edf3; border-radius:2px; transition:left .6s; }
-.sentiment-labels { display:flex; justify-content:space-between; font-size:11px; color:#8b949e; }
+.sentiment-labels { display:flex; justify-content:space-between; font-size:13px; color:#8b949e; }
 
 /* Stacked Bar */
 .stacked-bar { display:flex; height:24px; border-radius:6px; overflow:hidden; margin:10px 0; }
-.stacked-bar div { display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
+.stacked-bar div { display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:#fff; }
 
 /* Grid layouts */
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
@@ -77,14 +77,14 @@ a:hover { text-decoration:underline; }
 .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
 .mini-card { background:#21262d; border-radius:8px; padding:12px; text-align:center; }
 .mini-card .mc-val { font-size:20px; font-weight:700; color:#e6edf3; }
-.mini-card .mc-label { font-size:11px; color:#8b949e; margin-top:4px; }
-.mini-card .mc-delta { font-size:11px; font-weight:600; margin-top:2px; }
+.mini-card .mc-label { font-size:13px; color:#8b949e; margin-top:4px; }
+.mini-card .mc-delta { font-size:13px; font-weight:600; margin-top:2px; }
 
 /* Holdings items */
 .holding-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #21262d; }
 .holding-item:last-child { border-bottom:none; }
 .holding-name { font-size:13px; font-weight:500; }
-.holding-tag { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.holding-tag { font-size:14px; padding:2px 6px; border-radius:4px; font-weight:600; }
 .tag-buy { background:rgba(63,185,80,.12); color:#3fb950; }
 .tag-hold { background:rgba(210,153,34,.12); color:#d29922; }
 .tag-sell { background:rgba(248,81,73,.12); color:#f85149; }
@@ -92,7 +92,7 @@ a:hover { text-decoration:underline; }
 .tag-deal { background:rgba(188,140,255,.12); color:#bc8cff; }
 
 /* Pipeline progress */
-.pipeline-item { display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr; align-items:center; padding:10px 0; border-bottom:1px solid #21262d; font-size:12px; gap:8px; }
+.pipeline-item { display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr; align-items:center; padding:10px 0; border-bottom:1px solid #21262d; font-size:14px; gap:8px; }
 .pipeline-item:last-child { border-bottom:none; }
 .pipeline-bar { height:6px; border-radius:3px; background:#21262d; overflow:hidden; }
 .pipeline-bar-fill { height:100%; border-radius:3px; transition:width .6s; }
@@ -101,10 +101,10 @@ a:hover { text-decoration:underline; }
 .countdown-box { text-align:center; padding:20px; }
 .countdown-num { font-size:48px; font-weight:800; color:#f85149; }
 .countdown-label { font-size:14px; color:#8b949e; margin-top:4px; }
-.countdown-detail { font-size:12px; color:#6e7681; margin-top:8px; }
+.countdown-detail { font-size:14px; color:#6e7681; margin-top:8px; }
 
 /* Update time */
-.update-time { text-align:center; font-size:12px; color:#8b949e; margin-top:24px; padding-bottom:40px; }
+.update-time { text-align:center; font-size:14px; color:#8b949e; margin-top:24px; padding-bottom:40px; }
 
 /* Responsive */
 @media(max-width:768px) {
@@ -150,7 +150,7 @@ a:hover { text-decoration:underline; }
   VC赌注 &middot; AI制药龙头 &middot; 端到端AI药物发现 &middot; Phase IIa临床PoC
   <span class="badge badge-vc">VC框架</span>
   <span class="badge badge-live">实时刷新</span>
-  <span style="margin-left:auto;font-size:12px;" id="update-time">--</span>
+  <span style="margin-left:auto;font-size:14px;" id="update-time">--</span>
 </div>
 
 <!-- ═══════════════════════════════════════════ -->
@@ -265,13 +265,13 @@ a:hover { text-decoration:underline; }
   <div style="text-align:center;font-size:14px;margin-top:8px;" id="corridor-text">
     当前价 HK$-- 距A档 --%
   </div>
-  <div style="margin-top:16px;padding:12px;background:#21262d;border-radius:8px;font-size:12px;color:#8b949e;">
+  <div style="margin-top:16px;padding:12px;background:#21262d;border-radius:8px;font-size:14px;color:#8b949e;">
     <div style="font-weight:600;color:#bc8cff;margin-bottom:8px;">概率加权期望值模型</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
-      <div><div style="color:#3fb950;font-weight:600;">大成 15%</div><div>HK$180</div><div style="font-size:10px;">多管线成药</div></div>
-      <div><div style="color:#56d364;font-weight:600;">中成 30%</div><div>HK$80</div><div style="font-size:10px;">1-2管线成功</div></div>
-      <div><div style="color:#d29922;font-weight:600;">维持 35%</div><div>HK$35</div><div style="font-size:10px;">平台license</div></div>
-      <div><div style="color:#f85149;font-weight:600;">失败 20%</div><div>HK$5</div><div style="font-size:10px;">现金清算</div></div>
+      <div><div style="color:#3fb950;font-weight:600;">大成 15%</div><div>HK$180</div><div style="font-size:14px;">多管线成药</div></div>
+      <div><div style="color:#56d364;font-weight:600;">中成 30%</div><div>HK$80</div><div style="font-size:14px;">1-2管线成功</div></div>
+      <div><div style="color:#d29922;font-weight:600;">维持 35%</div><div>HK$35</div><div style="font-size:14px;">平台license</div></div>
+      <div><div style="color:#f85149;font-weight:600;">失败 20%</div><div>HK$5</div><div style="font-size:14px;">现金清算</div></div>
     </div>
     <div style="text-align:center;margin-top:8px;color:#e6edf3;font-weight:600;">
       EV = 0.15×180 + 0.30×80 + 0.35×35 + 0.20×5 = <span style="color:#bc8cff;">HK$64.25</span>
@@ -340,7 +340,7 @@ a:hover { text-decoration:underline; }
       <span>2026H1递交</span>
     </div>
   </div>
-  <div style="margin-top:12px;font-size:11px;color:#8b949e;">
+  <div style="margin-top:12px;font-size:13px;color:#8b949e;">
     核心催化剂: ISM001-055 IPF Phase IIa PoC数据 → 成功=估值翻倍, 失败=回到平台价
   </div>
 </div>
@@ -386,7 +386,7 @@ a:hover { text-decoration:underline; }
       <div style="width:4%;background:#f0883e;">启明 4%</div>
       <div style="width:71%;background:#30363d;color:#8b949e;">其他 71%</div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:12px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:14px;">
       <div style="text-align:center;"><div style="color:#bc8cff;font-weight:600;">7.64%</div><div style="color:#8b949e;">Alex (创始人)</div></div>
       <div style="text-align:center;"><div style="color:#58a6ff;font-weight:600;">8.32%</div><div style="color:#8b949e;">华平投资</div></div>
       <div style="text-align:center;"><div style="color:#3fb950;font-weight:600;">4.49%</div><div style="color:#8b949e;">淡马锡</div></div>
@@ -394,7 +394,7 @@ a:hover { text-decoration:underline; }
       <div style="text-align:center;"><div style="color:#f0883e;font-weight:600;">4.16%</div><div style="color:#8b949e;">启明创投</div></div>
       <div style="text-align:center;"><div style="color:#8b949e;font-weight:600;">无WVR</div><div style="color:#6e7681;">无同股不同权</div></div>
     </div>
-    <div style="font-size:11px;color:#f85149;margin-top:12px;font-weight:500;">
+    <div style="font-size:13px;color:#f85149;margin-top:12px;font-weight:500;">
       ⚠ 创始人仅7.64%无WVR = 治理风险，无控制权溢价
     </div>
   </div>
@@ -410,7 +410,7 @@ a:hover { text-decoration:underline; }
       <div class="holding-item"><span class="holding-name">AI平台: Pharma.AI + Chemistry42</span><span class="holding-tag tag-deal">端到端</span></div>
       <div class="holding-item"><span class="holding-name">员工308人 · 研发为主</span><span class="holding-tag tag-hold">精英</span></div>
     </div>
-    <div style="font-size:11px;color:#8b949e;margin-top:10px;">
+    <div style="font-size:13px;color:#8b949e;margin-top:10px;">
       双CEO架构: Alex(拉脱维亚/莫大PhD AI衰老) + 任峰(哈佛/GSK资深药物开发)
     </div>
   </div>
@@ -421,19 +421,19 @@ a:hover { text-decoration:underline; }
 <!-- ═══════════════════════════════════════════ -->
 <div class="grid-3" style="margin-bottom:16px;">
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">日成交额</div>
+    <div style="font-size:14px;color:#8b949e;">日成交额</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover">--</div>
-    <div style="font-size:11px;color:#8b949e;">亿HK$</div>
+    <div style="font-size:13px;color:#8b949e;">亿HK$</div>
   </div>
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">换手率</div>
+    <div style="font-size:14px;color:#8b949e;">换手率</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-turnover-rate">--</div>
-    <div style="font-size:11px;color:#8b949e;">%</div>
+    <div style="font-size:13px;color:#8b949e;">%</div>
   </div>
   <div class="card" style="text-align:center;">
-    <div style="font-size:12px;color:#8b949e;">52周波动</div>
+    <div style="font-size:14px;color:#8b949e;">52周波动</div>
     <div style="font-size:24px;font-weight:700;color:#e6edf3;margin-top:4px;" id="kpi-52w">--</div>
-    <div style="font-size:11px;color:#8b949e;">高 / 低</div>
+    <div style="font-size:13px;color:#8b949e;">高 / 低</div>
   </div>
 </div>
 
@@ -469,7 +469,7 @@ a:hover { text-decoration:underline; }
   <div class="grid-2">
     <div style="padding:12px;">
       <div style="color:#f85149;font-weight:600;font-size:13px;margin-bottom:8px;">核心风险</div>
-      <div style="font-size:12px;color:#c9d1d9;line-height:1.8;">
+      <div style="font-size:14px;color:#c9d1d9;line-height:1.8;">
         &bull; 6/30解禁81.25% → 短期抛压巨大<br>
         &bull; ISM001-055 PoC失败 → 估值腰斩至平台价<br>
         &bull; 年消耗~$7000万 → 5年runway有限<br>
@@ -479,7 +479,7 @@ a:hover { text-decoration:underline; }
     </div>
     <div style="padding:12px;">
       <div style="color:#3fb950;font-weight:600;font-size:13px;margin-bottom:8px;">期权价值</div>
-      <div style="font-size:12px;color:#c9d1d9;line-height:1.8;">
+      <div style="font-size:14px;color:#c9d1d9;line-height:1.8;">
         &bull; 唯一端到端AI制药上市公司 → 稀缺性溢价<br>
         &bull; 礼来$27.5亿deal验证平台 → Big Pharma背书<br>
         &bull; 10条管线分散风险 → 非单药赌注<br>
