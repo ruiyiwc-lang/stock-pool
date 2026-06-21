@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VC Bets | 赌注组合</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#0d1117;color:#c9d1d9;padding:16px;padding-left:80px;max-width:1200px;margin:0 auto;line-height:1.6}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Sidebar */
+.sidebar{position:fixed;left:0;top:0;width:80px;height:100vh;background:#0d1117;border-right:1px solid #30363d;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:12px;overflow-y:auto}
+.sidebar a.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;height:64px;text-decoration:none;color:#8b949e;font-size:10px;gap:4px;border-left:3px solid transparent;transition:all .2s}
+.sidebar a.nav-btn:hover{color:#d29922;background:rgba(210,153,34,.05)}
+.sidebar a.nav-btn.active{color:#d29922;border-left-color:#d29922;background:rgba(210,153,34,.08)}
+.sidebar a.nav-btn svg{width:20px;height:20px;flex-shrink:0}
+.nav-label{white-space:nowrap}
+
+/* Header */
+.page-header{background:linear-gradient(135deg,#1a1e2e 0%,#0d1117 100%);border:1px solid #30363d;border-radius:12px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#d29922,#f0c040,#d29922)}
+.page-header h1{font-size:24px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+.page-header .subtitle{font-size:13px;color:#8b949e}
+.badge{display:inline-block;background:rgba(210,153,34,.15);color:#d29922;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:8px}
+
+/* Cards */
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px 24px;margin-bottom:20px}
+.card-title{font-size:15px;font-weight:600;color:#e6edf3;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Stock Grid */
+.stock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:24px}
+.stock-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:border-color .2s}
+.stock-card:hover{border-color:#d29922}
+.stock-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stock-card.legend::before{background:#3fb950}
+.stock-card.kangfang::before{background:#58a6ff}
+.stock-card.baili::before{background:#f0c040}
+.stock-card.beigene::before{background:#da3633}
+.stock-card.wuxi::before{background:#a371f7}
+
+.stock-name{font-size:16px;font-weight:700;color:#e6edf3;margin-bottom:2px}
+.stock-code{font-size:12px;color:#8b949e;margin-bottom:12px}
+.stock-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meta-item{display:flex;flex-direction:column}
+.meta-label{font-size:11px;color:#8b949e;margin-bottom:2px}
+.meta-value{font-size:14px;font-weight:600;color:#c9d1d9}
+.meta-value.green{color:#3fb950}
+.meta-value.red{color:#f85149}
+.meta-value.gold{color:#d29922}
+
+/* Entry Point */
+.entry-section{margin-top:14px;padding-top:14px;border-top:1px solid #30363d}
+.entry-label{font-size:11px;color:#8b949e;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.entry-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.entry-item{background:#21262d;border-radius:6px;padding:6px 8px;text-align:center}
+.entry-item .el{font-size:10px;color:#8b949e}
+.entry-item .ev{font-size:13px;font-weight:700}
+.entry-item .ev.a-price{color:#3fb950}
+.entry-item .ev.b-price{color:#d29922}
+.entry-item .ev.red-price{color:#f85149}
+
+/* Thesis */
+.thesis{font-size:12px;color:#8b949e;margin-top:10px;padding:8px 10px;background:#0d1117;border-radius:6px;border:1px solid #21262d}
+
+/* Price Range Bar */
+.range-bar{margin-top:12px;position:relative;height:6px;background:#21262d;border-radius:3px;overflow:visible}
+.range-fill{position:absolute;height:100%;border-radius:3px}
+.range-marker{position:absolute;top:-4px;width:2px;height:14px;border-radius:1px}
+.range-label{position:absolute;top:-18px;font-size:9px;transform:translateX(-50%);white-space:nowrap}
+
+/* Framework */
+.framework{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px 20px;margin-top:20px}
+.framework h3{font-size:14px;color:#e6edf3;margin-bottom:10px}
+.framework p{font-size:13px;color:#8b949e;margin-bottom:6px}
+.framework strong{color:#c9d1d9}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:8px 12px;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.data-table td{padding:8px 12px;border-bottom:1px solid #21262d}
+.data-table tr:hover td{background:#1c2128}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none}
+  body{padding-left:16px}
+  .stock-grid{grid-template-columns:1fr}
+  .entry-grid{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+</head>
+<body data-active-page="vc-bets">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+<a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span class="nav-label">总览</span></a>
+<a class="nav-btn" href="bubble.html" data-page="bubble"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z"/><path d="M12 6v8"/><path d="M8 10h8"/></svg><span class="nav-label">温度计</span></a>
+<a class="nav-btn" href="ai-foundation.html" data-page="ai-foundation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg><span class="nav-label">基石</span></a>
+<a class="nav-btn" href="portfolio.html" data-page="portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 3v18"/></svg><span class="nav-label">三档</span></a>
+<a class="nav-btn" href="smic.html" data-page="smic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg><span class="nav-label">中芯</span></a>
+<a class="nav-btn" href="popmart.html" data-page="popmart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0z"/><path d="M9 10h.01M15 10h.01M9.5 15a3.5 3.5 0 0 0 5 0"/></svg><span class="nav-label">泡泡玛特</span></a>
+<a class="nav-btn" href="tencent.html" data-page="tencent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="nav-label">腾讯</span></a>
+<a class="nav-btn" href="baba.html" data-page="baba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg><span class="nav-label">阿里</span></a>
+<a class="nav-btn" href="wuxi.html" data-page="wuxi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4"/></svg><span class="nav-label">药明</span></a>
+<a class="nav-btn" href="beigene.html" data-page="beigene"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="nav-label">百济</span></a>
+<a class="nav-btn" href="vc-bets.html" data-page="vc-bets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="nav-label">VC赌注</span></a>
+<a class="nav-btn" href="news.html" data-page="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/><path d="M8 4v4"/></svg><span class="nav-label">新闻</span></a>
+<a class="nav-btn" href="methodology.html" data-page="methodology"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="nav-label">方法论</span></a>
+</nav>
+
+<!-- Main Content -->
+<div class="page-header">
+  <h1>VC Bets<span class="badge">等权赌注</span></h1>
+  <p class="subtitle">非PEG定价 / 产品稀缺性+团队能力 / 等权配置 / 事故级别匹配建仓</p>
+</div>
+
+<!-- Framework Card -->
+<div class="card">
+  <div class="card-title"><span class="dot" style="background:#d29922"></span>赌注逻辑</div>
+  <div class="framework">
+    <p><strong>核心命题：</strong>赌未来公司 = 赌产品能否改变世界，财务报表只是后视镜。</p>
+    <p><strong>筛选标准：</strong>first-in-class / best-in-class产品 + 全球化验证(BD/FDA) + 创始人all-in。</p>
+    <p><strong>定价方式：</strong>不用PEG，用"事故级别匹配"——行业事故/政治事故/数据失败时进入，无事故到价=价值陷阱。</p>
+    <p><strong>仓位：</strong>等权配置，每只占总仓位约3-5%，合计不超组合15%。</p>
+  </div>
+</div>
+
+<!-- Stock Cards -->
+<div class="stock-grid">
+
+  <!-- 百济神州 -->
+  <div class="stock-card beigene">
+    <div class="stock-name">百济神州</div>
+    <div class="stock-code">ONC (NASDAQ) / 06160.HK / 688235.SH</div>
+    <div class="stock-meta">
+      <div class="meta-item"><span class="meta-label">当前价(H)</span><span class="meta-value" id="beigene-h-price">162 HKD</span></div>
+      <div class="meta-item"><span class="meta-label">当前价(A)</span><span class="meta-value" id="beigene-a-price">218 CNY</span></div>
+      <div class="meta-item"><span class="meta-label">历史高点</span><span class="meta-value">346 (2025.9)</span></div>
+      <div class="meta-item"><span class="meta-label">历史低点</span><span class="meta-value">78 (2022)</span></div>
+      <div class="meta-item"><span class="meta-label">市值</span><span class="meta-value">3,884亿</span></div>
+      <div class="meta-item"><span class="meta-label">2025营收</span><span class="meta-value">382亿 (+40%)</span></div>
+    </div>
+    <div class="entry-section">
+      <div class="entry-label">Entry Points (港股)</div>
+      <div class="entry-grid">
+        <div class="entry-item"><div class="el">A价(行业事故)</div><div class="ev a-price">HKD 144</div></div>
+        <div class="entry-item"><div class="el">B价</div><div class="ev b-price">HKD 120</div></div>
+        <div class="entry-item"><div class="el">红线</div><div class="ev red-price">HKD 100</div></div>
+      </div>
+    </div>
+    <div class="thesis">全球BTK第一 / 2025首次全年盈利14.6亿 / 风险=专利悬崖2030s+AI削临床壁垒+1260H</div>
+  </div>
+
+  <!-- 康方生物 -->
+  <div class="stock-card kangfang">
+    <div class="stock-name">康方生物</div>
+    <div class="stock-code">09926.HK</div>
+    <div class="stock-meta">
+      <div class="meta-item"><span class="meta-label">当前价</span><span class="meta-value" id="kangfang-price">~100 HKD</span></div>
+      <div class="meta-item"><span class="meta-label">距高点</span><span class="meta-value red">-44%</span></div>
+      <div class="meta-item"><span class="meta-label">历史高点</span><span class="meta-value">179 (2025.8)</span></div>
+      <div class="meta-item"><span class="meta-label">历史低点</span><span class="meta-value">12 (2022)</span></div>
+      <div class="meta-item"><span class="meta-label">市值</span><span class="meta-value">~860亿HKD</span></div>
+      <div class="meta-item"><span class="meta-label">2025产品销售</span><span class="meta-value">30.3亿 (+51%)</span></div>
+    </div>
+    <div class="entry-section">
+      <div class="entry-label">Entry Points</div>
+      <div class="entry-grid">
+        <div class="entry-item"><div class="el">A价(数据失败)</div><div class="ev a-price">HKD 55</div></div>
+        <div class="entry-item"><div class="el">B价</div><div class="ev b-price">HKD 45</div></div>
+        <div class="entry-item"><div class="el">红线</div><div class="ev red-price">HKD 35</div></div>
+      </div>
+    </div>
+    <div class="thesis">PD-1/VEGF双抗first-in-class / 依沃西若OS获证→重新定义IO联合治疗 / 风险=ASCO数据未达预期+亏损扩大+AZ/Roche追赶</div>
+  </div>
+
+  <!-- 百利天恒 -->
+  <div class="stock-card baili">
+    <div class="stock-name">百利天恒</div>
+    <div class="stock-code">688506.SH</div>
+    <div class="stock-meta">
+      <div class="meta-item"><span class="meta-label">当前价</span><span class="meta-value" id="baili-price">229 CNY</span></div>
+      <div class="meta-item"><span class="meta-label">距高点</span><span class="meta-value red">-45%</span></div>
+      <div class="meta-item"><span class="meta-label">历史高点</span><span class="meta-value">414 (2024.3)</span></div>
+      <div class="meta-item"><span class="meta-label">发行价</span><span class="meta-value">24.7 (2023.1)</span></div>
+      <div class="meta-item"><span class="meta-label">市值</span><span class="meta-value">1,061亿</span></div>
+      <div class="meta-item"><span class="meta-label">2025净利</span><span class="meta-value red">-11亿</span></div>
+    </div>
+    <div class="entry-section">
+      <div class="entry-label">Entry Points</div>
+      <div class="entry-grid">
+        <div class="entry-item"><div class="el">A价(III期失败)</div><div class="ev a-price">CNY 120</div></div>
+        <div class="entry-item"><div class="el">B价</div><div class="ev b-price">CNY 100</div></div>
+        <div class="entry-item"><div class="el">红线</div><div class="ev red-price">CNY 80</div></div>
+      </div>
+    </div>
+    <div class="thesis">双抗ADC(BL-B01D1)全球首创 / BMS $84亿背书 / 零商业化收入纯赌管线 / 风险=III期读出不达预期+竞品追赶+持续烧钱</div>
+  </div>
+
+  <!-- 传奇生物 -->
+  <div class="stock-card legend">
+    <div class="stock-name">传奇生物</div>
+    <div class="stock-code">LEGN (NASDAQ)</div>
+    <div class="stock-meta">
+      <div class="meta-item"><span class="meta-label">当前价</span><span class="meta-value" id="legend-price">$27.9</span></div>
+      <div class="meta-item"><span class="meta-label">距高点</span><span class="meta-value red">-64%</span></div>
+      <div class="meta-item"><span class="meta-label">历史高点</span><span class="meta-value">$76.5 (2023.7)</span></div>
+      <div class="meta-item"><span class="meta-label">历史低点</span><span class="meta-value">$16.2 (2025)</span></div>
+      <div class="meta-item"><span class="meta-label">市值</span><span class="meta-value">$52亿</span></div>
+      <div class="meta-item"><span class="meta-label">Carvykti 2025</span><span class="meta-value">$19亿 (全球)</span></div>
+    </div>
+    <div class="entry-section">
+      <div class="entry-label">Entry Points</div>
+      <div class="entry-grid">
+        <div class="entry-item"><div class="el">A价(产能瓶颈)</div><div class="ev a-price">$22</div></div>
+        <div class="entry-item"><div class="el">B价</div><div class="ev b-price">$18</div></div>
+        <div class="entry-item"><div class="el">红线</div><div class="ev red-price">$14</div></div>
+      </div>
+    </div>
+    <div class="thesis">CAR-T细胞治疗品类定义者 / Carvykti=多发性骨髓瘤best-in-class / J&J合作 / 风险=产能限制+双抗替代+仍亏损$3亿+stock -64%</div>
+  </div>
+
+  <!-- 药明康德(VC视角) -->
+  <div class="stock-card wuxi">
+    <div class="stock-name">药明康德</div>
+    <div class="stock-code">603259.SH / 02359.HK</div>
+    <div class="stock-meta">
+      <div class="meta-item"><span class="meta-label">当前价(A)</span><span class="meta-value" id="wuxi-a-price">103 CNY</span></div>
+      <div class="meta-item"><span class="meta-label">距高点</span><span class="meta-value red">-45%</span></div>
+      <div class="meta-item"><span class="meta-label">历史高点</span><span class="meta-value">188 (2021.2)</span></div>
+      <div class="meta-item"><span class="meta-label">BIOSECURE低</span><span class="meta-value">45 (2024.2)</span></div>
+      <div class="meta-item"><span class="meta-label">市值</span><span class="meta-value">3,077亿</span></div>
+      <div class="meta-item"><span class="meta-label">2025扣非净利</span><span class="meta-value">132亿 (+33%)</span></div>
+    </div>
+    <div class="entry-section">
+      <div class="entry-label">Entry Points (A股)</div>
+      <div class="entry-grid">
+        <div class="entry-item"><div class="el">A价(政治事故)</div><div class="ev a-price">CNY 85</div></div>
+        <div class="entry-item"><div class="el">B价</div><div class="ev b-price">CNY 70</div></div>
+        <div class="entry-item"><div class="el">红线</div><div class="ev red-price">CNY 55</div></div>
+      </div>
+    </div>
+    <div class="thesis">全球药物研发基础设施品类定义者 / 海外收入95% / 赌注属性=BIOSECURE是政治事故级别 / PEG~0.7(扣非口径)</div>
+  </div>
+
+</div>
+
+<!-- Summary Table -->
+<div class="card">
+  <div class="card-title"><span class="dot" style="background:#58a6ff"></span>全览</div>
+  <table class="data-table">
+    <thead>
+      <tr><th>标的</th><th>市场</th><th>当前价</th><th>A价</th><th>距A价</th><th>事故类型</th><th>核心赌注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>百济神州</td><td>06160.HK</td><td>162 HKD</td><td>144 HKD</td><td style="color:#d29922">-11%</td><td>行业事故</td><td>全球BTK#1 + 盈利拐点</td></tr>
+      <tr><td>康方生物</td><td>09926.HK</td><td>~100 HKD</td><td>55 HKD</td><td style="color:#8b949e">-45%</td><td>数据失败</td><td>双抗OS证明 → IO重定义</td></tr>
+      <tr><td>百利天恒</td><td>688506.SH</td><td>229 CNY</td><td>120 CNY</td><td style="color:#8b949e">-48%</td><td>III期失败</td><td>双抗ADC全球首创</td></tr>
+      <tr><td>传奇生物</td><td>LEGN</td><td>$27.9</td><td>$22</td><td style="color:#d29922">-21%</td><td>产能瓶颈</td><td>CAR-T best-in-class</td></tr>
+      <tr><td>药明康德</td><td>603259.SH</td><td>103 CNY</td><td>85 CNY</td><td style="color:#d29922">-17%</td><td>政治事故</td><td>全球CRDMO唯一平台</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Rules -->
+<div class="card">
+  <div class="card-title"><span class="dot" style="background:#f85149"></span>纪律</div>
+  <div class="framework">
+    <p><strong>1. 无事故不建仓：</strong>当前价距A价>30%时保持观望，VC赌注只在恐慌/事故窗口进入。</p>
+    <p><strong>2. 等权纪律：</strong>每只占总仓位3-5%，不因conviction差异加仓某一只。</p>
+    <p><strong>3. 认错线=红线：</strong>跌破红线即清仓，不补仓不扛单。</p>
+    <p><strong>4. 不看财报定价：</strong>这些公司的价值在管线/平台，不在当期EPS。用产品稀缺性+全球验证做conviction，不做DCF。</p>
+    <p><strong>5. 催化剂驱动：</strong>每只都有明确催化（百济=盈利释放 / 康方=OS数据 / 百利=III期读出 / 传奇=产能扩张 / 药明=BIOSECURE落地）。</p>
+  </div>
+</div>
+
+<div style="text-align:center;font-size:11px;color:#8b949e;margin-top:32px;padding-top:16px;border-top:1px solid #21262d">
+  VC Bets Portfolio | Updated 2026-06-21 | 等权赌注，非PEG定价
+</div>
+
+<!-- Sidebar active highlight -->
+<script>
+(function(){
+  const active = document.body.dataset.activePage;
+  document.querySelectorAll('.sidebar a.nav-btn').forEach(btn => {
+    if(btn.dataset.page === active) btn.classList.add('active');
+  });
+})();
+</script>
+</body>
+</html>
