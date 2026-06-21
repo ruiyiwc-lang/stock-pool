@@ -28,7 +28,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
 .stock-title { font-size:18px; font-weight:700; }
 .stock-code { font-size:13px; color:#6b7b8d; margin-left:8px; }
-.stock-link { font-size:12px; color:#c9a84c; text-decoration:none; margin-left:8px; }
+.stock-link { font-size:14px; color:#c9a84c; text-decoration:none; margin-left:8px; }
 .stock-link:hover { text-decoration:underline; }
 
 .price-display { display:flex; align-items:baseline; gap:8px; }
@@ -41,10 +41,10 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 /* 进度条 */
 .gauge-mini { position:relative; margin:48px 0 38px; height:10px; border-radius:5px; background:linear-gradient(to right,#ef4444 0%,#ef4444 20%,#22c55e 20%,#22c55e 40%,#5fb583 40%,#5fb583 60%,#5a6878 60%,#5a6878 100%); opacity:.85; }
 .gauge-mini-marker { position:absolute; top:-12px; width:3px; height:26px; background:#fff; transform:translateX(-50%); border-radius:1px; box-shadow:0 0 6px rgba(255,255,255,.6); transition:left .6s; z-index:5; }
-.gauge-mini-label { position:absolute; top:-26px; transform:translateX(-50%); font-size:11px; color:#fff; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 6px; border-radius:3px; border:1px solid #c9a84c; }
+.gauge-mini-label { position:absolute; top:-26px; transform:translateX(-50%); font-size:13px; color:#fff; white-space:nowrap; font-weight:700; background:#1a1f2e; padding:1px 6px; border-radius:3px; border:1px solid #c9a84c; }
 .gauge-ticks { position:absolute; top:0; left:0; right:0; height:10px; }
 .gauge-ticks .tick { position:absolute; top:0; width:1px; height:10px; background:rgba(255,255,255,.35); }
-.gauge-ticks .tick-label { position:absolute; top:14px; transform:translateX(-50%); font-size:10px; white-space:nowrap; font-weight:600; }
+.gauge-ticks .tick-label { position:absolute; top:14px; transform:translateX(-50%); font-size:14px; white-space:nowrap; font-weight:600; }
 .gauge-ticks .tick-label.red { color:#ef4444; }
 .gauge-ticks .tick-label.b { color:#22c55e; }
 .gauge-ticks .tick-label.a { color:#c9a84c; }
@@ -58,7 +58,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .metrics .val-gold { color:#c9a84c; font-weight:600; }
 
 /* 状态 */
-.status-tag { display:inline-block; padding:3px 10px; border-radius:10px; font-size:12px; font-weight:600; }
+.status-tag { display:inline-block; padding:3px 10px; border-radius:10px; font-size:14px; font-weight:600; }
 .status-tag.buy { background:rgba(26,122,76,.15); color:#22c55e; }
 .status-tag.wait { background:rgba(201,168,76,.12); color:#c9a84c; }
 .status-tag.near { background:rgba(234,179,8,.12); color:#eab308; }
@@ -69,7 +69,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .summary-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
 .summary-item { text-align:center; }
 .summary-item .sv { font-size:20px; font-weight:700; }
-.summary-item .sl { font-size:12px; color:#6b7b8d; margin-top:2px; }
+.summary-item .sl { font-size:14px; color:#6b7b8d; margin-top:2px; }
 .sv.green { color:#22c55e; }
 .sv.gold { color:#c9a84c; }
 .sv.red { color:#ef4444; }
@@ -95,15 +95,15 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .ah-mkt.h { background:rgba(93,173,226,.15); color:#5dade2; }
 .ah-panel .price-now { font-size:22px; }
 .ah-panel .gauge-mini { margin:44px 0 32px; }
-.cheaper-tag { font-size:11px; color:#22c55e; font-weight:600; padding:2px 6px; background:rgba(26,122,76,.1); border-radius:4px; }
+.cheaper-tag { font-size:13px; color:#22c55e; font-weight:600; padding:2px 6px; background:rgba(26,122,76,.1); border-radius:4px; }
 /* 财报季度方块 */
 .earnings-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px; }
 .earnings-block { background:rgba(255,255,255,.03); border:1px solid #1e3a5f; border-radius:8px; padding:10px 12px; }
-.earnings-block .eq-title { font-size:11px; color:#6b7b8d; margin-bottom:6px; font-weight:600; }
+.earnings-block .eq-title { font-size:13px; color:#6b7b8d; margin-bottom:6px; font-weight:600; }
 .earnings-block .eq-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-.earnings-block .eq-label { font-size:12px; color:#8fa0b3; }
+.earnings-block .eq-label { font-size:14px; color:#8fa0b3; }
 .earnings-block .eq-val { font-size:13px; font-weight:700; color:#e0e6ed; }
-.earnings-block .eq-yoy { font-size:11px; font-weight:600; margin-left:6px; }
+.earnings-block .eq-yoy { font-size:13px; font-weight:600; margin-left:6px; }
 .eq-yoy.up { color:#22c55e; }
 .eq-yoy.down { color:#ef4444; }
 @media(max-width:700px) {
@@ -118,13 +118,13 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .verify-title .vt-icon.warn { background:#eab308; box-shadow:0 0 6px rgba(234,179,8,.5); }
 .verify-title .vt-icon.err { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,.5); }
 .verify-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; }
-.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:12px; }
+.verify-item { background:rgba(255,255,255,.02); border:1px solid #1a2940; border-radius:8px; padding:10px 14px; font-size:14px; }
 .verify-item.pass { border-left:3px solid #22c55e; }
 .verify-item.drift { border-left:3px solid #eab308; }
 .verify-item.fail { border-left:3px solid #ef4444; }
 .vi-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
 .vi-name { font-weight:700; color:#e0e6ed; }
-.vi-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; }
+.vi-badge { font-size:14px; padding:2px 6px; border-radius:4px; font-weight:600; }
 .vi-badge.pass { background:rgba(34,197,94,.12); color:#22c55e; }
 .vi-badge.drift { background:rgba(234,179,8,.12); color:#eab308; }
 .vi-badge.fail { background:rgba(239,68,68,.12); color:#ef4444; }
@@ -132,7 +132,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .vi-row .src { color:#6b7b8d; }
 .vi-row .val { color:#e0e6ed; font-weight:600; }
 .vi-row .val.mismatch { color:#eab308; }
-.verify-summary { margin-top:10px; font-size:11px; color:#6b7b8d; text-align:right; }
+.verify-summary { margin-top:10px; font-size:13px; color:#6b7b8d; text-align:right; }
 </style>
 </head>
 <body data-active-page="portfolio">
@@ -143,7 +143,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
 .sidebar a.nav-btn:hover{color:#c9a84c;background:rgba(201,168,76,.05)}
 .sidebar a.nav-btn.active{color:#c9a84c;border-left-color:#c9a84c;background:rgba(201,168,76,.08)}
 .sidebar a.nav-btn svg{width:24px;height:24px;margin-bottom:4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sidebar a.nav-btn .nav-label{font-size:12px;line-height:1.2;white-space:nowrap}
+.sidebar a.nav-btn .nav-label{font-size:14px;line-height:1.2;white-space:nowrap}
 </style>
 <nav class="sidebar">
 <a class="nav-btn" href="index.html" data-page="index"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">总览</span></a>
@@ -287,7 +287,7 @@ h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
     <div class="card-top">
       <div>
         <span class="stock-title">阿里巴巴</span><span class="stock-code">9988.HK</span>
-        <span style="font-size:12px;color:#22c55e;margin-left:8px;font-weight:600;">✓ 已持仓</span>
+        <span style="font-size:14px;color:#22c55e;margin-left:8px;font-weight:600;">✓ 已持仓</span>
       </div>
       <span class="status-tag hold" id="status-baba">已持仓</span>
     </div>
@@ -826,7 +826,7 @@ function renderMetrics(key, price, prevClose, ahInfo) {
   if (s.thesis) parts.push('<span style="opacity:.7">'+s.thesis+'</span>');
   // Despair line
   if (s.despair) {
-    parts.push('<br><span style="color:#ef4444;font-size:12px;opacity:.8">🎯 等待：'+s.despair+'</span>');
+    parts.push('<br><span style="color:#ef4444;font-size:14px;opacity:.8">🎯 等待：'+s.despair+'</span>');
   }
   el.innerHTML = parts.join(' · ');
 }
@@ -1164,7 +1164,7 @@ function fmtNum(n) {
 
 function renderEarningsBlock(el, quarters) {
   // quarters: array of {title, revenue, revYoy, profit, profitYoy}
-  if (!quarters || quarters.length === 0) { el.innerHTML = '<span style="color:#6b7b8d;font-size:12px;">财报加载中...</span>'; return; }
+  if (!quarters || quarters.length === 0) { el.innerHTML = '<span style="color:#6b7b8d;font-size:14px;">财报加载中...</span>'; return; }
   var html = '';
   quarters.slice(0,3).forEach(function(q) {
     var revYoyCls = q.revYoy >= 0 ? 'up' : 'down';
